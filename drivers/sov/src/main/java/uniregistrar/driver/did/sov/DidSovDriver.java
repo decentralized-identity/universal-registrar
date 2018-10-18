@@ -1,14 +1,13 @@
 package uniregistrar.driver.did.sov;
 
 import java.io.File;
-import java.security.acl.Owner;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.regex.Matcher;
 
+import org.apache.commons.lang3.RandomStringUtils;
+import org.hyperledger.indy.sdk.IndyConstants;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
@@ -24,16 +23,11 @@ import org.hyperledger.indy.sdk.wallet.WalletExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
-
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegistrationRequest;
 import uniregistrar.state.RegistrationState;
+import uniregistrar.state.RegistrationStateFinished;
 
 public class DidSovDriver implements Driver {
 
@@ -41,17 +35,16 @@ public class DidSovDriver implements Driver {
 
 	private Map<String, Object> properties;
 
-	private static final Gson gson = new Gson();
-
 	private String libIndyPath;
 	private String poolConfigs;
 	private String poolVersions;
 	private String walletName;
+	private String trustAnchorSeed;
 
 	private Map<String, Pool> poolMap = null;
 	private Map<String, Integer> poolVersionMap = null;
 	private Wallet wallet = null;
-	private String submitterDid = null;
+	private String trustAnchorDid = null;
 
 	public DidSovDriver(Map<String, Object> properties) {
 
@@ -71,15 +64,17 @@ public class DidSovDriver implements Driver {
 
 		try {
 
-			String env_libIndyPath = System.getenv("uniresolver_driver_did_sov_libIndyPath");
-			String env_poolConfigs = System.getenv("uniresolver_driver_did_sov_poolConfigs");
-			String env_poolVersions = System.getenv("uniresolver_driver_did_sov_poolVersions");
-			String env_walletName = System.getenv("uniresolver_driver_did_sov_walletName");
+			String env_libIndyPath = System.getenv("uniregistrar_driver_did_sov_libIndyPath");
+			String env_poolConfigs = System.getenv("uniregistrar_driver_did_sov_poolConfigs");
+			String env_poolVersions = System.getenv("uniregistrar_driver_did_sov_poolVersions");
+			String env_walletName = System.getenv("uniregistrar_driver_did_sov_walletName");
+			String env_trustAnchorSeed = System.getenv("uniregistrar_driver_did_sov_trustAnchorSeed");
 
 			if (env_libIndyPath != null) properties.put("libIndyPath", env_libIndyPath);
 			if (env_poolConfigs != null) properties.put("poolConfigs", env_poolConfigs);
 			if (env_poolVersions != null) properties.put("poolVersions", env_poolVersions);
 			if (env_walletName != null) properties.put("walletName", env_walletName);
+			if (env_trustAnchorSeed != null) properties.put("trustAnchorSeed", env_trustAnchorSeed);
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -98,11 +93,13 @@ public class DidSovDriver implements Driver {
 			String prop_poolConfigs = (String) this.getProperties().get("poolConfigs");
 			String prop_poolVersions = (String) this.getProperties().get("poolVersions");
 			String prop_walletName = (String) this.getProperties().get("walletName");
+			String prop_trustAnchorSeed = (String) this.getProperties().get("trustAnchorSeed");
 
 			if (prop_libIndyPath != null) this.setLibIndyPath(prop_libIndyPath);
 			if (prop_poolConfigs != null) this.setPoolConfigs(prop_poolConfigs);
 			if (prop_poolVersions != null) this.setPoolVersions(prop_poolVersions);
 			if (prop_walletName != null) this.setWalletName(prop_walletName);
+			if (prop_trustAnchorSeed != null) this.setTrustAnchorSeed(prop_trustAnchorSeed);
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -112,94 +109,99 @@ public class DidSovDriver implements Driver {
 	@Override
 	public RegistrationState register(RegistrationRequest registrationRequest) throws RegistrationException {
 
-		// open pool
+		// open pool and wallet
 
-		if (this.getPoolMap() == null || this.getWallet() == null || this.getSubmitterDid() == null) this.openIndy();
+		if (this.getPoolMap() == null || this.getWallet() == null || this.getTrustAnchorDid() == null) this.openIndy();
 
-		// parse identifier
+		// read parameters
 
-		Matcher matcher = DID_SOV_PATTERN.matcher(identifier);
-		if (! matcher.matches()) return null;
+		String network = registrationRequest.getOptions() == null ? null : (String) registrationRequest.getOptions().get("network");
+		if (network == null || network.trim().isEmpty()) network = "_";
 
-		String targetDid = matcher.group(1);
+		// find pool and version
 
-		// send GET_NYM request
+		Pool pool = this.getPoolMap().get(network);
+		if (pool == null) throw new RegistrationException("Unknown network: " + network);
 
-		String getNymResponse;
+		Integer poolVersion = this.getPoolVersionMap().get(network);
 
-		try {
+		// create USER SEED
 
-			String getNymRequest = Ledger.buildGetNymRequest(this.getSubmitterDid(), targetDid).get();
-			getNymResponse = Ledger.signAndSubmitRequest(this.getPool(), this.getWallet(), this.getSubmitterDid(), getNymRequest).get();
-		} catch (IndyException | InterruptedException | ExecutionException ex) {
+		String newSeed = RandomStringUtils.randomAlphanumeric(32);
 
-			throw new RegistrationException("Cannot send GET_NYM request: " + ex.getMessage(), ex);
-		}
+		// register
 
-		if (log.isInfoEnabled()) log.info("GET_NYM for " + targetDid + ": " + getNymResponse);
-
-		// send GET_ATTR request
-
-		String getAttrResponse;
+		String newDid;
+		String newVerkey;
 
 		try {
 
-			String getAttrRequest = Ledger.buildGetAttribRequest(this.getSubmitterDid(), targetDid, "endpoint").get();
-			getAttrResponse = Ledger.signAndSubmitRequest(this.getPool(), this.getWallet(), this.getSubmitterDid(), getAttrRequest).get();
-		} catch (IndyException | InterruptedException | ExecutionException ex) {
+			// create USER DID
 
-			throw new RegistrationException("Cannot send GET_NYM request: " + ex.getMessage(), ex);
+			Wallet walletUser = this.getWallet();
+
+			if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
+			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameter = new CreateAndStoreMyDidJSONParameter(null, newSeed, null, null);
+			if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidJSONParameter: " + createAndStoreMyDidJSONParameter);
+			CreateAndStoreMyDidResult createAndStoreMyDidResult = Did.createAndStoreMyDid(walletUser, createAndStoreMyDidJSONParameter.toJson()).get();
+			if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidResult: " + createAndStoreMyDidResult);
+
+			newDid = createAndStoreMyDidResult.getDid();
+			newVerkey = createAndStoreMyDidResult.getVerkey();
+
+			// create NYM request
+
+			if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
+			String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, IndyConstants.ROLE_TRUSTEE).get();
+			if (log.isDebugEnabled()) log.debug("nymRequest: " + nymRequest);
+
+			// sign and submit request to ledger
+
+			if (log.isDebugEnabled()) log.debug("=== SUBMIT 1 ===");
+			String submitRequestResult1 = Ledger.signAndSubmitRequest(pool, this.getWallet(), this.getTrustAnchorDid(), nymRequest).get();
+			if (log.isDebugEnabled()) log.debug("SubmitRequestResult1: " + submitRequestResult1);
+
+			// create ATTRIB request
+
+			if (log.isDebugEnabled()) log.debug("=== CREATE ATTRIB REQUEST ===");
+			String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, "{\"endpoint\":{\"xdi\":\"http://127.0.0.1:8080/xdi\"}}", null).get();
+			if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
+
+			// sign and submit request to ledger
+
+			if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
+			String submitRequestResult2 = Ledger.signAndSubmitRequest(pool, walletUser, newDid, attribRequest).get();
+			if (log.isDebugEnabled()) log.debug("SubmitRequestResult2: " + submitRequestResult2);
+		} catch (InterruptedException | ExecutionException | IndyException ex) {
+
+			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);
 		}
 
-		if (log.isInfoEnabled()) log.info("GET_ATTR for " + targetDid + ": " + getAttrResponse);
+		// create REGISTRAR METADATA
 
-		// DDO id
+		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
+		registrarMetadata.put("network", network);
+		registrarMetadata.put("poolVersion", poolVersion);
+		registrarMetadata.put("submitterDid", this.getTrustAnchorDid());
 
-		String id = identifier;
+		// create IDENTIFIER
 
-		// DDO owners
+		String identifier = "did:sov:";
+		if (network != null && ! network.isEmpty() && ! network.equals("_")) identifier += network + ":";
+		identifier += newDid;
 
-		JsonObject jsonGetNymResponse = gson.fromJson(getNymResponse, JsonObject.class);
-		JsonObject jsonGetNymResult = jsonGetNymResponse == null ? null : jsonGetNymResponse.getAsJsonObject("result");
-		JsonElement jsonGetNymData = jsonGetNymResult == null ? null : jsonGetNymResult.get("data");
-		JsonObject jsonGetNymDataContent = (jsonGetNymData == null || jsonGetNymData instanceof JsonNull) ? null : gson.fromJson(jsonGetNymData.getAsString(), JsonObject.class);
-		JsonPrimitive jsonGetNymVerkey = jsonGetNymDataContent == null ? null : jsonGetNymDataContent.getAsJsonPrimitive("verkey");
+		// create CREDENTIALS
 
-		String verkey = jsonGetNymVerkey == null ? null : jsonGetNymVerkey.getAsString();
+		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
+		credentials.put("seed", newSeed);
 
-		Owner owner = Owner.build(identifier, DDO_OWNER_TYPES, DDO_CURVE, verkey, null);
+		// create REGISTRATION_STATE
 
-		List<RegistrationState.Owner> owners = Collections.singletonList(owner);
-
-		// DDO controls
-
-		List<RegistrationState.Control> controls = Collections.emptyList();
-
-		// DDO services
-
-		JsonObject jsonGetAttrResponse = gson.fromJson(getAttrResponse, JsonObject.class);
-		JsonObject jsonGetAttrResult = jsonGetAttrResponse == null ? null : jsonGetAttrResponse.getAsJsonObject("result");
-		JsonElement jsonGetAttrData = jsonGetAttrResult == null ? null : jsonGetAttrResult.get("data");
-		JsonObject jsonGetAttrDataContent = (jsonGetAttrData == null || jsonGetAttrData instanceof JsonNull) ? null : gson.fromJson(jsonGetAttrData.getAsString(), JsonObject.class);
-		JsonObject jsonGetAttrEndpoint = jsonGetAttrDataContent == null ? null : jsonGetAttrDataContent.getAsJsonObject("endpoint");
-
-		Map<String, String> services = new HashMap<String, String> ();
-
-		for (Map.Entry<String, JsonElement> jsonService : jsonGetAttrEndpoint.entrySet()) {
-
-			JsonPrimitive jsonGetAttrEndpointValue = jsonGetAttrEndpoint == null ? null : jsonGetAttrEndpoint.getAsJsonPrimitive(jsonService.getKey());
-			String value = jsonGetAttrEndpointValue == null ? null : jsonGetAttrEndpointValue.getAsString();
-
-			services.put(jsonService.getKey(), value);
-		}
-
-		// create DDO
-
-		RegistrationState ddo = RegistrationState.build(id, owners, controls, services);
+		RegistrationState registrationState = new RegistrationStateFinished(null, registrarMetadata, identifier, credentials);
 
 		// done
 
-		return ddo;
+		return registrationState;
 	}
 
 	@Override
@@ -208,7 +210,7 @@ public class DidSovDriver implements Driver {
 		return this.getProperties();
 	}
 
-	private void openIndy() throws ResolutionException {
+	private void openIndy() throws RegistrationException {
 
 		// initialize libindy
 
@@ -331,17 +333,19 @@ public class DidSovDriver implements Driver {
 			throw new RegistrationException("Cannot open wallet \"" + this.getWalletName() + "\": " + ex.getMessage(), ex);
 		}
 
-		// create submitter DID
+		// create trust anchor DID
 
 		try {
 
-			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameterTrustee = new CreateAndStoreMyDidJSONParameter(null, null, null, null);
+			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameterTrustee = new CreateAndStoreMyDidJSONParameter(null, this.getTrustAnchorSeed(), null, null);
 			CreateAndStoreMyDidResult createAndStoreMyDidResultTrustee = Did.createAndStoreMyDid(this.getWallet(), createAndStoreMyDidJSONParameterTrustee.toJson()).get();
-			this.submitterDid = createAndStoreMyDidResultTrustee.getDid();
+			this.trustAnchorDid = createAndStoreMyDidResultTrustee.getDid();
 		} catch (IndyException | InterruptedException | ExecutionException ex) {
 
-			throw new RegistrationException("Cannot create submitter DID: " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot create trust anchor DID: " + ex.getMessage(), ex);
 		}
+
+		if (log.isInfoEnabled()) log.info("Created trust anchor DID: " + this.trustAnchorDid);
 	}
 
 	/*
@@ -399,6 +403,16 @@ public class DidSovDriver implements Driver {
 		this.walletName = walletName;
 	}
 
+	public String getTrustAnchorSeed() {
+
+		return this.trustAnchorSeed;
+	}
+
+	public void setTrustAnchorSeed(String trustAnchorSeed) {
+
+		this.trustAnchorSeed = trustAnchorSeed;
+	}
+
 	public Map<String, Pool> getPoolMap() {
 
 		return this.poolMap;
@@ -429,13 +443,13 @@ public class DidSovDriver implements Driver {
 		this.wallet = wallet;
 	}
 
-	public String getSubmitterDid() {
+	public String getTrustAnchorDid() {
 
-		return this.submitterDid;
+		return this.trustAnchorDid;
 	}
 
-	public void setSubmitterDid(String submitterDid) {
+	public void setTrustAnchorDid(String trustAnchorDid) {
 
-		this.submitterDid = submitterDid;
+		this.trustAnchorDid = trustAnchorDid;
 	}
 }

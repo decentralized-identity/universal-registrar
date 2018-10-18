@@ -1,36 +1,48 @@
 package uniregistrar.driver.did.btcr;
 
+import java.io.File;
 import java.io.IOException;
-import java.security.acl.Owner;
-import java.util.Collections;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
+import java.util.concurrent.ExecutionException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.InsufficientMoneyException;
+import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.PeerAddress;
+import org.bitcoinj.core.Transaction;
+import org.bitcoinj.core.TransactionBroadcast;
+import org.bitcoinj.core.TransactionInput;
+import org.bitcoinj.core.TransactionOutput;
+import org.bitcoinj.kits.WalletAppKit;
+import org.bitcoinj.params.MainNetParams;
+import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.script.Script;
+import org.bitcoinj.script.ScriptBuilder;
+import org.bitcoinj.script.ScriptOpCodes;
+import org.bitcoinj.wallet.DecryptingKeyBag;
+import org.bitcoinj.wallet.KeyBag;
+import org.bitcoinj.wallet.RedeemData;
+import org.bitcoinj.wallet.SendRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import info.weboftrust.txrefconversion.Bech32;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.subgraph.orchid.encoders.Hex;
+
+import did.DIDDocument;
 import info.weboftrust.txrefconversion.Chain;
-import info.weboftrust.txrefconversion.ChainAndTxid;
 import info.weboftrust.txrefconversion.TxrefConverter;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BTCDRPCBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoinConnection.BtcrData;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoindRPCBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoinjSPVBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BlockcypherAPIBitcoinConnection;
+import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
+import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
 import uniregistrar.request.RegistrationRequest;
 import uniregistrar.state.RegistrationState;
+import uniregistrar.state.RegistrationStateFinished;
 
 public class DidBtcrDriver implements Driver {
 
@@ -38,9 +50,12 @@ public class DidBtcrDriver implements Driver {
 
 	private Map<String, Object> properties;
 
-	private BitcoinConnection bitcoinConnection;
+	private String peerMainnet;
+	private String peerTestnet;
+	private DIDDocContinuation didDocContinuation;
 
-	private HttpClient httpClient = HttpClients.createDefault();
+	private WalletAppKit walletAppKitMainnet = null;
+	private WalletAppKit walletAppKitTestnet = null;
 
 	public DidBtcrDriver(Map<String, Object> properties) {
 
@@ -60,13 +75,17 @@ public class DidBtcrDriver implements Driver {
 
 		try {
 
-			String env_bitcoinConnection = System.getenv("uniresolver_driver_did_btcr_bitcoinConnection");
-			String env_rpcUrlMainnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlMainnet");
-			String env_rpcUrlTestnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlTestnet");
+			String env_peerMainnet = System.getenv("uniregistrar_driver_did_btcr_peerMainnet");
+			String env_peerTestnet = System.getenv("uniregistrar_driver_did_btcr_peerTestnet");
+			String env_didDocContinuation = System.getenv("uniregistrar_driver_did_btcr_didDocContinuation");
+			String env_basePath = System.getenv("uniregistrar_driver_did_btcr_basePath");
+			String env_baseUri = System.getenv("uniregistrar_driver_did_btcr_baseUri");
 
-			if (env_bitcoinConnection != null) properties.put("bitcoinConnection", env_bitcoinConnection);
-			if (env_rpcUrlMainnet != null) properties.put("rpcUrlMainnet", env_rpcUrlMainnet);
-			if (env_rpcUrlTestnet != null) properties.put("rpcUrlTestnet", env_rpcUrlTestnet);
+			if (env_peerMainnet != null) properties.put("peerMainnet", env_peerMainnet);
+			if (env_peerTestnet != null) properties.put("peerTestnet", env_peerTestnet);
+			if (env_didDocContinuation != null) properties.put("didDocContinuation", env_didDocContinuation);
+			if (env_basePath != null) properties.put("basePath", env_basePath);
+			if (env_baseUri != null) properties.put("baseUri", env_baseUri);
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -81,32 +100,22 @@ public class DidBtcrDriver implements Driver {
 
 		try {
 
-			String prop_bitcoinConnection = (String) this.getProperties().get("bitcoinConnection");
+			String prop_peerMainnet = (String) this.getProperties().get("peerMainnet");
+			String prop_peerTestnet = (String) this.getProperties().get("peerTestnet");
+			String prop_didDocContinuation = (String) this.getProperties().get("didDocContinuation");
 
-			if ("bitcoind".equals(prop_bitcoinConnection)) {
+			if (prop_peerMainnet != null) this.setPeerMainnet(prop_peerMainnet);
+			if (prop_peerTestnet != null) this.setPeerTestnet(prop_peerTestnet);
 
-				this.setBitcoinConnection(new BitcoindRPCBitcoinConnection());
+			if ("localfile".equals(prop_didDocContinuation)) {
 
-				String prop_rpcUrlMainnet = (String) this.getProperties().get("rpcUrlMainnet");
-				String prop_rpcUrlTestnet = (String) this.getProperties().get("rpcUrlTestnet");
+				this.setDIDDocContinuation(new LocalFileDIDDocContinuation());
 
-				if (prop_rpcUrlMainnet != null) ((BitcoindRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlMainnet(prop_rpcUrlMainnet);
-				if (prop_rpcUrlTestnet != null) ((BitcoindRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlTestnet(prop_rpcUrlTestnet);
-			} else if ("btcd".equals(prop_bitcoinConnection)) {
+				String prop_basePath = (String) this.getProperties().get("basePath");
+				String prop_baseUri = (String) this.getProperties().get("baseUri");
 
-				this.setBitcoinConnection(new BTCDRPCBitcoinConnection());
-
-				String prop_rpcUrlMainnet = (String) this.getProperties().get("rpcUrlMainnet");
-				String prop_rpcUrlTestnet = (String) this.getProperties().get("rpcUrlTestnet");
-
-				if (prop_rpcUrlMainnet != null) ((BTCDRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlMainnet(prop_rpcUrlMainnet);
-				if (prop_rpcUrlTestnet != null) ((BTCDRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlTestnet(prop_rpcUrlTestnet);
-			} else if ("bitcoinj".equals(prop_bitcoinConnection)) {
-
-				this.setBitcoinConnection(new BitcoinjSPVBitcoinConnection());
-			} else  if ("blockcypherapi".equals(prop_bitcoinConnection)) {
-
-				this.setBitcoinConnection(new BlockcypherAPIBitcoinConnection());
+				if (prop_basePath != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBasePath(prop_basePath);
+				if (prop_baseUri != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBaseUri(prop_baseUri);
 			}
 		} catch (Exception ex) {
 
@@ -117,93 +126,182 @@ public class DidBtcrDriver implements Driver {
 	@Override
 	public RegistrationState register(RegistrationRequest registrationRequest) throws RegistrationException {
 
-		// parse identifier
+		// open wallet app kits
 
-		Matcher matcher = DID_BTCR_PATTERN.matcher(identifier);
-		if (! matcher.matches()) return null;
+		if (this.getWalletAppKitMainnet() == null || this.getWalletAppKitTestnet() == null ) this.openWalletAppKits();
 
-		String targetDid = matcher.group(1);
+		// read parameters
 
-		// determine txref
+		String chain = registrationRequest.getOptions() == null ? null : (String) registrationRequest.getOptions().get("chain");
+		if (chain == null || chain.trim().isEmpty()) chain = "TESTNET";
 
-		String txref = null;
-		if (targetDid.charAt(0) == TxrefConverter.MAGIC_BTC_MAINNET_BECH32_CHAR) txref = TxrefConverter.TXREF_BECH32_HRP_MAINNET + Bech32.SEPARATOR + "-" + targetDid;
-		if (targetDid.charAt(0) == TxrefConverter.MAGIC_BTC_TESTNET_BECH32_CHAR) txref = TxrefConverter.TXREF_BECH32_HRP_TESTNET + Bech32.SEPARATOR + "-" + targetDid;
-		if (txref == null) throw new RegistrationException("Invalid magic byte in " + targetDid);
+		// find wallet app kit
 
-		// retrieve btcr data
+		WalletAppKit walletAppKit = null;
+		if ("MAINNET".equals(chain)) walletAppKit = this.getWalletAppKitMainnet();
+		if ("TESTNET".equals(chain)) walletAppKit = this.getWalletAppKitTestnet();
+		if (walletAppKit == null) throw new RegistrationException("Unknown network: " + chain);
 
-		Chain chain;
-		String txid;
-		BtcrData btcrData;
+		// create continuation DID Document
+
+		URI didContinuationUri = this.didDocContinuation.prepareDIDDocContinuation(null);
+
+		// prepare transaction
+
+		if (log.isDebugEnabled()) log.debug("Balance: " + ((double) walletAppKit.wallet().getBalance().getValue() / Coin.COIN.getValue()));
+		if (log.isDebugEnabled()) log.debug("Change address: " + walletAppKit.wallet().currentChangeAddress());
+
+		Transaction originalTransaction = new Transaction(walletAppKit.params());
+		originalTransaction.addOutput(Coin.ZERO, new URIScriptBuilder(didContinuationUri).build());
+		SendRequest sendRequest = SendRequest.forTx(originalTransaction);
 
 		try {
 
-			TxrefConverter txrefConverter = new TxrefConverter(this.getExtendedBitcoinConnection());
+			walletAppKit.wallet().completeTx(sendRequest);
+		} catch (InsufficientMoneyException ex) {
 
-			ChainAndTxid chainAndTxid = txrefConverter.txrefToTxid(txref);
-			chain = chainAndTxid.getChain();
-			txid = chainAndTxid.getTxid();
-
-			btcrData = this.getExtendedBitcoinConnection().getBtcrData(chain, txid);
-		} catch (IOException ex) {
-
-			throw new RegistrationException("Cannot retrieve BTCR data for " + txref + ": " + ex.getMessage());
+			throw new RegistrationException("Insufficent coins: " + ex.getMessage());
 		}
 
-		if (log.isInfoEnabled()) log.info("Retrieved BTCR data for " + txref + " ("+ txid + " on chain " + chain + "): " + btcrData);
+		// send transaction
+		
+		TransactionBroadcast transactionBroadcast = walletAppKit.peerGroup().broadcastTransaction(originalTransaction);
+		ListenableFuture<Transaction> future = transactionBroadcast.future();
 
-		// retrieve more DDO
+		Transaction sentTransaction;
+		
+		try {
 
-		HttpGet httpGet = new HttpGet(btcrData.getMoreDdoUri());
-		RegistrationState moreDdo = null;
-
-		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
-
-			if (httpResponse.getStatusLine().getStatusCode() > 200) throw new RegistrationException("Cannot retrieve more DDO for " + txref + " from " + btcrData.getMoreDdoUri() + ": " + httpResponse.getStatusLine());
-
-			HttpEntity httpEntity = httpResponse.getEntity();
-
-			moreDdo = RegistrationState.fromString(EntityUtils.toString(httpEntity));
-			EntityUtils.consume(httpEntity);
-		} catch (IOException ex) {
-
-			throw new RegistrationException("Cannot retrieve more DDO for " + txref + " from " + btcrData.getMoreDdoUri() + ": " + ex.getMessage(), ex);
+			sentTransaction = future.get();
+		} catch (InterruptedException | ExecutionException ex) {
+			
+			throw new RegistrationException("Cannot sent transaction: " + ex.getMessage());
 		}
 
-		if (log.isInfoEnabled()) log.info("Retrieved more DDO for " + txref + " (" + btcrData.getMoreDdoUri() + "): " + moreDdo);
+		if (log.isDebugEnabled()) log.debug("Sent transaction! Transaction hash is " + sentTransaction.getHashAsString());
+		if (log.isDebugEnabled()) for (TransactionInput input : sentTransaction.getInputs()) log.debug("Transaction input: " + input.getValue() + " " + input); 
+		if (log.isDebugEnabled()) for (TransactionOutput output : sentTransaction.getOutputs()) log.debug("Transaction output: " + output.getValue() + " " + output); 
 
-		// DDO id
+		// determine txref
+		
+		String txref;
 
-		String id = identifier;
+		try {
+		
+			txref = TxrefConverter.get().txidToTxref(sentTransaction.getHashAsString(), Chain.valueOf(chain));
+		} catch (IOException ex) {
+			
+			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
+		}
 
-		// DDO owners
+		if (log.isDebugEnabled()) log.debug("Determined txref: " + txref);
 
-		Owner owner = Owner.build(identifier, DDO_OWNER_TYPES, DDO_CURVE, null, btcrData.getInputScriptPubKey());
+		// determine private key
+		
+		KeyBag maybeDecryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
+		for (TransactionInput input : sentTransaction.getInputs()) {
 
-		List<RegistrationState.Owner> owners = Collections.singletonList(owner);
+			RedeemData redeemData = input.getConnectedRedeemData(maybeDecryptingKeyBag);
+			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyAsHex());
+			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyAsWiF(walletAppKit.params()));
+			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyEncoded(walletAppKit.params()).toBase58());
+			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyEncoded(walletAppKit.params()).toString());
+			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + new String(Hex.encode(redeemData.keys.get(0).getPrivKeyBytes())));
+		}
 
-		// DDO controls
+		// store continuation DID Document
 
-		List<RegistrationState.Control> controls = Collections.emptyList();
+		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
 
-		// DDO services
+		try {
 
-		Map<String, String> services = moreDdo.getServices();
+			this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
+		} catch (IOException ex) {
 
-		// create DDO
+			throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+		}
 
-		RegistrationState ddo = RegistrationState.build(id, owners, controls, services);
+		// create REGISTRAR METADATA
+
+		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
+		registrarMetadata.put("chain", chain);
+		registrarMetadata.put("transactionHash", sentTransaction.getHashAsString());
+
+		// create IDENTIFIER
+
+		String identifier = "did:btcr:";
+		identifier += txref;
+
+		// create CREDENTIALS
+
+		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
+		credentials.put("seed", "blabla");
+
+		// create REGISTRATION_STATE
+
+		RegistrationState registrationState = new RegistrationStateFinished(null, registrarMetadata, identifier, credentials);
 
 		// done
 
-		return ddo;
+		return registrationState;
 	}
 
 	@Override
 	public Map<String, Object> properties() {
 
 		return this.getProperties();
+	}
+
+	private void openWalletAppKits() throws RegistrationException {
+
+		// open wallet app kits
+
+		NetworkParameters mainnetParams = MainNetParams.get();
+		NetworkParameters testnetParams = TestNet3Params.get();
+		URI uriMainnet = URI.create("temp://" + this.getPeerMainnet());
+		URI uriTestnet = URI.create("temp://" + this.getPeerTestnet());
+
+		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("."), "mainNetWallet");
+		this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
+		if (log.isInfoEnabled()) log.info("Opened mainnet wallet app kit: " + this.getPeerMainnet());
+
+		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("."), "testNetWallet");
+		this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
+		if (log.isInfoEnabled()) log.info("Opened testnet wallet app kit: " + this.getPeerTestnet());
+
+		// connect
+
+		this.walletAppKitMainnet.startAsync();
+		this.walletAppKitTestnet.startAsync();
+		this.walletAppKitMainnet.awaitRunning();
+		this.walletAppKitTestnet.awaitRunning();
+
+		if (log.isInfoEnabled()) log.info("Connected mainnet wallet app kit: " + this.getPeerMainnet());
+		if (log.isInfoEnabled()) log.info("Connected testnet wallet app kit: " + this.getPeerTestnet());
+	}
+
+	/*
+	 * Helper classes
+	 */
+
+	private static class URIScriptBuilder extends ScriptBuilder {
+
+		private URI uri;
+
+		private URIScriptBuilder(URI uri) {
+
+			super();
+			this.uri = uri;
+		}
+
+		@Override
+		public Script build() {
+
+			this.op(ScriptOpCodes.OP_RETURN);
+			this.data(this.uri.toString().getBytes(StandardCharsets.UTF_8));
+
+			return super.build();
+		}
 	}
 
 	/*
@@ -221,23 +319,53 @@ public class DidBtcrDriver implements Driver {
 		this.configureFromProperties();
 	}
 
-	public BitcoinConnection getBitcoinConnection() {
+	public String getPeerMainnet() {
 
-		return this.bitcoinConnection;
+		return this.peerMainnet;
 	}
 
-	public void setBitcoinConnection(BitcoinConnection bitcoinConnection) {
+	public void setPeerMainnet(String peerMainnet) {
 
-		this.bitcoinConnection = bitcoinConnection;
+		this.peerMainnet = peerMainnet;
 	}
 
-	public HttpClient getHttpClient() {
+	public String getPeerTestnet() {
 
-		return this.httpClient;
+		return this.peerTestnet;
 	}
 
-	public void setHttpClient(HttpClient httpClient) {
+	public void setPeerTestnet(String peerTestnet) {
 
-		this.httpClient = httpClient;
+		this.peerTestnet = peerTestnet;
+	}
+
+	public DIDDocContinuation getDIDDocContinuation() {
+
+		return this.didDocContinuation;
+	}
+
+	public void setDIDDocContinuation(DIDDocContinuation didDocContinuation) {
+
+		this.didDocContinuation = didDocContinuation;
+	}
+
+	public WalletAppKit getWalletAppKitMainnet() {
+
+		return this.walletAppKitMainnet;
+	}
+
+	public void setWalletAppKitMainnet(WalletAppKit walletAppKitMainnet) {
+
+		this.walletAppKitMainnet = walletAppKitMainnet;
+	}
+
+	public WalletAppKit getWalletAppKitTestnet() {
+
+		return this.walletAppKitTestnet;
+	}
+
+	public void setWalletAppKitTestnet(WalletAppKit walletAppKitTestnet) {
+
+		this.walletAppKitTestnet = walletAppKitTestnet;
 	}
 }

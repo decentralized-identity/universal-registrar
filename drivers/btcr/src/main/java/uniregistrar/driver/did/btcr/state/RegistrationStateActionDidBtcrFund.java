@@ -1,10 +1,10 @@
 package uniregistrar.driver.did.btcr.state;
 
-import com.google.gson.JsonObject;
+import java.util.Map;
 
 import uniregistrar.state.RegistrationStateAction;
 
-public class RegistrationStateDidBtcrActionFund extends RegistrationStateAction {
+public class RegistrationStateActionDidBtcrFund extends RegistrationStateAction {
 
 	public static final String JSON_PROPERTY_BITCOINADDRESS = "bitcoinaddress";
 	public static final String JSON_PROPERTY_SATOSHIS = "satoshis";
@@ -12,15 +12,15 @@ public class RegistrationStateDidBtcrActionFund extends RegistrationStateAction 
 	private String bitcoinaddress;
 	private String satoshis;
 
-	public RegistrationStateDidBtcrActionFund(String jobid, String action, String bitcoinaddress, String satoshis) {
+	public RegistrationStateActionDidBtcrFund(String jobid, Map<String, Object> registrarMetadata, String action, String bitcoinaddress, String satoshis) {
 
-		super(jobid, "fundingrequired");
+		super(jobid, registrarMetadata, "fundingrequired");
 
 		this.bitcoinaddress = bitcoinaddress;
 		this.satoshis = satoshis;
 	}
 
-	@Override
+/*	@Override
 	public JsonObject toJson() {
 
 		JsonObject jsonObject = super.toJson();
@@ -30,7 +30,7 @@ public class RegistrationStateDidBtcrActionFund extends RegistrationStateAction 
 		if (this.getSatoshis() != null) jsonObject.addProperty(JSON_PROPERTY_SATOSHIS, this.getSatoshis());
 
 		return jsonObject;
-	}
+	}*/
 
 	/*
 	 * Getters
