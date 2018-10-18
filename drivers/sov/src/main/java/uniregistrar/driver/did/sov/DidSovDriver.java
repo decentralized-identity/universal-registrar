@@ -25,9 +25,13 @@ import org.slf4j.LoggerFactory;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.RegistrationRequest;
-import uniregistrar.state.RegistrationState;
-import uniregistrar.state.RegistrationStateFinished;
+import uniregistrar.request.RegisterRequest;
+import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.RegisterState;
+import uniregistrar.state.RegisterStateFinished;
+import uniregistrar.state.RevokeState;
+import uniregistrar.state.UpdateState;
 
 public class DidSovDriver implements Driver {
 
@@ -107,7 +111,7 @@ public class DidSovDriver implements Driver {
 	}
 
 	@Override
-	public RegistrationState register(RegistrationRequest registrationRequest) throws RegistrationException {
+	public RegisterState register(RegisterRequest registerRequest) throws RegistrationException {
 
 		// open pool and wallet
 
@@ -115,7 +119,7 @@ public class DidSovDriver implements Driver {
 
 		// read parameters
 
-		String network = registrationRequest.getOptions() == null ? null : (String) registrationRequest.getOptions().get("network");
+		String network = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("network");
 		if (network == null || network.trim().isEmpty()) network = "_";
 
 		// find pool and version
@@ -197,11 +201,23 @@ public class DidSovDriver implements Driver {
 
 		// create REGISTRATION_STATE
 
-		RegistrationState registrationState = new RegistrationStateFinished(null, registrarMetadata, identifier, credentials);
+		RegisterState registerState = new RegisterStateFinished(null, registrarMetadata, identifier, credentials);
 
 		// done
 
-		return registrationState;
+		return registerState;
+	}
+
+	@Override
+	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException {
+
+		throw new RuntimeException("Not implemented.");
+	}
+
+	@Override
+	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+
+		throw new RuntimeException("Not implemented.");
 	}
 
 	@Override

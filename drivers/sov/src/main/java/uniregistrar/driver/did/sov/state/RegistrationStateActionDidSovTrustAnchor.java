@@ -1,8 +1,8 @@
 package uniregistrar.driver.did.sov.state;
 
-import uniregistrar.state.RegistrationStateAction;
+import uniregistrar.state.RegisterStateAction;
 
-public class RegistrationStateActionDidSovTrustAnchor extends RegistrationStateAction {
+public class RegistrationStateActionDidSovTrustAnchor extends RegisterStateAction {
 
 	public static final String JSON_PROPERTY_DID = "did";
 	public static final String JSON_PROPERTY_VERKEY = "verkey";

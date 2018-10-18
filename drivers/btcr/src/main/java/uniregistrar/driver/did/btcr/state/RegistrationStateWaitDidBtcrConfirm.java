@@ -2,9 +2,9 @@ package uniregistrar.driver.did.btcr.state;
 
 import java.util.Map;
 
-import uniregistrar.state.RegistrationStateWait;
+import uniregistrar.state.RegisterStateWait;
 
-public class RegistrationStateWaitDidBtcrConfirm extends RegistrationStateWait {
+public class RegistrationStateWaitDidBtcrConfirm extends RegisterStateWait {
 
 	public RegistrationStateWaitDidBtcrConfirm(String jobid, Map<String, Object> registrarMetadata) {
 

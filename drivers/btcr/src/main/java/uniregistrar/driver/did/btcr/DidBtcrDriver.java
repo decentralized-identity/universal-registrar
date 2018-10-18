@@ -40,9 +40,13 @@ import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
-import uniregistrar.request.RegistrationRequest;
-import uniregistrar.state.RegistrationState;
-import uniregistrar.state.RegistrationStateFinished;
+import uniregistrar.request.RegisterRequest;
+import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.RegisterState;
+import uniregistrar.state.RegisterStateFinished;
+import uniregistrar.state.RevokeState;
+import uniregistrar.state.UpdateState;
 
 public class DidBtcrDriver implements Driver {
 
@@ -124,7 +128,7 @@ public class DidBtcrDriver implements Driver {
 	}
 
 	@Override
-	public RegistrationState register(RegistrationRequest registrationRequest) throws RegistrationException {
+	public RegisterState register(RegisterRequest registerRequest) throws RegistrationException {
 
 		// open wallet app kits
 
@@ -132,7 +136,7 @@ public class DidBtcrDriver implements Driver {
 
 		// read parameters
 
-		String chain = registrationRequest.getOptions() == null ? null : (String) registrationRequest.getOptions().get("chain");
+		String chain = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("chain");
 		if (chain == null || chain.trim().isEmpty()) chain = "TESTNET";
 
 		// find wallet app kit
@@ -164,17 +168,17 @@ public class DidBtcrDriver implements Driver {
 		}
 
 		// send transaction
-		
+
 		TransactionBroadcast transactionBroadcast = walletAppKit.peerGroup().broadcastTransaction(originalTransaction);
 		ListenableFuture<Transaction> future = transactionBroadcast.future();
 
 		Transaction sentTransaction;
-		
+
 		try {
 
 			sentTransaction = future.get();
 		} catch (InterruptedException | ExecutionException ex) {
-			
+
 			throw new RegistrationException("Cannot sent transaction: " + ex.getMessage());
 		}
 
@@ -183,21 +187,21 @@ public class DidBtcrDriver implements Driver {
 		if (log.isDebugEnabled()) for (TransactionOutput output : sentTransaction.getOutputs()) log.debug("Transaction output: " + output.getValue() + " " + output); 
 
 		// determine txref
-		
+
 		String txref;
 
 		try {
-		
+
 			txref = TxrefConverter.get().txidToTxref(sentTransaction.getHashAsString(), Chain.valueOf(chain));
 		} catch (IOException ex) {
-			
+
 			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
 		}
 
 		if (log.isDebugEnabled()) log.debug("Determined txref: " + txref);
 
 		// determine private key
-		
+
 		KeyBag maybeDecryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
 		for (TransactionInput input : sentTransaction.getInputs()) {
 
@@ -239,11 +243,23 @@ public class DidBtcrDriver implements Driver {
 
 		// create REGISTRATION_STATE
 
-		RegistrationState registrationState = new RegistrationStateFinished(null, registrarMetadata, identifier, credentials);
+		RegisterState registerState = new RegisterStateFinished(null, registrarMetadata, identifier, credentials);
 
 		// done
 
-		return registrationState;
+		return registerState;
+	}
+
+	@Override
+	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException {
+
+		throw new RuntimeException("Not implemented.");
+	}
+
+	@Override
+	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+
+		throw new RuntimeException("Not implemented.");
 	}
 
 	@Override

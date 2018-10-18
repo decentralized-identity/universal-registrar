@@ -2,9 +2,9 @@ package uniregistrar.driver.did.btcr.state;
 
 import java.util.Map;
 
-import uniregistrar.state.RegistrationStateAction;
+import uniregistrar.state.RegisterStateAction;
 
-public class RegistrationStateActionDidBtcrFund extends RegistrationStateAction {
+public class RegistrationStateActionDidBtcrFund extends RegisterStateAction {
 
 	public static final String JSON_PROPERTY_BITCOINADDRESS = "bitcoinaddress";
 	public static final String JSON_PROPERTY_SATOSHIS = "satoshis";
