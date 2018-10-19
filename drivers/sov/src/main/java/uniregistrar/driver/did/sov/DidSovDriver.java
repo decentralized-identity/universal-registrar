@@ -181,12 +181,12 @@ public class DidSovDriver implements Driver {
 			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);
 		}
 
-		// create REGISTRAR METADATA
+		// create METHOD METADATA
 
-		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
-		registrarMetadata.put("network", network);
-		registrarMetadata.put("poolVersion", poolVersion);
-		registrarMetadata.put("submitterDid", this.getTrustAnchorDid());
+		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
+		methodMetadata.put("network", network);
+		methodMetadata.put("poolVersion", poolVersion);
+		methodMetadata.put("submitterDid", this.getTrustAnchorDid());
 
 		// create IDENTIFIER
 
@@ -199,9 +199,9 @@ public class DidSovDriver implements Driver {
 		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
 		credentials.put("seed", newSeed);
 
-		// create REGISTRATION_STATE
+		// create REGISTER STATE
 
-		RegisterState registerState = new RegisterStateFinished(null, registrarMetadata, identifier, credentials);
+		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, credentials);
 
 		// done
 

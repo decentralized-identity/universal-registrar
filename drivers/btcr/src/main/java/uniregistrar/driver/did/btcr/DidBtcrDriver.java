@@ -225,11 +225,11 @@ public class DidBtcrDriver implements Driver {
 			throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
 		}
 
-		// create REGISTRAR METADATA
+		// create METHOD METADATA
 
-		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
-		registrarMetadata.put("chain", chain);
-		registrarMetadata.put("transactionHash", sentTransaction.getHashAsString());
+		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
+		methodMetadata.put("chain", chain);
+		methodMetadata.put("transactionHash", sentTransaction.getHashAsString());
 
 		// create IDENTIFIER
 
@@ -241,9 +241,9 @@ public class DidBtcrDriver implements Driver {
 		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
 		credentials.put("seed", "blabla");
 
-		// create REGISTRATION_STATE
+		// create REGISTER STATE
 
-		RegisterState registerState = new RegisterStateFinished(null, registrarMetadata, identifier, credentials);
+		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, credentials);
 
 		// done
 
