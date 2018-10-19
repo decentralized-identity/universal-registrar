@@ -140,42 +140,47 @@ public class DidSovDriver implements Driver {
 
 		try {
 
-			// create USER DID
+			synchronized (this) {
 
-			Wallet walletUser = this.getWallet();
+				Pool.setProtocolVersion(poolVersion);
 
-			if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
-			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameter = new CreateAndStoreMyDidJSONParameter(null, newSeed, null, null);
-			if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidJSONParameter: " + createAndStoreMyDidJSONParameter);
-			CreateAndStoreMyDidResult createAndStoreMyDidResult = Did.createAndStoreMyDid(walletUser, createAndStoreMyDidJSONParameter.toJson()).get();
-			if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidResult: " + createAndStoreMyDidResult);
+				// create USER DID
 
-			newDid = createAndStoreMyDidResult.getDid();
-			newVerkey = createAndStoreMyDidResult.getVerkey();
+				Wallet walletUser = this.getWallet();
 
-			// create NYM request
+				if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
+				CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameter = new CreateAndStoreMyDidJSONParameter(null, newSeed, null, null);
+				if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidJSONParameter: " + createAndStoreMyDidJSONParameter);
+				CreateAndStoreMyDidResult createAndStoreMyDidResult = Did.createAndStoreMyDid(walletUser, createAndStoreMyDidJSONParameter.toJson()).get();
+				if (log.isDebugEnabled()) log.debug("CreateAndStoreMyDidResult: " + createAndStoreMyDidResult);
 
-			if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
-			String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, IndyConstants.ROLE_TRUSTEE).get();
-			if (log.isDebugEnabled()) log.debug("nymRequest: " + nymRequest);
+				newDid = createAndStoreMyDidResult.getDid();
+				newVerkey = createAndStoreMyDidResult.getVerkey();
 
-			// sign and submit request to ledger
+				// create NYM request
 
-			if (log.isDebugEnabled()) log.debug("=== SUBMIT 1 ===");
-			String submitRequestResult1 = Ledger.signAndSubmitRequest(pool, this.getWallet(), this.getTrustAnchorDid(), nymRequest).get();
-			if (log.isDebugEnabled()) log.debug("SubmitRequestResult1: " + submitRequestResult1);
+				if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
+				String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, IndyConstants.ROLE_TRUSTEE).get();
+				if (log.isDebugEnabled()) log.debug("nymRequest: " + nymRequest);
 
-			// create ATTRIB request
+				// sign and submit request to ledger
 
-			if (log.isDebugEnabled()) log.debug("=== CREATE ATTRIB REQUEST ===");
-			String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, "{\"endpoint\":{\"xdi\":\"http://127.0.0.1:8080/xdi\"}}", null).get();
-			if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
+				if (log.isDebugEnabled()) log.debug("=== SUBMIT 1 ===");
+				String submitRequestResult1 = Ledger.signAndSubmitRequest(pool, this.getWallet(), this.getTrustAnchorDid(), nymRequest).get();
+				if (log.isDebugEnabled()) log.debug("SubmitRequestResult1: " + submitRequestResult1);
 
-			// sign and submit request to ledger
+				// create ATTRIB request
 
-			if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
-			String submitRequestResult2 = Ledger.signAndSubmitRequest(pool, walletUser, newDid, attribRequest).get();
-			if (log.isDebugEnabled()) log.debug("SubmitRequestResult2: " + submitRequestResult2);
+				if (log.isDebugEnabled()) log.debug("=== CREATE ATTRIB REQUEST ===");
+				String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, "{\"endpoint\":{\"xdi\":\"http://127.0.0.1:8080/xdi\"}}", null).get();
+				if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
+
+				// sign and submit request to ledger
+
+				if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
+				String submitRequestResult2 = Ledger.signAndSubmitRequest(pool, walletUser, newDid, attribRequest).get();
+				if (log.isDebugEnabled()) log.debug("SubmitRequestResult2: " + submitRequestResult2);
+			}
 		} catch (InterruptedException | ExecutionException | IndyException ex) {
 
 			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);

@@ -25,13 +25,31 @@
 		<servlet-class>uniregistrar.driver.servlet.RegisterServlet</servlet-class>
 	</servlet>
 	<servlet>
+		<display-name>UpdateServlet</display-name>
+		<servlet-name>UpdateServlet</servlet-name>
+		<servlet-class>uniregistrar.driver.servlet.UpdateServlet</servlet-class>
+	</servlet>
+	<servlet>
+		<display-name>RevokeServlet</display-name>
+		<servlet-name>RevokeServlet</servlet-name>
+		<servlet-class>uniregistrar.driver.servlet.RevokeServlet</servlet-class>
+	</servlet>
+	<servlet>
 		<display-name>PropertiesServlet</display-name>
 		<servlet-name>PropertiesServlet</servlet-name>
 		<servlet-class>uniregistrar.driver.servlet.PropertiesServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
 		<servlet-name>RegisterServlet</servlet-name>
-		<url-pattern>/1.0/register/*</url-pattern>
+		<url-pattern>/1.0/register</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>UpdateServlet</servlet-name>
+		<url-pattern>/1.0/update</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>RevokeServlet</servlet-name>
+		<url-pattern>/1.0/revoke</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>PropertiesServlet</servlet-name>
