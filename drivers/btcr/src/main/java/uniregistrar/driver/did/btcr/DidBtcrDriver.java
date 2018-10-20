@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.NetworkParameters;
@@ -152,7 +153,10 @@ public class DidBtcrDriver implements Driver {
 
 		// prepare transaction
 
-		if (log.isDebugEnabled()) log.debug("Balance: " + ((double) walletAppKit.wallet().getBalance().getValue() / Coin.COIN.getValue()));
+		double balance = ((double) walletAppKit.wallet().getBalance().getValue() / Coin.COIN.getValue());
+		Address changeAddress = walletAppKit.wallet().currentChangeAddress();
+
+		if (log.isDebugEnabled()) log.debug("Balance: " + balance);
 		if (log.isDebugEnabled()) log.debug("Change address: " + walletAppKit.wallet().currentChangeAddress());
 
 		Transaction originalTransaction = new Transaction(walletAppKit.params());
@@ -245,6 +249,8 @@ public class DidBtcrDriver implements Driver {
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
 		methodMetadata.put("transactionHash", sentTransaction.getHashAsString());
+		methodMetadata.put("balance", Double.valueOf(balance));
+		methodMetadata.put("changeAddress", changeAddress.toString());
 
 		// create IDENTIFIER
 
