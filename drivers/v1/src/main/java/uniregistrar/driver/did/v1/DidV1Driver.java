@@ -1,10 +1,14 @@
 package uniregistrar.driver.did.v1;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -77,18 +81,15 @@ public class DidV1Driver implements Driver {
 
 		// read parameters
 
-		String network = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("network");
-		if (network == null || network.trim().isEmpty()) network = "_";
-
 		// register
 
 		int exitCode;
-		BufferedReader stdOutReader;
-		BufferedReader stdErrReader;
+		BufferedReader stdOutReader = null;
+		BufferedReader stdErrReader = null;
 
 		try {
 
-			Process process = Runtime.getRuntime().exec("/opt/driver-did-v1/did-client/did generate -r -t rsa");
+			Process process = Runtime.getRuntime().exec("/opt/driver-did-v1/did-client/did generate -r");
 			exitCode = process.waitFor();
 			stdOutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			stdErrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -98,6 +99,7 @@ public class DidV1Driver implements Driver {
 		}
 
 		String newDid = null;
+		String didDocumentLocation = null;
 
 		try {
 
@@ -108,7 +110,7 @@ public class DidV1Driver implements Driver {
 				if (log.isDebugEnabled()) log.debug("OUT: " + line);
 
 				if (line.startsWith("[Veres One][test] DID: ")) newDid = line.substring("[Veres One][test] DID: ".length());
-				if (line.startsWith("[Veres One][test] DID Document stored in: ")) continue; //TODO
+				if (line.startsWith("[Veres One][test] DID Document stored in: ")) didDocumentLocation = line.substring("[Veres One][test] DID Document stored in: ".length());
 			}
 
 			while ((line = stdErrReader.readLine()) != null) {
@@ -118,17 +120,60 @@ public class DidV1Driver implements Driver {
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Process read error: " + ex.getMessage(), ex);
+		} finally {
+
+			try {
+
+				if (stdOutReader != null) stdOutReader.close();
+				if (stdErrReader != null) stdErrReader.close();
+			} catch (IOException ex) {
+
+				throw new RegistrationException("Stream problem: " + ex.getMessage(), ex);
+			}
 		}
 
-		if (log.isInfoEnabled()) log.info("Process exit code: " + exitCode);
+		if (log.isDebugEnabled()) log.debug("Process exit code: " + exitCode);
 		if (exitCode != 0) throw new RegistrationException("Process exit code: " + exitCode);
 
 		if (newDid == null) throw new RegistrationException("No DID registered.");
 
+		if (log.isDebugEnabled()) log.debug("DID: " + newDid);
+		if (log.isDebugEnabled()) log.debug("DID Document location: " + didDocumentLocation);
+
+		// read DID document
+
+		BufferedReader didDocumentReader = null;
+		List<String> privateKeys = new ArrayList<String> ();;
+
+		try {
+
+			didDocumentReader = new BufferedReader(new FileReader(new File(didDocumentLocation)));
+
+			String line;
+
+			while ((line = didDocumentReader.readLine()) != null) {
+
+				if (line.contains("\"privateKeyBase58\": ")) privateKeys.add(line.substring(line.indexOf("\"privateKeyBase58\": ") + "\"privateKeyBase58\": ".length() + 1, line.length() - 2));
+				if (line.contains("\"privateKeyPem\": ")) privateKeys.add(line.substring(line.indexOf("\"privateKeyPem\": ") + "\"privateKeyPem\": ".length() + 1, line.length() - 2));
+			}
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Process read error: " + ex.getMessage(), ex);
+		} finally {
+
+			try {
+
+				if (didDocumentReader != null) didDocumentReader.close();
+			} catch (IOException ex) {
+
+				throw new RegistrationException("Stream problem: " + ex.getMessage(), ex);
+			}
+		}
+
 		// create METHOD METADATA
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
-		methodMetadata.put("network", network);
+		//		methodMetadata.put("network", network);
 
 		// create IDENTIFIER
 
@@ -137,7 +182,7 @@ public class DidV1Driver implements Driver {
 		// create CREDENTIALS
 
 		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("privateKey", "TODO");
+		credentials.put("privateKeys", privateKeys);
 
 		// create REGISTER STATE
 
