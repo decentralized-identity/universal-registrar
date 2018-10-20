@@ -7,12 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionBroadcast;
 import org.bitcoinj.core.TransactionInput;
@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.util.concurrent.ListenableFuture;
-import com.subgraph.orchid.encoders.Hex;
 
 import did.DIDDocument;
 import info.weboftrust.txrefconversion.Chain;
@@ -40,6 +39,7 @@ import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
+import uniregistrar.driver.did.btcr.state.RegisterStateWaitDidBtcrConfirm;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.RevokeRequest;
 import uniregistrar.request.UpdateRequest;
@@ -202,27 +202,42 @@ public class DidBtcrDriver implements Driver {
 
 		// determine private key
 
-		KeyBag maybeDecryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
+		String privateKeyAsWif = null;
+		String privateKeyAsHex = null;
+
+		KeyBag decryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
 		for (TransactionInput input : sentTransaction.getInputs()) {
 
-			RedeemData redeemData = input.getConnectedRedeemData(maybeDecryptingKeyBag);
-			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyAsHex());
-			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyAsWiF(walletAppKit.params()));
-			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyEncoded(walletAppKit.params()).toBase58());
-			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + redeemData.keys.get(0).getPrivateKeyEncoded(walletAppKit.params()).toString());
-			if (log.isDebugEnabled()) log.debug("redeem: " + input + " --> " + new String(Hex.encode(redeemData.keys.get(0).getPrivKeyBytes())));
+			RedeemData redeemData = input.getConnectedRedeemData(decryptingKeyBag);
+			privateKeyAsWif = redeemData.keys.get(0).getPrivateKeyAsWiF(walletAppKit.params());
+			privateKeyAsHex = redeemData.keys.get(0).getPrivateKeyAsHex();
 		}
 
 		// store continuation DID Document
 
-		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
+		if (txref != null) {
 
-		try {
+			DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
 
-			this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
-		} catch (IOException ex) {
+			try {
 
-			throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+				this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
+			} catch (IOException ex) {
+
+				throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+			}
+		}
+
+		// create JOBID
+
+		String jobId;
+
+		if (txref == null) {
+
+			jobId = UUID.randomUUID().toString();
+		} else {
+
+			jobId = null;
 		}
 
 		// create METHOD METADATA
@@ -233,17 +248,25 @@ public class DidBtcrDriver implements Driver {
 
 		// create IDENTIFIER
 
-		String identifier = "did:btcr:";
-		identifier += txref;
+		String identifier = txref == null ? null : "did:btcr:" + txref;
 
 		// create CREDENTIALS
 
 		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("seed", "blabla");
+		credentials.put("privateKeyWif", privateKeyAsWif);
+		credentials.put("privateKeyHex", privateKeyAsHex);
 
 		// create REGISTER STATE
 
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, credentials);
+		RegisterState registerState;
+
+		if (identifier != null) {
+
+			registerState = new RegisterStateFinished(jobId, null, methodMetadata, identifier, credentials);
+		} else {
+
+			registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
+		}
 
 		// done
 
@@ -274,15 +297,15 @@ public class DidBtcrDriver implements Driver {
 
 		NetworkParameters mainnetParams = MainNetParams.get();
 		NetworkParameters testnetParams = TestNet3Params.get();
-		URI uriMainnet = URI.create("temp://" + this.getPeerMainnet());
-		URI uriTestnet = URI.create("temp://" + this.getPeerTestnet());
+		//		URI uriMainnet = URI.create("temp://" + this.getPeerMainnet());
+		//		URI uriTestnet = URI.create("temp://" + this.getPeerTestnet());
 
-		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("."), "mainNetWallet");
-		this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
+		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("./wallet/"), "mainNetWallet");
+		//		this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened mainnet wallet app kit: " + this.getPeerMainnet());
 
-		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("."), "testNetWallet");
-		this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
+		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("./wallet/"), "testNetWallet");
+		//		this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened testnet wallet app kit: " + this.getPeerTestnet());
 
 		// connect

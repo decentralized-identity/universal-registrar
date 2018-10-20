@@ -186,6 +186,10 @@ public class DidSovDriver implements Driver {
 			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);
 		}
 
+		// create JOBID
+
+		String jobId = null;
+
 		// create METHOD METADATA
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
@@ -206,7 +210,7 @@ public class DidSovDriver implements Driver {
 
 		// create REGISTER STATE
 
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, credentials);
+		RegisterState registerState = new RegisterStateFinished(jobId, null, methodMetadata, identifier, credentials);
 
 		// done
 
