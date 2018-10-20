@@ -9,6 +9,6 @@ public class RandomDIDDocFileNameStrategy implements DIDDocFileNameStrategy {
 	@Override
 	public String createDIDDocFileName(DIDDocument didDocument) {
 
-		return UUID.randomUUID().toString();
+		return UUID.randomUUID().toString() + ".jsonld";
 	}
 }

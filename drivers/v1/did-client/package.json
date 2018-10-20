@@ -1,0 +1,44 @@
+{
+  "name": "did-client",
+  "version": "0.3.2-0",
+  "description": "A program for managing Decentralized Identifiers (DIDs).",
+  "main": "./did",
+  "bin": {
+    "did": "./did"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/digitalbazaar/did-client.git"
+  },
+  "author": {
+    "name": "Digital Bazaar, Inc.",
+    "email": "support@digitalbazaar.com",
+    "url": "https://digitalbazaar.com/"
+  },
+  "bugs": {
+    "url": "https://github.com/digitalbazaar/did-client/issues"
+  },
+  "homepage": "https://github.com/digitalbazaar/did-client",
+  "dependencies": {
+    "chalk": "^2.3.1",
+    "did-client-veres-one": "veres-one/did-client-veres-one#implementation",
+    "did-veres-one": "veres-one/did-veres-one#implementation",
+    "equihash-signature": "digitalbazaar/equihash-signature#master",
+    "fs-extra": "^5.0.0",
+    "get-stdin": "^5.0.1",
+    "glob": "^7.1.2",
+    "jsonld": "^1.0.1",
+    "jsonld-signatures": "^2.2.1",
+    "lodash": "^4.17.0",
+    "mkdirp-promise": "^5.0.1",
+    "node-forge": "^0.7.2",
+    "program": "^1.0.0",
+    "proper-lockfile": "^3.0.2",
+    "r2": "^2.0.0",
+    "util.promisify": "^1.0.0",
+    "yargs": "^11.1.0"
+  },
+  "engines": {
+    "node": ">=8.6.0"
+  }
+}

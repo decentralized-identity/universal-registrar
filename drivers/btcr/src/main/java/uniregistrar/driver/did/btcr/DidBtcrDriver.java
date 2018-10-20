@@ -137,6 +137,13 @@ public class DidBtcrDriver implements Driver {
 
 		// read parameters
 
+		String jobId = registerRequest.getJobId();
+
+		if (jobId != null) {
+
+			// TODO??
+		}
+
 		String chain = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("chain");
 		if (chain == null || chain.trim().isEmpty()) chain = "TESTNET";
 
@@ -233,8 +240,6 @@ public class DidBtcrDriver implements Driver {
 		}
 
 		// create JOBID
-
-		String jobId;
 
 		if (txref == null) {
 

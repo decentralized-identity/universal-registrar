@@ -82,37 +82,48 @@ public class DidV1Driver implements Driver {
 
 		// register
 
-		BufferedReader reader;
+		int exitCode;
+		BufferedReader stdOutReader;
+		BufferedReader stdErrReader;
 
 		try {
 
-			Process process = Runtime.getRuntime().exec("did generate  --register");
-			process.waitFor();
-			reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			Process process = Runtime.getRuntime().exec("/opt/driver-did-v1/did-client/did generate -r -t rsa");
+			exitCode = process.waitFor();
+			stdOutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+			stdErrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 		} catch (IOException | InterruptedException ex) {
 
 			throw new RegistrationException("Cannot generate DID: " + ex.getMessage(), ex);
 		}
 
-		String newDid;
+		String newDid = null;
 
 		try {
 
-			newDid = reader.readLine();
+			String line;
+
+			while ((line = stdOutReader.readLine()) != null) {
+
+				if (log.isDebugEnabled()) log.debug("OUT: " + line);
+
+				if (line.startsWith("[Veres One][test] DID: ")) newDid = line.substring("[Veres One][test] DID: ".length());
+				if (line.startsWith("[Veres One][test] DID Document stored in: ")) continue; //TODO
+			}
+
+			while ((line = stdErrReader.readLine()) != null) {
+
+				if (log.isWarnEnabled()) log.warn("ERR: " + line);
+			}
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot read DID: " + ex.getMessage(), ex);
+			throw new RegistrationException("Process read error: " + ex.getMessage(), ex);
 		}
 
-		String newPrivateKey;
+		if (log.isInfoEnabled()) log.info("Process exit code: " + exitCode);
+		if (exitCode != 0) throw new RegistrationException("Process exit code: " + exitCode);
 
-		try {
-
-			newPrivateKey = reader.readLine();
-		} catch (IOException ex) {
-
-			throw new RegistrationException("Cannot read private key: " + ex.getMessage(), ex);
-		}
+		if (newDid == null) throw new RegistrationException("No DID registered.");
 
 		// create METHOD METADATA
 
@@ -121,14 +132,12 @@ public class DidV1Driver implements Driver {
 
 		// create IDENTIFIER
 
-		String identifier = "did:sov:";
-		if (network != null && ! network.isEmpty() && ! network.equals("_")) identifier += network + ":";
-		identifier += newDid;
+		String identifier = newDid;
 
 		// create CREDENTIALS
 
 		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("privateKey", newPrivateKey);
+		credentials.put("privateKey", "TODO");
 
 		// create REGISTER STATE
 

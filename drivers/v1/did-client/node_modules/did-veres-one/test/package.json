@@ -1,0 +1,13 @@
+{
+  "name": "did-veres-one-test",
+  "version": "0.0.1-0",
+  "description": "DID Veres One Tests",
+  "private": true,
+  "scripts": {
+    "test": "node --preserve-symlinks test.js test --framework mocha"
+  },
+  "dependencies": {
+    "bedrock": "github:digitalbazaar/bedrock#jsonld-1.1",
+    "bedrock-test": "^2.0.0"
+  }
+}
