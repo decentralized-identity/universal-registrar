@@ -24,6 +24,9 @@ ENV uniregistrar_driver_did_btcr_peerTestnet=localhost:38333
 ENV uniregistrar_driver_did_btcr_didDocContinuation=localfile
 ENV uniregistrar_driver_did_btcr_basePath=/tmp/
 ENV uniregistrar_driver_did_btcr_baseUri=http://localhost/
+ENV uniregistrar_driver_did_btcr_bitcoinConnection=blockcypherapi
+ENV uniregistrar_driver_did_btcr_rpcUrlMainnet=http://user:pass@localhost:8332/
+ENV uniregistrar_driver_did_btcr_rpcUrlTestnet=http://user:pass@localhost:18332/
 
 # done
 

@@ -7,7 +7,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Address;
@@ -35,9 +34,16 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import did.DIDDocument;
 import info.weboftrust.txrefconversion.Chain;
+import info.weboftrust.txrefconversion.ChainAndBlockLocation;
 import info.weboftrust.txrefconversion.TxrefConverter;
+import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
 import uniregistrar.RegistrationException;
+import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
+import uniregistrar.driver.did.btcr.bitcoinconnection.BTCDRPCBitcoinConnection;
+import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoindRPCBitcoinConnection;
+import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoinjSPVBitcoinConnection;
+import uniregistrar.driver.did.btcr.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
 import uniregistrar.driver.did.btcr.state.RegisterStateWaitDidBtcrConfirm;
@@ -49,7 +55,7 @@ import uniregistrar.state.RegisterStateFinished;
 import uniregistrar.state.RevokeState;
 import uniregistrar.state.UpdateState;
 
-public class DidBtcrDriver implements Driver {
+public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 	private static Logger log = LoggerFactory.getLogger(DidBtcrDriver.class);
 
@@ -58,6 +64,7 @@ public class DidBtcrDriver implements Driver {
 	private String peerMainnet;
 	private String peerTestnet;
 	private DIDDocContinuation didDocContinuation;
+	private BitcoinConnection bitcoinConnection;
 
 	private WalletAppKit walletAppKitMainnet = null;
 	private WalletAppKit walletAppKitTestnet = null;
@@ -85,12 +92,18 @@ public class DidBtcrDriver implements Driver {
 			String env_didDocContinuation = System.getenv("uniregistrar_driver_did_btcr_didDocContinuation");
 			String env_basePath = System.getenv("uniregistrar_driver_did_btcr_basePath");
 			String env_baseUri = System.getenv("uniregistrar_driver_did_btcr_baseUri");
+			String env_bitcoinConnection = System.getenv("uniresolver_driver_did_btcr_bitcoinConnection");
+			String env_rpcUrlMainnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlMainnet");
+			String env_rpcUrlTestnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlTestnet");
 
 			if (env_peerMainnet != null) properties.put("peerMainnet", env_peerMainnet);
 			if (env_peerTestnet != null) properties.put("peerTestnet", env_peerTestnet);
 			if (env_didDocContinuation != null) properties.put("didDocContinuation", env_didDocContinuation);
 			if (env_basePath != null) properties.put("basePath", env_basePath);
 			if (env_baseUri != null) properties.put("baseUri", env_baseUri);
+			if (env_bitcoinConnection != null) properties.put("bitcoinConnection", env_bitcoinConnection);
+			if (env_rpcUrlMainnet != null) properties.put("rpcUrlMainnet", env_rpcUrlMainnet);
+			if (env_rpcUrlTestnet != null) properties.put("rpcUrlTestnet", env_rpcUrlTestnet);
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -108,6 +121,7 @@ public class DidBtcrDriver implements Driver {
 			String prop_peerMainnet = (String) this.getProperties().get("peerMainnet");
 			String prop_peerTestnet = (String) this.getProperties().get("peerTestnet");
 			String prop_didDocContinuation = (String) this.getProperties().get("didDocContinuation");
+			String prop_bitcoinConnection = (String) this.getProperties().get("bitcoinConnection");
 
 			if (prop_peerMainnet != null) this.setPeerMainnet(prop_peerMainnet);
 			if (prop_peerTestnet != null) this.setPeerTestnet(prop_peerTestnet);
@@ -122,6 +136,32 @@ public class DidBtcrDriver implements Driver {
 				if (prop_basePath != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBasePath(prop_basePath);
 				if (prop_baseUri != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBaseUri(prop_baseUri);
 			}
+
+			if ("bitcoind".equals(prop_bitcoinConnection)) {
+
+				this.setBitcoinConnection(new BitcoindRPCBitcoinConnection());
+
+				String prop_rpcUrlMainnet = (String) this.getProperties().get("rpcUrlMainnet");
+				String prop_rpcUrlTestnet = (String) this.getProperties().get("rpcUrlTestnet");
+
+				if (prop_rpcUrlMainnet != null) ((BitcoindRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlMainnet(prop_rpcUrlMainnet);
+				if (prop_rpcUrlTestnet != null) ((BitcoindRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlTestnet(prop_rpcUrlTestnet);
+			} else if ("btcd".equals(prop_bitcoinConnection)) {
+
+				this.setBitcoinConnection(new BTCDRPCBitcoinConnection());
+
+				String prop_rpcUrlMainnet = (String) this.getProperties().get("rpcUrlMainnet");
+				String prop_rpcUrlTestnet = (String) this.getProperties().get("rpcUrlTestnet");
+
+				if (prop_rpcUrlMainnet != null) ((BTCDRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlMainnet(prop_rpcUrlMainnet);
+				if (prop_rpcUrlTestnet != null) ((BTCDRPCBitcoinConnection) this.getBitcoinConnection()).setRpcUrlTestnet(prop_rpcUrlTestnet);
+			} else if ("bitcoinj".equals(prop_bitcoinConnection)) {
+
+				this.setBitcoinConnection(new BitcoinjSPVBitcoinConnection());
+			} else  if ("blockcypherapi".equals(prop_bitcoinConnection)) {
+
+				this.setBitcoinConnection(new BlockcypherAPIBitcoinConnection());
+			}
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -135,14 +175,19 @@ public class DidBtcrDriver implements Driver {
 
 		if (this.getWalletAppKitMainnet() == null || this.getWalletAppKitTestnet() == null ) this.openWalletAppKits();
 
-		// read parameters
+		// CONTINUE JOB?
 
 		String jobId = registerRequest.getJobId();
 
 		if (jobId != null) {
 
-			// TODO??
+			DidBtcrJob job = (DidBtcrJob) this.continueJob(jobId);
+			if (job == null) throw new RegistrationException("Invalid job: " + jobId);
+
+			return this.continueRegisterJob(jobId, job, registerRequest.getOptions());
 		}
+
+		// read options
 
 		String chain = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("chain");
 		if (chain == null || chain.trim().isEmpty()) chain = "TESTNET";
@@ -183,33 +228,21 @@ public class DidBtcrDriver implements Driver {
 		TransactionBroadcast transactionBroadcast = walletAppKit.peerGroup().broadcastTransaction(originalTransaction);
 		ListenableFuture<Transaction> future = transactionBroadcast.future();
 
-		Transaction sentTransaction;
+		Transaction transaction;
+		String transactionHash;
 
 		try {
 
-			sentTransaction = future.get();
+			transaction = future.get();
+			transactionHash = transaction.getHashAsString();
 		} catch (InterruptedException | ExecutionException ex) {
 
 			throw new RegistrationException("Cannot sent transaction: " + ex.getMessage());
 		}
 
-		if (log.isDebugEnabled()) log.debug("Sent transaction! Transaction hash is " + sentTransaction.getHashAsString());
-		if (log.isDebugEnabled()) for (TransactionInput input : sentTransaction.getInputs()) log.debug("Transaction input: " + input.getValue() + " " + input); 
-		if (log.isDebugEnabled()) for (TransactionOutput output : sentTransaction.getOutputs()) log.debug("Transaction output: " + output.getValue() + " " + output); 
-
-		// determine txref
-
-		String txref;
-
-		try {
-
-			txref = TxrefConverter.get().txidToTxref(sentTransaction.getHashAsString(), Chain.valueOf(chain));
-		} catch (IOException ex) {
-
-			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
-		}
-
-		if (log.isDebugEnabled()) log.debug("Determined txref: " + txref);
+		if (log.isDebugEnabled()) log.debug("Sent transaction! Transaction hash is " + transactionHash);
+		if (log.isDebugEnabled()) for (TransactionInput input : transaction.getInputs()) log.debug("Transaction input: " + input.getValue() + " " + input); 
+		if (log.isDebugEnabled()) for (TransactionOutput output : transaction.getOutputs()) log.debug("Transaction output: " + output.getValue() + " " + output); 
 
 		// determine private key
 
@@ -217,70 +250,94 @@ public class DidBtcrDriver implements Driver {
 		String privateKeyAsHex = null;
 
 		KeyBag decryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
-		for (TransactionInput input : sentTransaction.getInputs()) {
+		for (TransactionInput input : transaction.getInputs()) {
 
 			RedeemData redeemData = input.getConnectedRedeemData(decryptingKeyBag);
 			privateKeyAsWif = redeemData.keys.get(0).getPrivateKeyAsWiF(walletAppKit.params());
 			privateKeyAsHex = redeemData.keys.get(0).getPrivateKeyAsHex();
 		}
 
-		// store continuation DID Document
+		// REGISTER STATE: wait
 
-		if (txref != null) {
-
-			DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
-
-			try {
-
-				this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
-			} catch (IOException ex) {
-
-				throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
-			}
-		}
-
-		// create JOBID
-
-		if (txref == null) {
-
-			jobId = UUID.randomUUID().toString();
-		} else {
-
-			jobId = null;
-		}
-
-		// create METHOD METADATA
+		DidBtcrJob job = new DidBtcrJob(chain, transactionHash, didContinuationUri, privateKeyAsWif, privateKeyAsHex);
+		jobId = this.newJob(job);
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
-		methodMetadata.put("transactionHash", sentTransaction.getHashAsString());
+		methodMetadata.put("transactionHash", transactionHash);
 		methodMetadata.put("balance", Double.valueOf(balance));
 		methodMetadata.put("changeAddress", changeAddress.toString());
 
-		// create IDENTIFIER
+		RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
+		return registerState;
+	}
 
-		String identifier = txref == null ? null : "did:btcr:" + txref;
+	private RegisterState continueRegisterJob(String jobId, DidBtcrJob job, Map<String, Object> options) throws RegistrationException {
 
-		// create CREDENTIALS
+		// read job
 
-		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("privateKeyWif", privateKeyAsWif);
-		credentials.put("privateKeyHex", privateKeyAsHex);
+		String chain = job.getChain();
+		String transactionHash = job.getTransactionHash();
+		URI didContinuationUri = job.getDidContinuationUri();
+		String privateKeyAsWif = job.getPrivateKeyAsWif();
+		String privateKeyAsHex = job.getPrivateKeyAsHex();
 
-		// create REGISTER STATE
+		// read options
 
-		RegisterState registerState;
+		// determine txref
 
-		if (identifier != null) {
+		String txref;
 
-			registerState = new RegisterStateFinished(jobId, null, methodMetadata, identifier, credentials);
-		} else {
+		try {
 
-			registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
+			ChainAndBlockLocation chainAndBlockLocation = this.getBitcoinConnection().getChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
+			txref = TxrefConverter.get().txrefEncode(chainAndBlockLocation);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
 		}
 
-		// done
+		if (log.isDebugEnabled()) log.debug("Determined txref: " + txref);
 
+		// REGISTER STATE: wait
+
+		if (txref == null) {
+
+			Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
+			methodMetadata.put("chain", chain);
+			methodMetadata.put("transactionHash", transactionHash);
+
+			RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
+			return registerState;
+		}
+
+		// store continuation DID Document
+
+		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
+
+		try {
+
+			this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+		}
+
+		// REGISTRATION STATE: finished
+
+		this.finishJob(jobId);
+
+		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
+		methodMetadata.put("chain", chain);
+		methodMetadata.put("transactionHash", transactionHash);
+
+		String identifier = "did:btcr:" + txref;
+
+		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
+		secret.put("privateKeyWif", privateKeyAsWif);
+		secret.put("privateKeyHex", privateKeyAsHex);
+
+		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
 		return registerState;
 	}
 
@@ -333,6 +390,49 @@ public class DidBtcrDriver implements Driver {
 	/*
 	 * Helper classes
 	 */
+
+	private static class DidBtcrJob implements AbstractDriver.Job {
+
+		private String chain;
+		private String transactionHash;
+		private URI didContinuationUri;
+		private String privateKeyAsWif;
+		private String privateKeyAsHex;
+
+		private DidBtcrJob(String chain, String transactionHash, URI didContinuationUri, String privateKeyAsWif, String privateKeyAsHex) {
+
+			this.chain = chain;
+			this.transactionHash = transactionHash;
+			this.didContinuationUri = didContinuationUri;
+			this.privateKeyAsWif = privateKeyAsWif;
+			this.privateKeyAsHex = privateKeyAsHex;
+		}
+
+		private String getChain() {
+
+			return this.chain;
+		}
+
+		private String getTransactionHash() {
+
+			return this.transactionHash;
+		}
+
+		private URI getDidContinuationUri() {
+
+			return this.didContinuationUri;
+		}
+
+		private String getPrivateKeyAsWif() {
+
+			return this.privateKeyAsWif;
+		}
+
+		private String getPrivateKeyAsHex() {
+
+			return this.privateKeyAsHex;
+		}
+	}
 
 	private static class URIScriptBuilder extends ScriptBuilder {
 
@@ -397,6 +497,16 @@ public class DidBtcrDriver implements Driver {
 	public void setDIDDocContinuation(DIDDocContinuation didDocContinuation) {
 
 		this.didDocContinuation = didDocContinuation;
+	}
+
+	public BitcoinConnection getBitcoinConnection() {
+
+		return this.bitcoinConnection;
+	}
+
+	public void setBitcoinConnection(BitcoinConnection bitcoinConnection) {
+
+		this.bitcoinConnection = bitcoinConnection;
 	}
 
 	public WalletAppKit getWalletAppKitMainnet() {

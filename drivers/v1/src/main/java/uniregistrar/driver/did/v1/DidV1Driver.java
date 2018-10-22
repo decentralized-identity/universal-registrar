@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uniregistrar.RegistrationException;
+import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.RevokeRequest;
@@ -24,7 +25,7 @@ import uniregistrar.state.RegisterStateFinished;
 import uniregistrar.state.RevokeState;
 import uniregistrar.state.UpdateState;
 
-public class DidV1Driver implements Driver {
+public class DidV1Driver extends AbstractDriver implements Driver {
 
 	private static Logger log = LoggerFactory.getLogger(DidV1Driver.class);
 
@@ -170,26 +171,17 @@ public class DidV1Driver implements Driver {
 			}
 		}
 
-		// create METHOD METADATA
+		// REGISTRATION STATE: finished
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
-		//		methodMetadata.put("network", network);
-
-		// create IDENTIFIER
+		methodMetadata.put("didDocumentLocation", didDocumentLocation);
 
 		String identifier = newDid;
 
-		// create CREDENTIALS
+		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
+		secret.put("privateKeys", privateKeys);
 
-		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("privateKeys", privateKeys);
-
-		// create REGISTER STATE
-
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, credentials);
-
-		// done
-
+		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
 		return registerState;
 	}
 

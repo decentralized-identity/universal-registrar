@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uniregistrar.RegistrationException;
+import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.RevokeRequest;
@@ -33,7 +34,7 @@ import uniregistrar.state.RegisterStateFinished;
 import uniregistrar.state.RevokeState;
 import uniregistrar.state.UpdateState;
 
-public class DidSovDriver implements Driver {
+public class DidSovDriver extends AbstractDriver implements Driver {
 
 	private static Logger log = LoggerFactory.getLogger(DidSovDriver.class);
 
@@ -186,34 +187,21 @@ public class DidSovDriver implements Driver {
 			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);
 		}
 
-		// create JOBID
-
-		String jobId = null;
-
-		// create METHOD METADATA
+		// REGISTRATION STATE: finished
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("network", network);
 		methodMetadata.put("poolVersion", poolVersion);
 		methodMetadata.put("submitterDid", this.getTrustAnchorDid());
 
-		// create IDENTIFIER
-
 		String identifier = "did:sov:";
 		if (network != null && ! network.isEmpty() && ! network.equals("_")) identifier += network + ":";
 		identifier += newDid;
 
-		// create CREDENTIALS
+		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
+		secret.put("seed", newSeed);
 
-		Map<String, Object> credentials = new LinkedHashMap<String, Object> ();
-		credentials.put("seed", newSeed);
-
-		// create REGISTER STATE
-
-		RegisterState registerState = new RegisterStateFinished(jobId, null, methodMetadata, identifier, credentials);
-
-		// done
-
+		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
 		return registerState;
 	}
 
