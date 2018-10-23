@@ -316,7 +316,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// store continuation DID Document
 
-		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref, null, null, null, null);
+		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref.substring("txtest1-".length()), null, null, null, null);
 
 		try {
 
@@ -336,7 +336,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
 		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
 
-		String identifier = "did:btcr:" + txref;
+		String identifier = "did:btcr:" + txref.substring("txtest1-".length());
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeyWif", privateKeyAsWif);
