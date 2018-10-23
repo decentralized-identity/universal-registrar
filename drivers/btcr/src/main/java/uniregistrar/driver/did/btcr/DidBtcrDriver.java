@@ -11,6 +11,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.DumpedPrivateKey;
+import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.core.Transaction;
@@ -92,9 +94,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			String env_didDocContinuation = System.getenv("uniregistrar_driver_did_btcr_didDocContinuation");
 			String env_basePath = System.getenv("uniregistrar_driver_did_btcr_basePath");
 			String env_baseUri = System.getenv("uniregistrar_driver_did_btcr_baseUri");
-			String env_bitcoinConnection = System.getenv("uniresolver_driver_did_btcr_bitcoinConnection");
-			String env_rpcUrlMainnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlMainnet");
-			String env_rpcUrlTestnet = System.getenv("uniresolver_driver_did_btcr_rpcUrlTestnet");
+			String env_bitcoinConnection = System.getenv("uniregistrar_driver_did_btcr_bitcoinConnection");
+			String env_rpcUrlMainnet = System.getenv("uniregistrar_driver_did_btcr_rpcUrlMainnet");
+			String env_rpcUrlTestnet = System.getenv("uniregistrar_driver_did_btcr_rpcUrlTestnet");
 
 			if (env_peerMainnet != null) properties.put("peerMainnet", env_peerMainnet);
 			if (env_peerTestnet != null) properties.put("peerTestnet", env_peerTestnet);
@@ -171,7 +173,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	@Override
 	public RegisterState register(RegisterRequest registerRequest) throws RegistrationException {
 
-		// open wallet app kits
+		// open wallets and pools
 
 		if (this.getWalletAppKitMainnet() == null || this.getWalletAppKitTestnet() == null ) this.openWalletAppKits();
 
@@ -286,12 +288,13 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// determine txref
 
+		ChainAndBlockLocation chainAndBlockLocation;
 		String txref;
 
 		try {
 
-			ChainAndBlockLocation chainAndBlockLocation = this.getBitcoinConnection().getChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
-			txref = TxrefConverter.get().txrefEncode(chainAndBlockLocation);
+			chainAndBlockLocation = this.getBitcoinConnection().getChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
+			txref = chainAndBlockLocation == null ? null : TxrefConverter.get().txrefEncode(chainAndBlockLocation);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
@@ -330,6 +333,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
 		methodMetadata.put("transactionHash", transactionHash);
+		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
+		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
 
 		String identifier = "did:btcr:" + txref;
 
@@ -372,19 +377,32 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		//		this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened mainnet wallet app kit: " + this.getPeerMainnet());
 
-		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("./wallet/"), "testNetWallet");
+		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("./wallet/"), "testNetWallet") {
+
+			@Override
+			protected void onSetupCompleted() {
+
+				ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), "cVcesUwDNu3HaBFPfEBsHbnbiWMMaAhgxnnWVcLkkevQdebsZiT4").getKey();
+				wallet().importKey(privateKey);
+			}
+		};
 		//		this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened testnet wallet app kit: " + this.getPeerTestnet());
 
+		//		ECKey key = DumpedPrivateKey.fromBase58(this.walletAppKitTestnet.params(), "cP4AMSxftX54jNyjbRE93hQckp7Yyv8TjXpjDYAAY6pr4awrYY3G").getKey();
+		//		this.walletAppKitTestnet.wallet().importKey(key);
+
 		// connect
 
-		this.walletAppKitMainnet.startAsync();
+		//this.walletAppKitMainnet.startAsync();
 		this.walletAppKitTestnet.startAsync();
-		this.walletAppKitMainnet.awaitRunning();
+		//this.walletAppKitMainnet.awaitRunning();
 		this.walletAppKitTestnet.awaitRunning();
 
-		if (log.isInfoEnabled()) log.info("Connected mainnet wallet app kit: " + this.getPeerMainnet());
-		if (log.isInfoEnabled()) log.info("Connected testnet wallet app kit: " + this.getPeerTestnet());
+		// import keys
+
+		//if (log.isInfoEnabled()) log.info("Connected mainnet wallet app kit: " + this.getPeerMainnet() + " with balance " + this.walletAppKitMainnet.wallet().getBalance());
+		if (log.isInfoEnabled()) log.info("Connected testnet wallet app kit: " + this.getPeerTestnet() + " with balance " + this.walletAppKitTestnet.wallet().getBalance());
 	}
 
 	/*

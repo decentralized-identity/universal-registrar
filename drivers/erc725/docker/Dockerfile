@@ -14,7 +14,6 @@ RUN apt-get install -y --no-install-recommends nodejs
 # build driver-did-erc725
 
 ADD . /opt/driver-did-erc725
-RUN chmod a+x /opt/driver-did-erc725/did-client/did
 RUN cd /opt/driver-did-erc725 && mvn install package -N -DskipTests
 
 # clean up
