@@ -382,7 +382,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			@Override
 			protected void onSetupCompleted() {
 
-				ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), "cVcesUwDNu3HaBFPfEBsHbnbiWMMaAhgxnnWVcLkkevQdebsZiT4").getKey();
+				ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), "cTeRJePBzzk7oMUwZNPDqtwUKmvUtZkUw39QCdn8BhvTw362DrUc").getKey();
 				wallet().importKey(privateKey);
 			}
 		};
