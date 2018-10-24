@@ -220,7 +220,10 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 	@Override
 	public Map<String, Object> properties() {
 
-		return this.getProperties();
+		Map<String, Object> properties = new HashMap<String, Object> (this.getProperties());
+		properties.replace("trustAnchorSeed", "...");
+
+		return properties;
 	}
 
 	private void openIndy() throws RegistrationException {
