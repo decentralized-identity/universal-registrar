@@ -11,6 +11,7 @@ import org.hyperledger.indy.sdk.IndyConstants;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
+import org.hyperledger.indy.sdk.did.DidAlreadyExistsException;
 import org.hyperledger.indy.sdk.did.DidJSONParameters.CreateAndStoreMyDidJSONParameter;
 import org.hyperledger.indy.sdk.did.DidResults.CreateAndStoreMyDidResult;
 import org.hyperledger.indy.sdk.ledger.Ledger;
@@ -118,7 +119,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 		if (this.getPoolMap() == null || this.getWallet() == null || this.getTrustAnchorDid() == null) this.openIndy();
 
-		// read parameters
+		// read options
 
 		String network = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("network");
 		if (network == null || network.trim().isEmpty()) network = "_";
@@ -357,6 +358,17 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			CreateAndStoreMyDidResult createAndStoreMyDidResultTrustee = Did.createAndStoreMyDid(this.getWallet(), createAndStoreMyDidJSONParameterTrustee.toJson()).get();
 			this.trustAnchorDid = createAndStoreMyDidResultTrustee.getDid();
 		} catch (IndyException | InterruptedException | ExecutionException ex) {
+
+			IndyException iex = null;
+			if (ex instanceof IndyException) iex = (IndyException) ex;
+			if (ex instanceof ExecutionException && ex.getCause() instanceof IndyException) iex = (IndyException) ex.getCause();
+			if (iex instanceof DidAlreadyExistsException) {
+
+				if (log.isInfoEnabled()) log.info("Trust anchor DID has already been created.");
+			} else {
+
+				throw new RegistrationException("Cannot create trust anchor DID: " + ex.getMessage(), ex);
+			}
 
 			throw new RegistrationException("Cannot create trust anchor DID: " + ex.getMessage(), ex);
 		}
