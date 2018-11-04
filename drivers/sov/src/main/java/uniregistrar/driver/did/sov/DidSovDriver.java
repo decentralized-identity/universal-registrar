@@ -369,8 +369,6 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 				throw new RegistrationException("Cannot create trust anchor DID: " + ex.getMessage(), ex);
 			}
-
-			throw new RegistrationException("Cannot create trust anchor DID: " + ex.getMessage(), ex);
 		}
 
 		if (log.isInfoEnabled()) log.info("Created trust anchor DID: " + this.trustAnchorDid);
