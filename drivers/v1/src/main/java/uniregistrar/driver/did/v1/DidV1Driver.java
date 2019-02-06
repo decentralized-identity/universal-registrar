@@ -80,7 +80,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 	@Override
 	public RegisterState register(RegisterRequest registerRequest) throws RegistrationException {
 
-		// read parameters
+		// read options
 
 		// register
 

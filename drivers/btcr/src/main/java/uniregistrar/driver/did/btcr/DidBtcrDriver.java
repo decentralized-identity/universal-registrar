@@ -15,6 +15,7 @@ import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.NetworkParameters;
+import org.bitcoinj.core.PeerAddress;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.TransactionBroadcast;
 import org.bitcoinj.core.TransactionInput;
@@ -370,11 +371,11 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		NetworkParameters mainnetParams = MainNetParams.get();
 		NetworkParameters testnetParams = TestNet3Params.get();
-		//		URI uriMainnet = URI.create("temp://" + this.getPeerMainnet());
-		//		URI uriTestnet = URI.create("temp://" + this.getPeerTestnet());
+		URI uriMainnet = (this.getPeerMainnet() != null && this.getPeerMainnet().isEmpty()) ? URI.create("temp://" + this.getPeerMainnet()) : null;
+		URI uriTestnet = (this.getPeerTestnet() != null && this.getPeerTestnet().isEmpty()) ? URI.create("temp://" + this.getPeerTestnet()) : null;
 
 		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("./wallet/"), "mainNetWallet");
-		//		this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
+		if (uriMainnet != null) this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened mainnet wallet app kit: " + this.getPeerMainnet());
 
 		this.walletAppKitTestnet = new WalletAppKit(testnetParams, new File("./wallet/"), "testNetWallet") {
@@ -386,7 +387,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 				wallet().importKey(privateKey);
 			}
 		};
-		//		this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
+		if (uriTestnet != null) this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened testnet wallet app kit: " + this.getPeerTestnet());
 
 		//		ECKey key = DumpedPrivateKey.fromBase58(this.walletAppKitTestnet.params(), "cP4AMSxftX54jNyjbRE93hQckp7Yyv8TjXpjDYAAY6pr4awrYY3G").getKey();
@@ -394,14 +395,14 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// connect
 
-		//this.walletAppKitMainnet.startAsync();
+		this.walletAppKitMainnet.startAsync();
 		this.walletAppKitTestnet.startAsync();
-		//this.walletAppKitMainnet.awaitRunning();
+		this.walletAppKitMainnet.awaitRunning();
 		this.walletAppKitTestnet.awaitRunning();
 
 		// import keys
 
-		//if (log.isInfoEnabled()) log.info("Connected mainnet wallet app kit: " + this.getPeerMainnet() + " with balance " + this.walletAppKitMainnet.wallet().getBalance());
+		if (log.isInfoEnabled()) log.info("Connected mainnet wallet app kit: " + this.getPeerMainnet() + " with balance " + this.walletAppKitMainnet.wallet().getBalance());
 		if (log.isInfoEnabled()) log.info("Connected testnet wallet app kit: " + this.getPeerTestnet() + " with balance " + this.walletAppKitTestnet.wallet().getBalance());
 	}
 
