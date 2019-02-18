@@ -1,0 +1,41 @@
+version: "3"
+services:
+  driver-did-btcr:
+    image: universalregistrar/driver-did-btcr:latest
+    environment:
+      uniregistrar_driver_did_btcr_peerMainnet: ${uniregistrar_driver_did_btcr_peerMainnet}
+      uniregistrar_driver_did_btcr_peerTestnet: ${uniregistrar_driver_did_btcr_peerTestnet}
+      uniregistrar_driver_did_btcr_didDocContinuation: ${uniregistrar_driver_did_btcr_didDocContinuation}
+      uniregistrar_driver_did_btcr_basePath: ${uniregistrar_driver_did_btcr_basePath}
+      uniregistrar_driver_did_btcr_baseUri: ${uniregistrar_driver_did_btcr_baseUri}
+      uniregistrar_driver_did_btcr_bitcoinConnection: ${uniregistrar_driver_did_btcr_bitcoinConnection}
+      uniregistrar_driver_did_btcr_rpcUrlMainnet: ${uniregistrar_driver_did_btcr_rpcUrlMainnet}
+      uniregistrar_driver_did_btcr_rpcUrlTestnet: ${uniregistrar_driver_did_btcr_rpcUrlTestnet}
+    ports:
+      - "9081:8080"
+  driver-did-sov:
+    image: universalregistrar/driver-did-sov:latest
+    environment:
+      uniregistrar_driver_did_sov_libIndyPath: ${uniregistrar_driver_did_sov_libIndyPath}
+      uniregistrar_driver_did_sov_poolConfigs: ${uniregistrar_driver_did_sov_poolConfigs}
+      uniregistrar_driver_did_sov_poolVersions: ${uniregistrar_driver_did_sov_poolVersions}
+      uniregistrar_driver_did_sov_walletName: ${uniregistrar_driver_did_sov_walletName}
+      uniregistrar_driver_did_sov_trustAnchorSeed: ${uniregistrar_driver_did_sov_trustAnchorSeed}
+    ports:
+      - "9082:8080"
+  driver-did-v1:
+    image: universalregistrar/driver-did-v1:latest
+    environment:
+      uniregistrar_driver_did_v1_trustAnchorSeed: ${uniregistrar_driver_did_v1_trustAnchorSeed}
+    ports:
+      - "9083:8080"
+  driver-did-erc725:
+    image: universalregistrar/driver-did-erc725:latest
+    environment:
+      uniregistrar_driver_did_erc725_trustAnchorSeed: ${uniregistrar_driver_did_erc725_trustAnchorSeed}
+    ports:
+      - "9084:8080"
+  uni-registrar-web:
+    image: universalregistrar/uni-registrar-web:latest
+    ports:
+      - "9080:8080"
