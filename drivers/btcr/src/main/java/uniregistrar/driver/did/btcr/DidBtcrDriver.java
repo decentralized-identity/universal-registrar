@@ -38,7 +38,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import did.DIDDocument;
 import info.weboftrust.txrefconversion.Chain;
 import info.weboftrust.txrefconversion.ChainAndBlockLocation;
-import info.weboftrust.txrefconversion.TxrefConverter;
+import info.weboftrust.txrefconversion.TxrefEncoder;
 import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
@@ -294,8 +294,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		try {
 
-			chainAndBlockLocation = this.getBitcoinConnection().getChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
-			txref = chainAndBlockLocation == null ? null : TxrefConverter.get().txrefEncode(chainAndBlockLocation);
+			chainAndBlockLocation = this.getBitcoinConnection().lookupChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
+			txref = chainAndBlockLocation == null ? null : TxrefEncoder.txrefEncode(chainAndBlockLocation);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
@@ -317,7 +317,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// store continuation DID Document
 
-		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref.substring("txtest1-".length()), null, null, null, null);
+		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref.substring("txtest1-".length()), null, null, null);
 
 		try {
 
