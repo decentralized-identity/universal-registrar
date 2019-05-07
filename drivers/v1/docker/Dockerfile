@@ -1,6 +1,6 @@
 # Dockerfile for universalregistrar/driver-did-v1
 
-FROM universalregistrar/driver
+FROM universalregistrar/base-alpine
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # build dependencies
@@ -16,10 +16,6 @@ RUN apt-get install -y --no-install-recommends nodejs
 ADD . /opt/driver-did-v1
 RUN chmod a+x /opt/driver-did-v1/did-client/did
 RUN cd /opt/driver-did-v1 && mvn install package -N -DskipTests
-
-# clean up
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # variables
 

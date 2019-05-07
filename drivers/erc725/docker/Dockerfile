@@ -1,6 +1,6 @@
 # Dockerfile for universalregistrar/driver-did-erc725
 
-FROM universalregistrar/driver
+FROM universalregistrar/base-alpine
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # build dependencies
@@ -14,11 +14,7 @@ RUN apt-get install -y --no-install-recommends nodejs
 # build driver-did-erc725
 
 ADD . /opt/driver-did-erc725
-RUN cd /opt/driver-did-erc725 && mvn install package -N -DskipTests
-
-# clean up
-
-RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN cd /opt/driver-did-erc725 && mvn clean install package -N -DskipTests
 
 # variables
 
