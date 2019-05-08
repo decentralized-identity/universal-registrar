@@ -1,14 +1,17 @@
 # Dockerfile for universalregistrar/driver-did-erc725
 
-FROM universalregistrar/base-alpine
+FROM universalregistrar/base-ubuntu
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # build dependencies
 
-RUN apt-get install -y --no-install-recommends curl software-properties-common gpg make build-essential python
+ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
+RUN apt-get -y update && \
+    apt-get install -y --no-install-recommends curl software-properties-common gpg gpg-agent make build-essential python && \
+    curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
+    apt-get install -y --no-install-recommends nodejs && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
-RUN apt-get install -y --no-install-recommends nodejs
 #RUN cd /opt/ && git clone https://github.com/digitalbazaar/did-cli.git && cd did-cli && git checkout v0.3.1 && sed -i 's/veres-one\/did-veres-one#implementation/veres-one\/did-veres-one#master/g' package.json && npm install .
 
 # build driver-did-erc725

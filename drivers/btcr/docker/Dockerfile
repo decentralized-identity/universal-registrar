@@ -17,6 +17,8 @@ RUN cd /opt/driver-did-btcr && mvn clean install package -N -DskipTests
 
 ENV uniregistrar_driver_did_btcr_peerMainnet=localhost:28333
 ENV uniregistrar_driver_did_btcr_peerTestnet=localhost:38333
+ENV uniregistrar_driver_did_btcr_privateKeyMainnet=
+ENV uniregistrar_driver_did_btcr_privateKeyTestnet=
 ENV uniregistrar_driver_did_btcr_didDocContinuation=localfile
 ENV uniregistrar_driver_did_btcr_basePath=/tmp/
 ENV uniregistrar_driver_did_btcr_baseUri=http://localhost/
