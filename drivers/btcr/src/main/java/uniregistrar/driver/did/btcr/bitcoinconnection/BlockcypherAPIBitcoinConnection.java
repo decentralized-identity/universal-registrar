@@ -7,9 +7,9 @@ import java.util.Iterator;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
-import org.bitcoinj.core.ScriptException;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptChunk;
+import org.bitcoinj.script.ScriptException;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -68,7 +68,7 @@ public class BlockcypherAPIBitcoinConnection extends info.weboftrust.txrefconver
 					throw new IOException("Cannot decode script " + script.getAsString() + ": " + ex.getMessage(), ex);
 				}
 
-				inputScriptPubKey = Hex.encodeHexString(payToPubKeyHashScript.getPubKey());
+				inputScriptPubKey = Hex.encodeHexString(payToPubKeyHashScript.getPubKeys().get(0).getPubKey());
 				break;
 			}
 		}

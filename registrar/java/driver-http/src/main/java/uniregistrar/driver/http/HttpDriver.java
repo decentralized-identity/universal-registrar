@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public class HttpDriver implements Driver {
@@ -39,13 +39,13 @@ public class HttpDriver implements Driver {
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
 	public static final URI DEFAULT_REGISTER_URI = null;
 	public static final URI DEFAULT_UPDATE_URI = null;
-	public static final URI DEFAULT_REVOKE_URI = null;
+	public static final URI DEFAULT_DEACTIVATE_URI = null;
 	public static final URI DEFAULT_PROPERTIES_URI = null;
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
 	private URI registerUri = DEFAULT_REGISTER_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
-	private URI revokeUri = DEFAULT_REVOKE_URI;
+	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 
 	public HttpDriver() {
@@ -175,31 +175,31 @@ public class HttpDriver implements Driver {
 	}
 
 	@Override
-	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException {
 
 		// prepare HTTP request
 
-		String uriString = this.getRevokeUri().toString();
+		String uriString = this.getDeactivateUri().toString();
 
 		String body;
 
 		try {
 
-			body = revokeRequest.toJson();
+			body = deactivateRequest.toJson();
 		} catch (JsonProcessingException ex) {
 
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(RevokeRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", RevokeState.MIME_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(DeactivateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", DeactivateState.MIME_TYPE);
 
 		// execute HTTP request
 
-		RevokeState revokeState;
+		DeactivateState deactivateState;
 
-		if (log.isDebugEnabled()) log.debug("Request for revoke request " + revokeRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for deactivate request " + deactivateRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -218,21 +218,21 @@ public class HttpDriver implements Driver {
 
 			if (httpResponse.getStatusLine().getStatusCode() > 200) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve REVOKE STATE for revoke request " + revokeRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
-			revokeState = RevokeState.fromJson(httpBody);
+			deactivateState = DeactivateState.fromJson(httpBody);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve REVOKE STATE for revoke request " + revokeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved REVOKE STATE for for revoke request " + revokeRequest + " (" + uriString + "): " + revokeState);
+		if (log.isDebugEnabled()) log.debug("Retrieved DEACTIVATE STATE for for deactivate request " + deactivateRequest + " (" + uriString + "): " + deactivateState);
 
 		// done
 
-		return revokeState;
+		return deactivateState;
 	}
 
 	@Override
@@ -244,7 +244,7 @@ public class HttpDriver implements Driver {
 
 		if (this.getRegisterUri() != null) httpProperties.put("registerUri", this.getRegisterUri().toString());
 		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
-		if (this.getRevokeUri() != null) httpProperties.put("revokeUri", this.getRevokeUri().toString());
+		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
 
 		Map<String, Object> properties = new HashMap<String, Object> ();
@@ -355,19 +355,19 @@ public class HttpDriver implements Driver {
 		this.updateUri = URI.create(updateUri);
 	}
 
-	public URI getRevokeUri() {
+	public URI getDeactivateUri() {
 
-		return this.revokeUri;
+		return this.deactivateUri;
 	}
 
-	public void setRevokeUri(URI revokeUri) {
+	public void setDeactivateUri(URI deactivateUri) {
 
-		this.revokeUri = revokeUri;
+		this.deactivateUri = deactivateUri;
 	}
 
-	public void setRevokeUri(String revokeUri) {
+	public void setDeactivateUri(String deactivateUri) {
 
-		this.revokeUri = URI.create(revokeUri);
+		this.deactivateUri = URI.create(deactivateUri);
 	}
 
 	public URI getPropertiesUri() {

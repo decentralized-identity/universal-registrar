@@ -13,10 +13,10 @@ import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public class LocalUniRegistrar implements UniRegistrar {
@@ -118,10 +118,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public RevokeState revoke(String driverId, RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException {
 
 		if (driverId == null) throw new NullPointerException();
-		if (revokeRequest == null) throw new NullPointerException();
+		if (deactivateRequest == null) throw new NullPointerException();
 
 		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
 
@@ -133,9 +133,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		Driver driver = this.getDrivers().get(driverId);
 		if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-		if (log.isDebugEnabled()) log.debug("Attemping to revoke " + revokeRequest + " with driver " + driver.getClass());
+		if (log.isDebugEnabled()) log.debug("Attemping to deactivate " + deactivateRequest + " with driver " + driver.getClass());
 
-		RevokeState revokeState = driver.revoke(revokeRequest);
+		DeactivateState deactivateState = driver.deactivate(deactivateRequest);
 
 		// stop time
 
@@ -148,11 +148,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 		registrarMetadata.put("driver", driver.getClass().getSimpleName());
 		registrarMetadata.put("duration", Long.valueOf(stop - start));
 
-		revokeState.setRegistrarMetadata(registrarMetadata);
+		deactivateState.setRegistrarMetadata(registrarMetadata);
 
 		// done
 
-		return revokeState;
+		return deactivateState;
 	}
 
 	@Override

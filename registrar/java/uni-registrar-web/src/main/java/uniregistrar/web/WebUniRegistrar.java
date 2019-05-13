@@ -14,10 +14,10 @@ import org.springframework.web.HttpRequestHandler;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public abstract class WebUniRegistrar extends HttpServlet implements HttpRequestHandler, UniRegistrar {
@@ -62,9 +62,9 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
-	public RevokeState revoke(String driverId, RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException {
 
-		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().revoke(driverId, revokeRequest);
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().deactivate(driverId, deactivateRequest);
 	}
 
 	@Override

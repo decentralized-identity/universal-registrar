@@ -23,7 +23,7 @@
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 
-	<bean name="RevokeServlet" class="uniregistrar.web.servlet.RevokeServlet">
+	<bean name="DeactivateServlet" class="uniregistrar.web.servlet.DeactivateServlet">
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 
@@ -36,21 +36,21 @@
 	<bean id="DidBtcrDriver" class="uniregistrar.driver.http.HttpDriver">
 		<property name="registerUri" value="http://driver-did-btcr:8080/1.0/register" />
 		<property name="updateUri" value="http://driver-did-btcr:8080/1.0/update" />
-		<property name="revokeUri" value="http://driver-did-btcr:8080/1.0/revoke" />
+		<property name="deactivateUri" value="http://driver-did-btcr:8080/1.0/deactivate" />
 		<property name="propertiesUri" value="http://driver-did-btcr:8080/1.0/properties" />
 	</bean>
 
 	<bean id="DidSovDriver" class="uniregistrar.driver.http.HttpDriver">
 		<property name="registerUri" value="http://driver-did-sov:8080/1.0/register" />
 		<property name="updateUri" value="http://driver-did-sov:8080/1.0/update" />
-		<property name="revokeUri" value="http://driver-did-sov:8080/1.0/revoke" />
+		<property name="deactivateUri" value="http://driver-did-sov:8080/1.0/deactivate" />
 		<property name="propertiesUri" value="http://driver-did-sov:8080/1.0/properties" />
 	</bean>
 
 	<bean id="DidV1Driver" class="uniregistrar.driver.http.HttpDriver">
 		<property name="registerUri" value="http://driver-did-v1:8080/1.0/register" />
 		<property name="updateUri" value="http://driver-did-v1:8080/1.0/update" />
-		<property name="revokeUri" value="http://driver-did-v1:8080/1.0/revoke" />
+		<property name="deactivateUri" value="http://driver-did-v1:8080/1.0/deactivate" />
 		<property name="propertiesUri" value="http://driver-did-v1:8080/1.0/properties" />
 	</bean>
 

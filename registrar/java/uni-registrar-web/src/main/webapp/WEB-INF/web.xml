@@ -36,13 +36,13 @@
 
 	<servlet>
 		<description></description>
-		<display-name>RevokeServlet</display-name>
-		<servlet-name>RevokeServlet</servlet-name>
+		<display-name>DeactivateServlet</display-name>
+		<servlet-name>DeactivateServlet</servlet-name>
 		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>RevokeServlet</servlet-name>
-		<url-pattern>/1.0/revoke</url-pattern>
+		<servlet-name>DeactivateServlet</servlet-name>
+		<url-pattern>/1.0/deactivate</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -30,9 +30,9 @@
 		<servlet-class>uniregistrar.driver.servlet.UpdateServlet</servlet-class>
 	</servlet>
 	<servlet>
-		<display-name>RevokeServlet</display-name>
-		<servlet-name>RevokeServlet</servlet-name>
-		<servlet-class>uniregistrar.driver.servlet.RevokeServlet</servlet-class>
+		<display-name>DeactivateServlet</display-name>
+		<servlet-name>DeactivateServlet</servlet-name>
+		<servlet-class>uniregistrar.driver.servlet.DeactivateServlet</servlet-class>
 	</servlet>
 	<servlet>
 		<display-name>PropertiesServlet</display-name>
@@ -48,8 +48,8 @@
 		<url-pattern>/1.0/update</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>RevokeServlet</servlet-name>
-		<url-pattern>/1.0/revoke</url-pattern>
+		<servlet-name>DeactivateServlet</servlet-name>
+		<url-pattern>/1.0/deactivate</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>PropertiesServlet</servlet-name>

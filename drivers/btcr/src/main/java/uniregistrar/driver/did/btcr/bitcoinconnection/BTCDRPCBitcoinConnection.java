@@ -11,10 +11,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
+import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
+import org.bitcoinj.script.Script;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -256,6 +258,6 @@ public class BTCDRPCBitcoinConnection extends info.weboftrust.txrefconversion.bi
 			throw new IOException("Cannot decode public key " + pubKey + ": " + ex.getMessage(), ex);
 		}
 
-		return eckey.toAddress(params).toBase58();
+		return Address.fromKey(params, eckey, Script.ScriptType.P2PKH).toString();
 	}
 }

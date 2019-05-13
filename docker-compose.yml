@@ -5,6 +5,8 @@ services:
     environment:
       uniregistrar_driver_did_btcr_peerMainnet: ${uniregistrar_driver_did_btcr_peerMainnet}
       uniregistrar_driver_did_btcr_peerTestnet: ${uniregistrar_driver_did_btcr_peerTestnet}
+      uniregistrar_driver_did_btcr_privateKeyMainnet: ${uniregistrar_driver_did_btcr_privateKeyMainnet}
+      uniregistrar_driver_did_btcr_privateKeyTestnet: ${uniregistrar_driver_did_btcr_privateKeyTestnet}
       uniregistrar_driver_did_btcr_didDocContinuation: ${uniregistrar_driver_did_btcr_didDocContinuation}
       uniregistrar_driver_did_btcr_basePath: ${uniregistrar_driver_did_btcr_basePath}
       uniregistrar_driver_did_btcr_baseUri: ${uniregistrar_driver_did_btcr_baseUri}

@@ -23,7 +23,7 @@
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 
-	<bean name="RevokeServlet" class="uniregistrar.web.servlet.RevokeServlet">
+	<bean name="DeactivateServlet" class="uniregistrar.web.servlet.DeactivateServlet">
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 

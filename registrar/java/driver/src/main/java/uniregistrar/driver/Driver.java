@@ -4,10 +4,10 @@ import java.util.Map;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public interface Driver {
@@ -16,6 +16,6 @@ public interface Driver {
 
 	public RegisterState register(RegisterRequest registerRequest) throws RegistrationException;
 	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException;
-	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException;
+	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException;
 	public Map<String, Object> properties() throws RegistrationException;
 }

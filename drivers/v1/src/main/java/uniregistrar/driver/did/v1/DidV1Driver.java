@@ -18,11 +18,11 @@ import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
 import uniregistrar.state.RegisterStateFinished;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public class DidV1Driver extends AbstractDriver implements Driver {
@@ -192,7 +192,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 	}
 
 	@Override
-	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException {
 
 		throw new RuntimeException("Not implemented.");
 	}

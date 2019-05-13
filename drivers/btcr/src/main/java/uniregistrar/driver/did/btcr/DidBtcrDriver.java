@@ -6,11 +6,12 @@ import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
+import org.bitcoinj.core.Context;
 import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.InsufficientMoneyException;
@@ -24,6 +25,7 @@ import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet3Params;
 import org.bitcoinj.script.Script;
+import org.bitcoinj.script.Script.ScriptType;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptOpCodes;
 import org.bitcoinj.wallet.DecryptingKeyBag;
@@ -33,11 +35,13 @@ import org.bitcoinj.wallet.SendRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.util.concurrent.ListenableFuture;
-
+import did.Authentication;
 import did.DIDDocument;
+import did.PublicKey;
+import did.Service;
 import info.weboftrust.txrefconversion.Chain;
 import info.weboftrust.txrefconversion.ChainAndBlockLocation;
+import info.weboftrust.txrefconversion.TxrefConstants;
 import info.weboftrust.txrefconversion.TxrefEncoder;
 import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
 import uniregistrar.RegistrationException;
@@ -50,12 +54,12 @@ import uniregistrar.driver.did.btcr.bitcoinconnection.BlockcypherAPIBitcoinConne
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
 import uniregistrar.driver.did.btcr.state.RegisterStateWaitDidBtcrConfirm;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
 import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.RegisterState;
 import uniregistrar.state.RegisterStateFinished;
-import uniregistrar.state.RevokeState;
 import uniregistrar.state.UpdateState;
 
 public class DidBtcrDriver extends AbstractDriver implements Driver {
@@ -66,6 +70,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 	private String peerMainnet;
 	private String peerTestnet;
+	private String privateKeyMainnet;
+	private String privateKeyTestnet;
 	private DIDDocContinuation didDocContinuation;
 	private BitcoinConnection bitcoinConnection;
 
@@ -92,6 +98,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 			String env_peerMainnet = System.getenv("uniregistrar_driver_did_btcr_peerMainnet");
 			String env_peerTestnet = System.getenv("uniregistrar_driver_did_btcr_peerTestnet");
+			String env_privateKeyMainnet = System.getenv("uniregistrar_driver_did_btcr_privateKeyMainnet");
+			String env_privateKeyTestnet = System.getenv("uniregistrar_driver_did_btcr_privateKeyTestnet");
 			String env_didDocContinuation = System.getenv("uniregistrar_driver_did_btcr_didDocContinuation");
 			String env_basePath = System.getenv("uniregistrar_driver_did_btcr_basePath");
 			String env_baseUri = System.getenv("uniregistrar_driver_did_btcr_baseUri");
@@ -101,6 +109,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 			if (env_peerMainnet != null) properties.put("peerMainnet", env_peerMainnet);
 			if (env_peerTestnet != null) properties.put("peerTestnet", env_peerTestnet);
+			if (env_privateKeyMainnet != null) properties.put("privateKeyMainnet", env_privateKeyMainnet);
+			if (env_privateKeyTestnet != null) properties.put("privateKeyTestnet", env_privateKeyTestnet);
 			if (env_didDocContinuation != null) properties.put("didDocContinuation", env_didDocContinuation);
 			if (env_basePath != null) properties.put("basePath", env_basePath);
 			if (env_baseUri != null) properties.put("baseUri", env_baseUri);
@@ -123,22 +133,15 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 			String prop_peerMainnet = (String) this.getProperties().get("peerMainnet");
 			String prop_peerTestnet = (String) this.getProperties().get("peerTestnet");
+			String prop_privateKeyMainnet = (String) this.getProperties().get("privateKeyMainnet");
+			String prop_privateKeyTestnet = (String) this.getProperties().get("privateKeyTestnet");
 			String prop_didDocContinuation = (String) this.getProperties().get("didDocContinuation");
 			String prop_bitcoinConnection = (String) this.getProperties().get("bitcoinConnection");
 
 			if (prop_peerMainnet != null) this.setPeerMainnet(prop_peerMainnet);
 			if (prop_peerTestnet != null) this.setPeerTestnet(prop_peerTestnet);
-
-			if ("localfile".equals(prop_didDocContinuation)) {
-
-				this.setDIDDocContinuation(new LocalFileDIDDocContinuation());
-
-				String prop_basePath = (String) this.getProperties().get("basePath");
-				String prop_baseUri = (String) this.getProperties().get("baseUri");
-
-				if (prop_basePath != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBasePath(prop_basePath);
-				if (prop_baseUri != null) ((LocalFileDIDDocContinuation) this.getDIDDocContinuation()).setBaseUri(prop_baseUri);
-			}
+			if (prop_privateKeyMainnet != null) this.setPrivateKeyMainnet(prop_privateKeyMainnet);
+			if (prop_privateKeyTestnet != null) this.setPrivateKeyTestnet(prop_privateKeyTestnet);
 
 			if ("bitcoind".equals(prop_bitcoinConnection)) {
 
@@ -165,6 +168,17 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 				this.setBitcoinConnection(new BlockcypherAPIBitcoinConnection());
 			}
+
+			if ("localfile".equals(prop_didDocContinuation)) {
+
+				this.setDidDocContinuation(new LocalFileDIDDocContinuation());
+
+				String prop_basePath = (String) this.getProperties().get("basePath");
+				String prop_baseUri = (String) this.getProperties().get("baseUri");
+
+				if (prop_basePath != null) ((LocalFileDIDDocContinuation) this.getDidDocContinuation()).setBasePath(prop_basePath);
+				if (prop_baseUri != null) ((LocalFileDIDDocContinuation) this.getDidDocContinuation()).setBaseUri(prop_baseUri);
+			}
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
@@ -176,7 +190,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// open wallets and pools
 
-		if (this.getWalletAppKitMainnet() == null || this.getWalletAppKitTestnet() == null ) this.openWalletAppKits();
+		if (this.getWalletAppKitMainnet() == null || this.getWalletAppKitTestnet() == null) this.openWalletAppKits();
 
 		// CONTINUE JOB?
 
@@ -202,6 +216,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		if ("TESTNET".equals(chain)) walletAppKit = this.getWalletAppKitTestnet();
 		if (walletAppKit == null) throw new RegistrationException("Unknown network: " + chain);
 
+		Context.propagate(new Context(walletAppKit.params()));
+
 		// create continuation DID Document
 
 		URI didContinuationUri = this.didDocContinuation.prepareDIDDocContinuation(null);
@@ -223,25 +239,33 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			walletAppKit.wallet().completeTx(sendRequest);
 		} catch (InsufficientMoneyException ex) {
 
-			throw new RegistrationException("Insufficent coins: " + ex.getMessage());
+			Address currentReceiveAddress = walletAppKit.wallet().currentReceiveAddress();
+			throw new RegistrationException("Insufficent coins: " + ex.getMessage() + " (Send coins to " + currentReceiveAddress + ")");
 		}
+
+		if (log.isDebugEnabled()) log.debug("Send request: " + sendRequest.toString());
+		if (log.isDebugEnabled()) log.debug("Send request transaction: " + sendRequest.tx);
 
 		// send transaction
 
 		TransactionBroadcast transactionBroadcast = walletAppKit.peerGroup().broadcastTransaction(originalTransaction);
-		ListenableFuture<Transaction> future = transactionBroadcast.future();
+		if (log.isDebugEnabled()) log.debug("Transaction broadcast: " + transactionBroadcast);
 
 		Transaction transaction;
 		String transactionHash;
 
-		try {
+		transaction = sendRequest.tx;
+		transactionHash = transaction.getTxId().toString();
 
+		/*		try {
+
+			ListenableFuture<Transaction> future = transactionBroadcast.future();
 			transaction = future.get();
-			transactionHash = transaction.getHashAsString();
+			transactionHash = transaction.getTxId().toString();
 		} catch (InterruptedException | ExecutionException ex) {
 
 			throw new RegistrationException("Cannot sent transaction: " + ex.getMessage());
-		}
+		}*/
 
 		if (log.isDebugEnabled()) log.debug("Sent transaction! Transaction hash is " + transactionHash);
 		if (log.isDebugEnabled()) for (TransactionInput input : transaction.getInputs()) log.debug("Transaction input: " + input.getValue() + " " + input); 
@@ -262,7 +286,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// REGISTER STATE: wait
 
-		DidBtcrJob job = new DidBtcrJob(chain, transactionHash, didContinuationUri, privateKeyAsWif, privateKeyAsHex);
+		DidBtcrJob job = new DidBtcrJob(chain, transactionHash, didContinuationUri, privateKeyAsWif, privateKeyAsHex, registerRequest.getAddServices(), registerRequest.getAddPublicKeys(), registerRequest.getAddAuthentications());
 		jobId = this.newJob(job);
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
@@ -317,7 +341,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// store continuation DID Document
 
-		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + txref.substring("txtest1-".length()), null, null, null);
+		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + stripTxref(txref), null, null, null);
 
 		try {
 
@@ -337,7 +361,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
 		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
 
-		String identifier = "did:btcr:" + txref.substring("txtest1-".length());
+		String identifier = "did:btcr:" + stripTxref(txref);
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeyWif", privateKeyAsWif);
@@ -354,7 +378,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	}
 
 	@Override
-	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException {
 
 		throw new RuntimeException("Not implemented.");
 	}
@@ -362,7 +386,11 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	@Override
 	public Map<String, Object> properties() {
 
-		return this.getProperties();
+		Map<String, Object> properties = new HashMap<String, Object> (this.getProperties());
+		if (properties.containsKey("privateKeyMainnet")) properties.put("privateKeyMainnet", ((String) properties.get("privateKeyMainnet")).replaceAll(".", "."));
+		if (properties.containsKey("privateKeyTestnet")) properties.put("privateKeyTestnet", ((String) properties.get("privateKeyTestnet")).replaceAll(".", "."));
+
+		return properties;
 	}
 
 	private void openWalletAppKits() throws RegistrationException {
@@ -374,7 +402,19 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		URI uriMainnet = (this.getPeerMainnet() != null && this.getPeerMainnet().isEmpty()) ? URI.create("temp://" + this.getPeerMainnet()) : null;
 		URI uriTestnet = (this.getPeerTestnet() != null && this.getPeerTestnet().isEmpty()) ? URI.create("temp://" + this.getPeerTestnet()) : null;
 
-		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("./wallet/"), "mainNetWallet");
+		this.walletAppKitMainnet = new WalletAppKit(mainnetParams, new File("./wallet/"), "mainNetWallet") {
+
+			@Override
+			protected void onSetupCompleted() {
+
+				if (DidBtcrDriver.this.getPrivateKeyMainnet() != null && ! DidBtcrDriver.this.getPrivateKeyMainnet().isEmpty()) {
+
+					ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), DidBtcrDriver.this.getPrivateKeyMainnet()).getKey();
+					boolean success = wallet().importKey(privateKey);
+					if (log.isInfoEnabled()) log.info("Imported private key for mainnet (" + success + "): " + wallet().getImportedKeys() + " - " + Address.fromKey(this.params(), privateKey, ScriptType.P2PKH));
+				}
+			}
+		};
 		if (uriMainnet != null) this.walletAppKitMainnet.setPeerNodes((new PeerAddress(mainnetParams, uriMainnet.getHost(), uriMainnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened mainnet wallet app kit: " + this.getPeerMainnet());
 
@@ -383,15 +423,16 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			@Override
 			protected void onSetupCompleted() {
 
-				ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), "cTeRJePBzzk7oMUwZNPDqtwUKmvUtZkUw39QCdn8BhvTw362DrUc").getKey();
-				wallet().importKey(privateKey);
+				if (DidBtcrDriver.this.getPrivateKeyTestnet() != null && ! DidBtcrDriver.this.getPrivateKeyTestnet().isEmpty()) {
+
+					ECKey privateKey = DumpedPrivateKey.fromBase58(this.params(), DidBtcrDriver.this.getPrivateKeyTestnet()).getKey();
+					boolean success = wallet().importKey(privateKey);
+					if (log.isInfoEnabled()) log.info("Imported private key for testnet (" + success + "): " + wallet().getImportedKeys() + " - " + Address.fromKey(this.params(), privateKey, ScriptType.P2PKH));
+				}
 			}
 		};
 		if (uriTestnet != null) this.walletAppKitTestnet.setPeerNodes((new PeerAddress(testnetParams, uriTestnet.getHost(), uriTestnet.getPort())));
 		if (log.isInfoEnabled()) log.info("Opened testnet wallet app kit: " + this.getPeerTestnet());
-
-		//		ECKey key = DumpedPrivateKey.fromBase58(this.walletAppKitTestnet.params(), "cP4AMSxftX54jNyjbRE93hQckp7Yyv8TjXpjDYAAY6pr4awrYY3G").getKey();
-		//		this.walletAppKitTestnet.wallet().importKey(key);
 
 		// connect
 
@@ -407,6 +448,21 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	}
 
 	/*
+	 * Helper methods
+	 */
+
+	private static final String PREFIX_MAINNET = TxrefConstants.TXREF_BECH32_HRP_MAINNET + "1:";
+	private static final String PREFIX_TESTNET = TxrefConstants.TXREF_BECH32_HRP_TESTNET + "1:";
+
+	private static String stripTxref(String txref) {
+
+		if (txref.startsWith(PREFIX_MAINNET)) return txref.substring(PREFIX_MAINNET.length());
+		if (txref.startsWith(PREFIX_TESTNET)) return txref.substring(PREFIX_TESTNET.length());
+
+		return txref;
+	}
+
+	/*
 	 * Helper classes
 	 */
 
@@ -417,14 +473,20 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		private URI didContinuationUri;
 		private String privateKeyAsWif;
 		private String privateKeyAsHex;
+		private List<Service> addServices;
+		private List<PublicKey> addPublicKeys;
+		private List<Authentication> addAuthentications;
 
-		private DidBtcrJob(String chain, String transactionHash, URI didContinuationUri, String privateKeyAsWif, String privateKeyAsHex) {
+		private DidBtcrJob(String chain, String transactionHash, URI didContinuationUri, String privateKeyAsWif, String privateKeyAsHex, List<Service> addServices, List<PublicKey> addPublicKeys, List<Authentication> addAuthentications) {
 
 			this.chain = chain;
 			this.transactionHash = transactionHash;
 			this.didContinuationUri = didContinuationUri;
 			this.privateKeyAsWif = privateKeyAsWif;
 			this.privateKeyAsHex = privateKeyAsHex;
+			this.addServices = addServices;
+			this.addPublicKeys = addPublicKeys;
+			this.addAuthentications = addAuthentications;
 		}
 
 		private String getChain() {
@@ -450,6 +512,21 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		private String getPrivateKeyAsHex() {
 
 			return this.privateKeyAsHex;
+		}
+
+		private List<Service> getAddServices() {
+
+			return this.addServices;
+		}
+
+		private List<PublicKey> getAddPublicKeys() {
+
+			return this.addPublicKeys;
+		}
+
+		private List<Authentication> getAddAuthentications() {
+
+			return this.addAuthentications;
 		}
 	}
 
@@ -508,12 +585,32 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		this.peerTestnet = peerTestnet;
 	}
 
-	public DIDDocContinuation getDIDDocContinuation() {
+	public String getPrivateKeyMainnet() {
+
+		return this.privateKeyMainnet;
+	}
+
+	public void setPrivateKeyMainnet(String privateKeyMainnet) {
+
+		this.privateKeyMainnet = privateKeyMainnet;
+	}
+
+	public String getPrivateKeyTestnet() {
+
+		return this.privateKeyTestnet;
+	}
+
+	public void setPrivateKeyTestnet(String privateKeyTestnet) {
+
+		this.privateKeyTestnet = privateKeyTestnet;
+	}
+
+	public DIDDocContinuation getDidDocContinuation() {
 
 		return this.didDocContinuation;
 	}
 
-	public void setDIDDocContinuation(DIDDocContinuation didDocContinuation) {
+	public void setDidDocContinuation(DIDDocContinuation didDocContinuation) {
 
 		this.didDocContinuation = didDocContinuation;
 	}

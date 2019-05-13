@@ -3,10 +3,10 @@ package uniregistrar;
 import java.util.Map;
 
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RevokeState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public interface UniRegistrar {
@@ -15,6 +15,6 @@ public interface UniRegistrar {
 
 	public RegisterState register(String driverId, RegisterRequest registerRequest) throws RegistrationException;
 	public UpdateState update(String driverId, UpdateRequest updateRequest) throws RegistrationException;
-	public RevokeState revoke(String driverId, RevokeRequest revokeRequest) throws RegistrationException;
+	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException;
 	public Map<String, Map<String, Object>> properties() throws RegistrationException;
 }

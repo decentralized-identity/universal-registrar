@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class RevokeState {
+public class DeactivateState {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -32,11 +32,11 @@ public class RevokeState {
 	@JsonProperty
 	private Map<String, Object> methodMetadata;
 
-	public RevokeState() {
+	public DeactivateState() {
 		
 	}
 
-	public RevokeState(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String state) {
+	public DeactivateState(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String state) {
 
 		this.jobId = jobId;
 		this.didState = new HashMap<String, Object> ();
@@ -50,14 +50,14 @@ public class RevokeState {
 	 * Serialization
 	 */
 
-	public static RevokeState fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static DeactivateState fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(json, RevokeState.class);
+		return objectMapper.readValue(json, DeactivateState.class);
 	}
 
-	public static RevokeState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static DeactivateState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(reader, RevokeState.class);
+		return objectMapper.readValue(reader, DeactivateState.class);
 	}
 
 	public String toJson() throws JsonProcessingException {

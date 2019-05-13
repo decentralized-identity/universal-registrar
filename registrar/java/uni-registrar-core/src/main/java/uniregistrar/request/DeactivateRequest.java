@@ -12,7 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class RevokeRequest {
+public class DeactivateRequest {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -27,11 +27,11 @@ public class RevokeRequest {
 	@JsonProperty
 	private Map<String, Object> secret;
 
-	public RevokeRequest() {
+	public DeactivateRequest() {
 
 	}
 
-	public RevokeRequest(String jobId, Map<String, Object> options, Map<String, Object> secret) {
+	public DeactivateRequest(String jobId, Map<String, Object> options, Map<String, Object> secret) {
 
 		this.jobId = jobId;
 		this.options = options;
@@ -42,14 +42,14 @@ public class RevokeRequest {
 	 * Serialization
 	 */
 
-	public static RevokeRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static DeactivateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(json, RevokeRequest.class);
+		return objectMapper.readValue(json, DeactivateRequest.class);
 	}
 
-	public static RevokeRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static DeactivateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(reader, RevokeRequest.class);
+		return objectMapper.readValue(reader, DeactivateRequest.class);
 	}
 
 	public String toJson() throws JsonProcessingException {

@@ -1,13 +1,13 @@
 package uniregistrar.driver.did.sov;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.lang3.RandomStringUtils;
-import org.hyperledger.indy.sdk.IndyConstants;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
@@ -24,15 +24,18 @@ import org.hyperledger.indy.sdk.wallet.WalletExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.jsonldjava.utils.JsonUtils;
+
+import did.Service;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.RegisterRequest;
-import uniregistrar.request.RevokeRequest;
 import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.RegisterState;
 import uniregistrar.state.RegisterStateFinished;
-import uniregistrar.state.RevokeState;
 import uniregistrar.state.UpdateState;
 
 public class DidSovDriver extends AbstractDriver implements Driver {
@@ -117,7 +120,10 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 		// open pool and wallet
 
-		if (this.getPoolMap() == null || this.getWallet() == null || this.getTrustAnchorDid() == null) this.openIndy();
+		synchronized (this) {
+
+			if (this.getPoolMap() == null || this.getWallet() == null || this.getTrustAnchorDid() == null) this.openIndy();
+		}
 
 		// read options
 
@@ -162,7 +168,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 				// create NYM request
 
 				if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
-				String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, IndyConstants.ROLE_TRUSTEE).get();
+				String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, null).get();
 				if (log.isDebugEnabled()) log.debug("nymRequest: " + nymRequest);
 
 				// sign and submit request to ledger
@@ -171,17 +177,44 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 				String submitRequestResult1 = Ledger.signAndSubmitRequest(pool, this.getWallet(), this.getTrustAnchorDid(), nymRequest).get();
 				if (log.isDebugEnabled()) log.debug("SubmitRequestResult1: " + submitRequestResult1);
 
-				// create ATTRIB request
+				// service endpoints
 
-				if (log.isDebugEnabled()) log.debug("=== CREATE ATTRIB REQUEST ===");
-				String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, "{\"endpoint\":{\"xdi\":\"http://127.0.0.1:8080/xdi\"}}", null).get();
-				if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
+				if (registerRequest.getAddServices() != null) {
 
-				// sign and submit request to ledger
+					Map<String, Object> jsonObject = new HashMap<String, Object> ();
+					Map<String, Object> endpointJsonObject = new HashMap<String, Object> ();
 
-				if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
-				String submitRequestResult2 = Ledger.signAndSubmitRequest(pool, walletUser, newDid, attribRequest).get();
-				if (log.isDebugEnabled()) log.debug("SubmitRequestResult2: " + submitRequestResult2);
+					for (Service service : registerRequest.getAddServices()) {
+
+						endpointJsonObject.put(service.getType(), service.getServiceEndpoint());
+					}
+
+					jsonObject.put("endpoint", endpointJsonObject);
+
+					String jsonObjectString;
+
+					try {
+
+						jsonObjectString = JsonUtils.toString(jsonObject);
+					} catch (IOException ex) {
+
+						throw new RegistrationException("Invalid endpoints: " + endpointJsonObject);
+					}
+
+					if (log.isDebugEnabled()) log.debug("Raw: " + jsonObjectString);
+
+					// create ATTRIB request
+
+					if (log.isDebugEnabled()) log.debug("=== CREATE ATTRIB REQUEST ===");
+					String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, jsonObjectString, null).get();
+					if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
+
+					// sign and submit request to ledger
+
+					if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
+					String submitRequestResult2 = Ledger.signAndSubmitRequest(pool, walletUser, newDid, attribRequest).get();
+					if (log.isDebugEnabled()) log.debug("SubmitRequestResult2: " + submitRequestResult2);
+				}
 			}
 		} catch (InterruptedException | ExecutionException | IndyException ex) {
 
@@ -213,7 +246,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 	}
 
 	@Override
-	public RevokeState revoke(RevokeRequest revokeRequest) throws RegistrationException {
+	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException {
 
 		throw new RuntimeException("Not implemented.");
 	}
@@ -222,7 +255,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 	public Map<String, Object> properties() {
 
 		Map<String, Object> properties = new HashMap<String, Object> (this.getProperties());
-		properties.replace("trustAnchorSeed", "...");
+		if (properties.containsKey("trustAnchorSeed")) properties.put("trustAnchorSeed", ((String) properties.get("trustAnchorSeed")).replaceAll(".", "."));
 
 		return properties;
 	}
@@ -250,6 +283,11 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			poolConfigMap.put(poolConfigName, poolConfigFile);
 		}
 
+		if (poolConfigMap.size() < 1) {
+
+			throw new RegistrationException("Please provide pool configs for the did:sov: driver.");
+		}
+
 		if (log.isInfoEnabled()) log.info("Pool config map: " + poolConfigMap);
 
 		// parse pool versions
@@ -265,7 +303,21 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			this.poolVersionMap.put(poolConfigName, poolConfigVersion);
 		}
 
+		if (this.poolVersionMap.size() < 1) {
+
+			throw new RegistrationException("Please provide pool versions for the did:sov: driver.");
+		}
+
 		if (log.isInfoEnabled()) log.info("Pool version map: " + this.poolVersionMap);
+
+		// check trust anchor seed
+
+		String trustAnchorSeed = this.getTrustAnchorSeed();
+
+		if (trustAnchorSeed == null || trustAnchorSeed.trim().isEmpty()) {
+
+			throw new RegistrationException("Please provide a trust anchor seed for the did:sov: driver.");
+		}
 
 		// create pool configs
 
@@ -350,11 +402,13 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			throw new RegistrationException("Cannot open wallet \"" + this.getWalletName() + "\": " + ex.getMessage(), ex);
 		}
 
+		if (log.isInfoEnabled()) log.info("Opened wallet: " + this.wallet);
+
 		// create trust anchor DID
 
 		try {
 
-			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameterTrustee = new CreateAndStoreMyDidJSONParameter(null, this.getTrustAnchorSeed(), null, null);
+			CreateAndStoreMyDidJSONParameter createAndStoreMyDidJSONParameterTrustee = new CreateAndStoreMyDidJSONParameter(null, trustAnchorSeed, null, null);
 			CreateAndStoreMyDidResult createAndStoreMyDidResultTrustee = Did.createAndStoreMyDid(this.getWallet(), createAndStoreMyDidJSONParameterTrustee.toJson()).get();
 			this.trustAnchorDid = createAndStoreMyDidResultTrustee.getDid();
 		} catch (IndyException | InterruptedException | ExecutionException ex) {
@@ -371,7 +425,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			}
 		}
 
-		if (log.isInfoEnabled()) log.info("Created trust anchor DID: " + this.trustAnchorDid);
+		if (log.isInfoEnabled()) log.info("Trust anchor DID: " + this.trustAnchorDid);
 	}
 
 	/*
