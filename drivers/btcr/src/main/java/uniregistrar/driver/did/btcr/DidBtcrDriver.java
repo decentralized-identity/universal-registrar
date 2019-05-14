@@ -318,7 +318,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		try {
 
-			chainAndBlockLocation = this.getBitcoinConnection().lookupChainAndBlockLocation(Chain.valueOf(chain), transactionHash);
+			chainAndBlockLocation = this.getBitcoinConnection().lookupChainAndBlockLocation(Chain.valueOf(chain), transactionHash, 0);
 			txref = chainAndBlockLocation == null ? null : TxrefEncoder.txrefEncode(chainAndBlockLocation);
 		} catch (IOException ex) {
 
