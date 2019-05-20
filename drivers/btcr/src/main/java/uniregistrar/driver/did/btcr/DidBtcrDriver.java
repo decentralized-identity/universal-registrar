@@ -220,7 +220,20 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// create continuation DID Document
 
-		URI didContinuationUri = this.didDocContinuation.prepareDIDDocContinuation(null);
+		URI didContinuationUri;
+
+		if (registerRequest.getAddServices() != null &&
+				registerRequest.getAddServices().size() > 0 &&
+				registerRequest.getAddPublicKeys() != null &&
+				registerRequest.getAddPublicKeys().size() > 0 &&
+				registerRequest.getAddPublicKeys() != null &&
+				registerRequest.getAddPublicKeys().size() > 0) {
+
+			didContinuationUri = this.didDocContinuation.prepareDIDDocContinuation(null);
+		} else {
+
+			didContinuationUri = null;
+		}
 
 		// prepare transaction
 
@@ -231,7 +244,12 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		if (log.isDebugEnabled()) log.debug("Change address: " + walletAppKit.wallet().currentChangeAddress());
 
 		Transaction originalTransaction = new Transaction(walletAppKit.params());
-		originalTransaction.addOutput(Coin.ZERO, new URIScriptBuilder(didContinuationUri).build());
+
+		if (didContinuationUri != null) {
+
+			originalTransaction.addOutput(Coin.ZERO, new URIScriptBuilder(didContinuationUri).build());
+		}
+
 		SendRequest sendRequest = SendRequest.forTx(originalTransaction);
 
 		try {
@@ -294,6 +312,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("transactionHash", transactionHash);
 		methodMetadata.put("balance", Double.valueOf(balance));
 		methodMetadata.put("changeAddress", changeAddress.toString());
+		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
 		return registerState;
@@ -308,24 +327,29 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		URI didContinuationUri = job.getDidContinuationUri();
 		String privateKeyAsWif = job.getPrivateKeyAsWif();
 		String privateKeyAsHex = job.getPrivateKeyAsHex();
+		List<Service> addServices = job.getAddServices();
+		List<PublicKey> addPublicKeys = job.getAddPublicKeys();
+		List<Authentication> addAuthentications = job.getAddAuthentications();
 
 		// read options
 
-		// determine txref
+		// determine txref and DID
 
 		ChainAndBlockLocation chainAndBlockLocation;
 		String txref;
+		String did;
 
 		try {
 
 			chainAndBlockLocation = this.getBitcoinConnection().lookupChainAndBlockLocation(Chain.valueOf(chain), transactionHash, 0);
 			txref = chainAndBlockLocation == null ? null : TxrefEncoder.txrefEncode(chainAndBlockLocation);
+			did = txref == null ? null : "did:btcr:" + stripTxref(txref);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Determined txref: " + txref);
+		if (log.isDebugEnabled()) log.debug("Determined chainAndBlockLocation: " + chainAndBlockLocation + ", txref: " + txref + ", DID: " + did);
 
 		// REGISTER STATE: wait
 
@@ -341,14 +365,17 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// store continuation DID Document
 
-		DIDDocument didContinuationDocument = DIDDocument.build("did:btcr:" + stripTxref(txref), null, null, null);
+		if (didContinuationUri != null) {
 
-		try {
+			DIDDocument didContinuationDocument = DIDDocument.build(did, addPublicKeys, addAuthentications, addServices);
 
-			this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
-		} catch (IOException ex) {
+			try {
 
-			throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+				this.didDocContinuation.storeDIDDocContinuation(didContinuationUri, didContinuationDocument);
+			} catch (IOException ex) {
+
+				throw new RegistrationException("Cannot store continuation DID Document: " + ex.getMessage(), ex);
+			}
 		}
 
 		// REGISTRATION STATE: finished
@@ -361,7 +388,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
 		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
 
-		String identifier = "did:btcr:" + stripTxref(txref);
+		String identifier = did;
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeyWif", privateKeyAsWif);
