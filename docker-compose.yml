@@ -13,6 +13,8 @@ services:
       uniregistrar_driver_did_btcr_bitcoinConnection: ${uniregistrar_driver_did_btcr_bitcoinConnection}
       uniregistrar_driver_did_btcr_rpcUrlMainnet: ${uniregistrar_driver_did_btcr_rpcUrlMainnet}
       uniregistrar_driver_did_btcr_rpcUrlTestnet: ${uniregistrar_driver_did_btcr_rpcUrlTestnet}
+    volumes:
+      - "${uniregistrar_driver_did_btcr_basePath}:${uniregistrar_driver_did_btcr_basePath}"
     ports:
       - "9081:8080"
   driver-did-sov:

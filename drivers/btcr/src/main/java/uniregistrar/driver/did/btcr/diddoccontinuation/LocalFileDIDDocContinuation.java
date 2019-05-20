@@ -50,7 +50,7 @@ public class LocalFileDIDDocContinuation implements DIDDocContinuation {
 		String fileName = didContinuationUri.toString().substring(didContinuationUri.toString().lastIndexOf("/") + 1);
 
 		String filePath = this.getBasePath();
-		if (! filePath.endsWith(File.pathSeparator)) filePath += File.pathSeparator;
+		if (! filePath.endsWith(File.separator)) filePath += File.separator;
 		filePath += fileName;
 		if (log.isDebugEnabled()) log.debug("DID Document continuation file: " + filePath);
 
