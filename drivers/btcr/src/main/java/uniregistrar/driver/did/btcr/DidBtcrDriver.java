@@ -222,18 +222,17 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		URI didContinuationUri;
 
-		if (registerRequest.getAddServices() != null &&
-				registerRequest.getAddServices().size() > 0 &&
-				registerRequest.getAddPublicKeys() != null &&
-				registerRequest.getAddPublicKeys().size() > 0 &&
-				registerRequest.getAddPublicKeys() != null &&
-				registerRequest.getAddPublicKeys().size() > 0) {
+		if ((registerRequest.getAddServices() != null && registerRequest.getAddServices().size() > 0) ||
+				(registerRequest.getAddPublicKeys() != null && registerRequest.getAddPublicKeys().size() > 0) ||
+				(registerRequest.getAddAuthentications() != null && registerRequest.getAddAuthentications().size() > 0)) {
 
 			didContinuationUri = this.didDocContinuation.prepareDIDDocContinuation(null);
 		} else {
 
 			didContinuationUri = null;
 		}
+
+		if (log.isDebugEnabled()) log.debug("Preparing continuation DID Document: " + didContinuationUri);
 
 		// prepare transaction
 
@@ -366,6 +365,8 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		// store continuation DID Document
 
 		if (didContinuationUri != null) {
+
+			if (log.isDebugEnabled()) log.debug("Storing continuation DID Document: " + didContinuationUri);
 
 			DIDDocument didContinuationDocument = DIDDocument.build(did, addPublicKeys, addAuthentications, addServices);
 
