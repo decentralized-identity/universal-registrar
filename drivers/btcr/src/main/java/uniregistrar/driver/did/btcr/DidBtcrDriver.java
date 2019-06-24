@@ -310,7 +310,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("chain", chain);
 		methodMetadata.put("transactionHash", transactionHash);
 		methodMetadata.put("balance", Double.valueOf(balance));
-		methodMetadata.put("changeAddress", changeAddress.toString());
+		methodMetadata.put("changeAddress", "" + changeAddress);
 		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
@@ -388,6 +388,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("transactionHash", transactionHash);
 		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
 		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
+		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		String identifier = did;
 

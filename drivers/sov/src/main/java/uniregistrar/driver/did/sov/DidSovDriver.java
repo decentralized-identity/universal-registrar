@@ -368,28 +368,6 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			}
 		}
 
-		// open pools
-
-		this.poolMap = new HashMap<String, Pool> ();
-
-		for (String poolConfigName : poolConfigMap.keySet()) {
-
-			try {
-
-				Pool.setProtocolVersion(this.getPoolVersionMap().get(poolConfigName));
-
-				OpenPoolLedgerJSONParameter openPoolLedgerJSONParameter = new OpenPoolLedgerJSONParameter(null, null);
-				Pool pool = Pool.openPoolLedger(poolConfigName, openPoolLedgerJSONParameter.toJson()).get();
-
-				this.poolMap.put(poolConfigName, pool);
-			} catch (IndyException | InterruptedException | ExecutionException ex) {
-
-				throw new RegistrationException("Cannot open pool \"" + poolConfigName + "\": " + ex.getMessage(), ex);
-			}
-		}
-
-		if (log.isInfoEnabled()) log.info("Opened " + this.poolMap.size() + " pools: " + this.poolMap.keySet());
-
 		// open wallet
 
 		try {
@@ -426,6 +404,29 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		}
 
 		if (log.isInfoEnabled()) log.info("Trust anchor DID: " + this.trustAnchorDid);
+
+		// open pools
+
+		this.poolMap = new HashMap<String, Pool> ();
+
+		for (String poolConfigName : poolConfigMap.keySet()) {
+
+			try {
+
+				Pool.setProtocolVersion(this.getPoolVersionMap().get(poolConfigName));
+
+				OpenPoolLedgerJSONParameter openPoolLedgerJSONParameter = new OpenPoolLedgerJSONParameter(null, null);
+				Pool pool = Pool.openPoolLedger(poolConfigName, openPoolLedgerJSONParameter.toJson()).get();
+
+				this.poolMap.put(poolConfigName, pool);
+			} catch (IndyException | InterruptedException | ExecutionException ex) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot open pool \"" + poolConfigName + "\": " + ex.getMessage(), ex);
+				continue;
+			}
+		}
+
+		if (log.isInfoEnabled()) log.info("Opened " + this.poolMap.size() + " pools: " + this.poolMap.keySet());
 	}
 
 	/*
