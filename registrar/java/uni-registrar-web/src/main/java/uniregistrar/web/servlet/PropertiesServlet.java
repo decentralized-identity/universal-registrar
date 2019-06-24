@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.web.WebUniRegistrar;
 
@@ -43,7 +42,7 @@ public class PropertiesServlet extends WebUniRegistrar {
 
 			properties = this.properties();
 			propertiesString = properties == null ? null : objectMapper.writeValueAsString(properties);
-		} catch (RegistrationException ex) {
+		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported: " + ex.getMessage(), ex);
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());

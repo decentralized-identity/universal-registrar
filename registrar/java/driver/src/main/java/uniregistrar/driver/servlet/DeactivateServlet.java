@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uniregistrar.RegistrationException;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.state.DeactivateState;
 
@@ -52,7 +51,7 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 
 			deactivateState = InitServlet.getDriver().deactivate(deactivateRequest);
 			deactivateStateString = deactivateState == null ? null : deactivateState.toJson();
-		} catch (RegistrationException ex) {
+		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported for " + deactivateRequest + ": " + ex.getMessage(), ex);
 			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + deactivateRequest + ": " + ex.getMessage());

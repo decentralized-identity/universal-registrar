@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uniregistrar.RegistrationException;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.UpdateState;
 import uniregistrar.web.WebUniRegistrar;
@@ -62,7 +61,7 @@ public class UpdateServlet extends WebUniRegistrar {
 
 			updateState = this.update(driverId, updateRequest);
 			updateStateString = updateState == null ? null : updateState.toJson();
-		} catch (RegistrationException ex) {
+		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Update problem for " + updateRequest + ": " + ex.getMessage(), ex);
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Update problem for " + updateRequest + ": " + ex.getMessage());

@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uniregistrar.RegistrationException;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.UpdateState;
 
@@ -52,7 +51,7 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 
 			updateState = InitServlet.getDriver().update(updateRequest);
 			updateStateString = updateState == null ? null : updateState.toJson();
-		} catch (RegistrationException ex) {
+		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported for " + updateRequest + ": " + ex.getMessage(), ex);
 			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + updateRequest + ": " + ex.getMessage());

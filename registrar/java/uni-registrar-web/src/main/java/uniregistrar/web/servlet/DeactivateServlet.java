@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uniregistrar.RegistrationException;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.state.DeactivateState;
 import uniregistrar.web.WebUniRegistrar;
@@ -62,7 +61,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 			deactiateState = this.deactivate(driverId, deactivateRequest);
 			deactivateStateString = deactiateState == null ? null : deactiateState.toJson();
-		} catch (RegistrationException ex) {
+		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
