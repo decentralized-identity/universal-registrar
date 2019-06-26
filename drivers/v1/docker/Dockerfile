@@ -12,13 +12,12 @@ RUN apt-get -y update && \
     apt-get install -y --no-install-recommends nodejs && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#RUN cd /opt/ && git clone https://github.com/digitalbazaar/did-cli.git && cd did-cli && git checkout v0.3.1 && sed -i 's/veres-one\/did-veres-one#implementation/veres-one\/did-veres-one#master/g' package.json && npm install .
+RUN cd /opt/ && mkdir did-cli && cd did-cli && npm install did-cli@0.4.1
 
 # build driver-did-v1
 
 ADD . /opt/driver-did-v1
-RUN chmod a+x /opt/driver-did-v1/did-client/did
-RUN cd /opt/driver-did-v1 && mvn install package -N -DskipTests
+RUN cd /opt/driver-did-v1 && mvn clean install package -N -DskipTests
 
 # variables
 

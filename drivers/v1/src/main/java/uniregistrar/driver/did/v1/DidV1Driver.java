@@ -5,29 +5,33 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.DeactivateRequest;
+import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.RegisterState;
 import uniregistrar.state.RegisterStateFinished;
-import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
 public class DidV1Driver extends AbstractDriver implements Driver {
 
 	private static Logger log = LoggerFactory.getLogger(DidV1Driver.class);
+
+	private static final Gson gson = new Gson();
 
 	private Map<String, Object> properties;
 
@@ -90,7 +94,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		try {
 
-			Process process = Runtime.getRuntime().exec("/opt/driver-did-v1/did-client/did generate -r");
+			Process process = Runtime.getRuntime().exec("/opt/did-cli/./node_modules/.bin/did generate -r");
 			exitCode = process.waitFor();
 			stdOutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			stdErrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -110,8 +114,11 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 				if (log.isDebugEnabled()) log.debug("OUT: " + line);
 
-				if (line.startsWith("[Veres One][test] DID: ")) newDid = line.substring("[Veres One][test] DID: ".length());
-				if (line.startsWith("[Veres One][test] DID Document stored in: ")) didDocumentLocation = line.substring("[Veres One][test] DID Document stored in: ".length());
+				if (line.startsWith("[Veres One][test] DID: ")) {
+
+					newDid = line.substring("[Veres One][test] DID: ".length());
+					didDocumentLocation = "/root/.dids/veres/test/"  + newDid.replace(":", "%3A") + ".json";
+				}
 			}
 
 			while ((line = stdErrReader.readLine()) != null) {
@@ -143,20 +150,17 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		// read DID document
 
-		BufferedReader didDocumentReader = null;
-		List<String> privateKeys = new ArrayList<String> ();;
+		FileReader didDocumentReader = null;
+		JsonNode jsonKeys = null;
 
 		try {
 
-			didDocumentReader = new BufferedReader(new FileReader(new File(didDocumentLocation)));
+			didDocumentReader = new FileReader(new File(didDocumentLocation));
 
-			String line;
+			JsonNode jsonNode = new ObjectMapper().readTree(didDocumentReader);
+			if (log.isDebugEnabled()) log.debug("JSON OBJECT: " + jsonNode);
 
-			while ((line = didDocumentReader.readLine()) != null) {
-
-				if (line.contains("\"privateKeyBase58\": ")) privateKeys.add(line.substring(line.indexOf("\"privateKeyBase58\": ") + "\"privateKeyBase58\": ".length() + 1, line.length() - 2));
-				if (line.contains("\"privateKeyPem\": ")) privateKeys.add(line.substring(line.indexOf("\"privateKeyPem\": ") + "\"privateKeyPem\": ".length() + 1, line.length() - 2));
-			}
+			jsonKeys = jsonNode.get("keys");
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Process read error: " + ex.getMessage(), ex);
@@ -179,7 +183,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 		String identifier = newDid;
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("privateKeys", privateKeys);
+		secret.put("privateKeys", jsonKeys);
 
 		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
 		return registerState;
@@ -202,6 +206,10 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		return this.getProperties();
 	}
+
+	/*
+	 * Helper methods
+	 */
 
 	/*
 	 * Getters and setters
