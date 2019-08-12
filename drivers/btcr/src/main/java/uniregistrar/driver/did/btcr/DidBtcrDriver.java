@@ -39,18 +39,16 @@ import did.Authentication;
 import did.DIDDocument;
 import did.PublicKey;
 import did.Service;
-import info.weboftrust.txrefconversion.Chain;
-import info.weboftrust.txrefconversion.ChainAndBlockLocation;
-import info.weboftrust.txrefconversion.TxrefConstants;
-import info.weboftrust.txrefconversion.TxrefEncoder;
-import info.weboftrust.txrefconversion.bitcoinconnection.BitcoinConnection;
+import info.weboftrust.btctxlookup.Chain;
+import info.weboftrust.btctxlookup.ChainAndLocationData;
+import info.weboftrust.btctxlookup.bitcoinconnection.BTCDRPCBitcoinConnection;
+import info.weboftrust.btctxlookup.bitcoinconnection.BitcoinConnection;
+import info.weboftrust.btctxlookup.bitcoinconnection.BitcoindRPCBitcoinConnection;
+import info.weboftrust.btctxlookup.bitcoinconnection.BitcoinjSPVBitcoinConnection;
+import info.weboftrust.btctxlookup.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BTCDRPCBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoindRPCBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BitcoinjSPVBitcoinConnection;
-import uniregistrar.driver.did.btcr.bitcoinconnection.BlockcypherAPIBitcoinConnection;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
 import uniregistrar.driver.did.btcr.state.RegisterStateWaitDidBtcrConfirm;
@@ -334,21 +332,21 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// determine txref and DID
 
-		ChainAndBlockLocation chainAndBlockLocation;
+		ChainAndLocationData chainAndLocationData;
 		String txref;
 		String did;
 
 		try {
 
-			chainAndBlockLocation = this.getBitcoinConnection().lookupChainAndBlockLocation(Chain.valueOf(chain), transactionHash, 0);
-			txref = chainAndBlockLocation == null ? null : TxrefEncoder.txrefEncode(chainAndBlockLocation);
+			chainAndLocationData = this.getBitcoinConnection().lookupChainAndLocationData(Chain.valueOf(chain), transactionHash, 0);
+			txref = chainAndLocationData == null ? null : ChainAndLocationData.txrefEncode(chainAndLocationData);
 			did = txref == null ? null : "did:btcr:" + stripTxref(txref);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot determine txref: " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Determined chainAndBlockLocation: " + chainAndBlockLocation + ", txref: " + txref + ", DID: " + did);
+		if (log.isDebugEnabled()) log.debug("Determined chainAndBlockLocation: " + chainAndLocationData + ", txref: " + txref + ", DID: " + did);
 
 		// REGISTER STATE: wait
 
@@ -386,8 +384,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
 		methodMetadata.put("transactionHash", transactionHash);
-		methodMetadata.put("blockHeight", chainAndBlockLocation.getBlockHeight());
-		methodMetadata.put("blockIndex", chainAndBlockLocation.getBlockIndex());
+		methodMetadata.put("blockHeight", chainAndLocationData.getLocationData().getBlockHeight());
+		methodMetadata.put("transactionPosition", chainAndLocationData.getLocationData().getTransactionPosition());
+		methodMetadata.put("txoIndex", chainAndLocationData.getLocationData().getTxoIndex());
 		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		String identifier = did;
@@ -480,15 +479,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	 * Helper methods
 	 */
 
-	private static final String PREFIX_MAINNET = TxrefConstants.TXREF_BECH32_HRP_MAINNET + "1:";
-	private static final String PREFIX_TESTNET = TxrefConstants.TXREF_BECH32_HRP_TESTNET + "1:";
-
 	private static String stripTxref(String txref) {
 
-		if (txref.startsWith(PREFIX_MAINNET)) return txref.substring(PREFIX_MAINNET.length());
-		if (txref.startsWith(PREFIX_TESTNET)) return txref.substring(PREFIX_TESTNET.length());
-
-		return txref;
+		return txref.substring(txref.indexOf(":") + 1);
 	}
 
 	/*
