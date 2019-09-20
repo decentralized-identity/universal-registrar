@@ -2,12 +2,16 @@ package uniregistrar.driver.did.sov;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import org.abstractj.kalium.NaCl;
+import org.abstractj.kalium.NaCl.Sodium;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.bitcoinj.core.Base58;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
@@ -52,9 +56,15 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 	private Map<String, Pool> poolMap = null;
 	private Map<String, Integer> poolVersionMap = null;
+	private Map<String, String> poolTaaMap = null;
 	private Wallet wallet = null;
 	private String trustAnchorDid = null;
 
+	static {
+		
+		NaCl.init();
+	}
+	
 	public DidSovDriver(Map<String, Object> properties) {
 
 		this.setProperties(properties);
@@ -130,12 +140,14 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		String network = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("network");
 		if (network == null || network.trim().isEmpty()) network = "_";
 
-		// find pool and version
+		// find pool and version and taa
 
 		Pool pool = this.getPoolMap().get(network);
 		if (pool == null) throw new RegistrationException("Unknown network: " + network);
 
 		Integer poolVersion = this.getPoolVersionMap().get(network);
+
+		String taa = this.getPoolTaaMap().get(network);
 
 		// create USER SEED
 
@@ -170,6 +182,14 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 				if (log.isDebugEnabled()) log.debug("=== CREATE NYM REQUEST ===");
 				String nymRequest = Ledger.buildNymRequest(this.getTrustAnchorDid(), newDid, newVerkey, /*"{\"alias\":\"b\"}"*/ null, null).get();
 				if (log.isDebugEnabled()) log.debug("nymRequest: " + nymRequest);
+
+				// agree
+
+				if (taa != null) {
+
+					nymRequest = Taa.agree(nymRequest, taa);
+					if (log.isDebugEnabled()) log.debug("agreed nymRequest: " + nymRequest);
+				}
 
 				// sign and submit request to ledger
 
@@ -209,6 +229,14 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 					String attribRequest = Ledger.buildAttribRequest(newDid, newDid, null, jsonObjectString, null).get();
 					if (log.isDebugEnabled()) log.debug("attribRequest: " + attribRequest);
 
+					// agree
+
+					if (taa != null) {
+
+						attribRequest = Taa.agree(attribRequest, taa);
+						if (log.isDebugEnabled()) log.debug("agreed attribRequest: " + attribRequest);
+					}
+
 					// sign and submit request to ledger
 
 					if (log.isDebugEnabled()) log.debug("=== SUBMIT 2 ===");
@@ -220,6 +248,13 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 			throw new RegistrationException("Problem connecting to Indy: " + ex.getMessage(), ex);
 		}
+
+		// secret
+
+		byte[] naclPublicKey = new byte[Sodium.CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
+		byte[] naclSecretKey = new byte[Sodium.CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
+		NaCl.sodium().crypto_sign_ed25519_seed_keypair(naclPublicKey, naclSecretKey, newSeed.getBytes());
+		byte[] naclDid = Arrays.copyOf(naclPublicKey, 16);
 
 		// REGISTRATION STATE: finished
 
@@ -234,6 +269,9 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("seed", newSeed);
+		secret.put("naclPublicKey", Base58.encode(naclPublicKey));
+		secret.put("naclSecretKey", Base58.encode(naclSecretKey));
+		secret.put("naclDid", Base58.encode(naclDid));
 
 		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
 		return registerState;
@@ -408,6 +446,7 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		// open pools
 
 		this.poolMap = new HashMap<String, Pool> ();
+		this.poolTaaMap = new HashMap<String, String> ();
 
 		for (String poolConfigName : poolConfigMap.keySet()) {
 
@@ -418,7 +457,10 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 				OpenPoolLedgerJSONParameter openPoolLedgerJSONParameter = new OpenPoolLedgerJSONParameter(null, null);
 				Pool pool = Pool.openPoolLedger(poolConfigName, openPoolLedgerJSONParameter.toJson()).get();
 
+				String taa = Taa.getTaa(pool, this.getWallet(), this.getTrustAnchorDid());
+
 				this.poolMap.put(poolConfigName, pool);
+				if (taa != null) this.poolTaaMap.put(poolConfigName, taa);
 			} catch (IndyException | InterruptedException | ExecutionException ex) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot open pool \"" + poolConfigName + "\": " + ex.getMessage(), ex);
@@ -512,6 +554,16 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 	public void setPoolVersionMap(Map<String, Integer> poolVersionMap) {
 
 		this.poolVersionMap = poolVersionMap;
+	}
+
+	public Map<String, String> getPoolTaaMap() {
+
+		return this.poolTaaMap;
+	}
+
+	public void setPoolTaaMap(Map<String, String> poolTaaMap) {
+
+		this.poolTaaMap = poolTaaMap;
 	}
 
 	public Wallet getWallet() {
