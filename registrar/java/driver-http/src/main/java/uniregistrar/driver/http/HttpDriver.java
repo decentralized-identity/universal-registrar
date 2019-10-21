@@ -23,11 +23,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.DeactivateRequest;
+import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.RegisterState;
 import uniregistrar.state.DeactivateState;
+import uniregistrar.state.RegisterState;
 import uniregistrar.state.UpdateState;
 
 public class HttpDriver implements Driver {
@@ -252,8 +252,15 @@ public class HttpDriver implements Driver {
 
 		// remote properties
 
-		Map<String, Object> remoteProperties = this.remoteProperties();
-		if (remoteProperties != null) properties.putAll(remoteProperties);
+		try {
+
+			Map<String, Object> remoteProperties = this.remoteProperties();
+			if (remoteProperties != null) properties.putAll(remoteProperties);
+		} catch (Exception ex) {
+
+			if (log.isWarnEnabled()) log.warn("Cannot retrieve remote properties: " + ex.getMessage(), ex);
+			properties.put("remotePropertiesException", ex.getMessage());
+		}
 
 		// done
 

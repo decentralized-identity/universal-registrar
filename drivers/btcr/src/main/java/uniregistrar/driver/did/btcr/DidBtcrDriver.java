@@ -129,17 +129,21 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		try {
 
+			// parse peerMainnet, peerTestnet, privateKeyMainnet, privateKeyTestnet
+
 			String prop_peerMainnet = (String) this.getProperties().get("peerMainnet");
 			String prop_peerTestnet = (String) this.getProperties().get("peerTestnet");
 			String prop_privateKeyMainnet = (String) this.getProperties().get("privateKeyMainnet");
 			String prop_privateKeyTestnet = (String) this.getProperties().get("privateKeyTestnet");
-			String prop_didDocContinuation = (String) this.getProperties().get("didDocContinuation");
-			String prop_bitcoinConnection = (String) this.getProperties().get("bitcoinConnection");
 
 			if (prop_peerMainnet != null) this.setPeerMainnet(prop_peerMainnet);
 			if (prop_peerTestnet != null) this.setPeerTestnet(prop_peerTestnet);
 			if (prop_privateKeyMainnet != null) this.setPrivateKeyMainnet(prop_privateKeyMainnet);
 			if (prop_privateKeyTestnet != null) this.setPrivateKeyTestnet(prop_privateKeyTestnet);
+
+			// parse bitcoinConnection
+
+			String prop_bitcoinConnection = (String) this.getProperties().get("bitcoinConnection");
 
 			if ("bitcoind".equals(prop_bitcoinConnection)) {
 
@@ -166,6 +170,10 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 				this.setBitcoinConnection(new BlockcypherAPIBitcoinConnection());
 			}
+
+			// parse didDocContinuation
+
+			String prop_didDocContinuation = (String) this.getProperties().get("didDocContinuation");
 
 			if ("localfile".equals(prop_didDocContinuation)) {
 
