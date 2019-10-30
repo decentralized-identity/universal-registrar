@@ -44,7 +44,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 	public DidV1Driver() {
 
-		this.setProperties(getPropertiesFromEnvironment());
+		this(getPropertiesFromEnvironment());
 	}
 
 	private static Map<String, Object> getPropertiesFromEnvironment() {

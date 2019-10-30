@@ -31,7 +31,7 @@ public class DidERC725Driver extends AbstractDriver implements Driver {
 
 	public DidERC725Driver() {
 
-		this.setProperties(getPropertiesFromEnvironment());
+		this(getPropertiesFromEnvironment());
 	}
 
 	private static Map<String, Object> getPropertiesFromEnvironment() {

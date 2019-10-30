@@ -83,7 +83,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 	public DidBtcrDriver() {
 
-		this.setProperties(getPropertiesFromEnvironment());
+		this(getPropertiesFromEnvironment());
 	}
 
 	private static Map<String, Object> getPropertiesFromEnvironment() {
@@ -166,9 +166,12 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			} else if ("bitcoinj".equals(prop_bitcoinConnection)) {
 
 				this.setBitcoinConnection(new BitcoinjSPVBitcoinConnection());
-			} else  if ("blockcypherapi".equals(prop_bitcoinConnection)) {
+			} else if ("blockcypherapi".equals(prop_bitcoinConnection)) {
 
 				this.setBitcoinConnection(new BlockcypherAPIBitcoinConnection());
+			} else {
+
+				throw new IllegalArgumentException("Invalid bitcoinConnection: " + prop_bitcoinConnection);
 			}
 
 			// parse didDocContinuation
@@ -184,7 +187,13 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 				if (prop_basePath != null) ((LocalFileDIDDocContinuation) this.getDidDocContinuation()).setBasePath(prop_basePath);
 				if (prop_baseUri != null) ((LocalFileDIDDocContinuation) this.getDidDocContinuation()).setBaseUri(prop_baseUri);
+			} else {
+
+				throw new IllegalArgumentException("Invalid didDocContinuation: " + prop_didDocContinuation);
 			}
+		} catch (IllegalArgumentException ex) {
+
+			throw ex;
 		} catch (Exception ex) {
 
 			throw new IllegalArgumentException(ex.getMessage(), ex);
