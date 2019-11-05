@@ -9,14 +9,16 @@ import java.util.Map.Entry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.danubetech.universalwallet.client.UniversalWalletClient;
+
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.DeactivateRequest;
+import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.RegisterState;
 import uniregistrar.state.DeactivateState;
+import uniregistrar.state.RegisterState;
 import uniregistrar.state.UpdateState;
 
 public class LocalUniRegistrar implements UniRegistrar {
@@ -25,20 +27,80 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 	private static final LocalUniRegistrar DEFAULT_REGISTRAR;
 
-	private Map<String, Driver> drivers = new HashMap<String, Driver> ();
+	private Map<String, Object> properties;
+
+	private UniversalWalletClient universalWalletClient;
+
+	private Map<String, Driver> drivers;
 
 	static {
 
 		DEFAULT_REGISTRAR = new LocalUniRegistrar();
 	}
 
-	public LocalUniRegistrar() {
-
-	}
-
 	public static LocalUniRegistrar getDefault() {
 
 		return DEFAULT_REGISTRAR;
+	}
+
+	public LocalUniRegistrar(Map<String, Object> properties) {
+
+		this.setProperties(properties);
+
+		this.drivers = new HashMap<String, Driver> ();
+	}
+
+	public LocalUniRegistrar() {
+
+		this(getPropertiesFromEnvironment());
+	}
+
+	private static Map<String, Object> getPropertiesFromEnvironment() {
+
+		if (log.isDebugEnabled()) log.debug("Loading from environment: " + System.getenv());
+
+		Map<String, Object> properties = new HashMap<String, Object> ();
+
+		try {
+
+			String env_universalWalletBase = System.getenv("uniregistrar_universalWalletBase");
+
+			if (env_universalWalletBase != null) properties.put("universalWalletBase", env_universalWalletBase);
+		} catch (Exception ex) {
+
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
+
+		return properties;
+	}
+
+	private void configureFromProperties() {
+
+		if (log.isDebugEnabled()) log.debug("Configuring from properties: " + this.getProperties());
+
+		try {
+
+			// parse universalWalletBase
+
+			String prop_universalWalletBase = (String) this.getProperties().get("universalWalletBase");
+
+			if (prop_universalWalletBase != null) {
+
+				final UniversalWalletClient universalWalletClient = UniversalWalletClient.create(prop_universalWalletBase);
+
+				this.setUniversalWalletClient(universalWalletClient);
+			} else {
+
+				if (log.isWarnEnabled()) log.warn("No universalWalletBase configured.");
+				this.setUniversalWalletClient(null);
+			}
+		} catch (IllegalArgumentException ex) {
+
+			throw ex;
+		} catch (Exception ex) {
+
+			throw new IllegalArgumentException(ex.getMessage(), ex);
+		}
 	}
 
 	@Override
@@ -180,6 +242,27 @@ public class LocalUniRegistrar implements UniRegistrar {
 	/*
 	 * Getters and setters
 	 */
+
+	public Map<String, Object> getProperties() {
+
+		return this.properties;
+	}
+
+	public void setProperties(Map<String, Object> properties) {
+
+		this.properties = properties;
+		this.configureFromProperties();
+	}
+
+	public UniversalWalletClient getUniversalWalletClient() {
+
+		return this.universalWalletClient;
+	}
+
+	public void setUniversalWalletClient(UniversalWalletClient universalWalletClient) {
+
+		this.universalWalletClient = universalWalletClient;
+	}
 
 	public Map<String, Driver> getDrivers() {
 
