@@ -31,12 +31,6 @@
 			<version>0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.danubetech</groupId>
-			<artifactId>universal-wallet-client</artifactId>
-			<version>0.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 </project>

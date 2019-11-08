@@ -1,4 +1,7 @@
-version: "3"
+version: "3.5"
+networks:
+  default:
+    name: universal-registrar
 services:
   driver-did-btcr:
     image: universalregistrar/driver-did-btcr:latest
