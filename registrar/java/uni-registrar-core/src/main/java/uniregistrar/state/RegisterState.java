@@ -47,6 +47,15 @@ public class RegisterState {
 	}
 
 	/*
+	 * Factory methods
+	 */
+
+	public static RegisterState build() {
+
+		return new RegisterState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), null);
+	}
+
+	/*
 	 * Serialization
 	 */
 

@@ -5,13 +5,12 @@
 
 	<!-- UNIVERSAL REGISTRAR SERVLET -->
 
-	<bean name="UniRegistrar" class="uniregistrar.local.LocalUniRegistrar">
-		<property name="drivers">
-			<util:map>
-				<entry key="did:btcr"><ref bean="DidBtcrDriver" /></entry>
-				<entry key="did:sov"><ref bean="DidSovDriver" /></entry>
-				<entry key="did:v1"><ref bean="DidV1Driver" /></entry>
-			</util:map>
+	<bean name="UniRegistrar" class="uniregistrar.local.LocalUniRegistrar" factory-method="fromConfigFile">
+		<constructor-arg value="./config.json" />
+		<property name="extensions">
+			<util:list>
+				<bean class="uniregistrar.local.extensions.impl.DummyExtension" />
+			</util:list>
 		</property>
 	</bean>
 
@@ -29,29 +28,6 @@
 
 	<bean name="PropertiesServlet" class="uniregistrar.web.servlet.PropertiesServlet">
 		<property name="uniRegistrar" ref="UniRegistrar" />
-	</bean>
-
-	<!-- DRIVERS (VIA DOCKER REST API) -->
-
-	<bean id="DidBtcrDriver" class="uniregistrar.driver.http.HttpDriver">
-		<property name="registerUri" value="http://driver-did-btcr:8080/1.0/register" />
-		<property name="updateUri" value="http://driver-did-btcr:8080/1.0/update" />
-		<property name="deactivateUri" value="http://driver-did-btcr:8080/1.0/deactivate" />
-		<property name="propertiesUri" value="http://driver-did-btcr:8080/1.0/properties" />
-	</bean>
-
-	<bean id="DidSovDriver" class="uniregistrar.driver.http.HttpDriver">
-		<property name="registerUri" value="http://driver-did-sov:8080/1.0/register" />
-		<property name="updateUri" value="http://driver-did-sov:8080/1.0/update" />
-		<property name="deactivateUri" value="http://driver-did-sov:8080/1.0/deactivate" />
-		<property name="propertiesUri" value="http://driver-did-sov:8080/1.0/properties" />
-	</bean>
-
-	<bean id="DidV1Driver" class="uniregistrar.driver.http.HttpDriver">
-		<property name="registerUri" value="http://driver-did-v1:8080/1.0/register" />
-		<property name="updateUri" value="http://driver-did-v1:8080/1.0/update" />
-		<property name="deactivateUri" value="http://driver-did-v1:8080/1.0/deactivate" />
-		<property name="propertiesUri" value="http://driver-did-v1:8080/1.0/properties" />
 	</bean>
 
 </beans>

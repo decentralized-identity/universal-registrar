@@ -1,0 +1,20 @@
+{
+	"drivers": [
+		{
+			"name": "driver-did-btcr"
+			"image": "universalregistrar/driver-did-btcr",
+			"imageProperties": "true",
+			"tag": "latest"
+		}, {
+			"name": "driver-did-sov",
+			"image": "universalregistrar/driver-did-sov",
+			"imageProperties": "true",
+			"tag": "latest"
+		}, {
+			"name": "driver-did-v1",
+			"image": "universalregistrar/driver-did-v1",
+			"imageProperties": "true",
+			"tag": "latest"
+		}
+	]
+}

@@ -47,6 +47,15 @@ public class UpdateState {
 	}
 
 	/*
+	 * Factory methods
+	 */
+
+	public static UpdateState build() {
+
+		return new UpdateState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), null);
+	}
+
+	/*
 	 * Serialization
 	 */
 

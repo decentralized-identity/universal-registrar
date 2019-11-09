@@ -47,6 +47,15 @@ public class DeactivateState {
 	}
 
 	/*
+	 * Factory methods
+	 */
+
+	public static DeactivateState build() {
+
+		return new DeactivateState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), null);
+	}
+
+	/*
 	 * Serialization
 	 */
 
@@ -91,6 +100,12 @@ public class DeactivateState {
 	public final void setDidState(Map<String, Object> didState) {
 
 		this.didState = didState;
+	}
+
+	@JsonGetter
+	public final Map<String, Object> getRegistrarMetadata() {
+
+		return this.registrarMetadata;
 	}
 
 	@JsonSetter

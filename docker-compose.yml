@@ -44,7 +44,5 @@ services:
       - "9084:8080"
   uni-registrar-web:
     image: universalregistrar/uni-registrar-web:latest
-    environment:
-      uniregistrar_universalWalletBase: ${uniregistrar_universalWalletBase}
     ports:
       - "9080:9080"

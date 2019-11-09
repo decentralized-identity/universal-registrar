@@ -1,17 +1,32 @@
 package uniregistrar.local;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
+import uniregistrar.driver.http.HttpDriver;
+import uniregistrar.local.extensions.Extension;
+import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
@@ -23,22 +38,76 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 	private static Logger log = LoggerFactory.getLogger(LocalUniRegistrar.class);
 
-	private static final LocalUniRegistrar DEFAULT_REGISTRAR;
-
 	private Map<String, Driver> drivers;
-
-	static {
-
-		DEFAULT_REGISTRAR = new LocalUniRegistrar();
-	}
-
-	public static LocalUniRegistrar getDefault() {
-
-		return DEFAULT_REGISTRAR;
-	}
+	private List<Extension> extensions = new ArrayList<Extension> ();
 
 	public LocalUniRegistrar() {
 
+	}
+
+	public static LocalUniRegistrar fromConfigFile(String filePath) throws FileNotFoundException, IOException {
+
+		final Gson gson = new Gson();
+
+		Map<String, Driver> drivers = new HashMap<String, Driver> ();
+
+		try (Reader reader = new FileReader(new File(filePath))) {
+
+			JsonObject jsonObjectRoot  = gson.fromJson(reader, JsonObject.class);
+			JsonArray jsonArrayDrivers = jsonObjectRoot.getAsJsonArray("drivers");
+
+			int i = 0;
+
+			for (Iterator<JsonElement> jsonElementsDrivers = jsonArrayDrivers.iterator(); jsonElementsDrivers.hasNext(); ) {
+
+				i++;
+
+				JsonObject jsonObjectDriver = (JsonObject) jsonElementsDrivers.next();
+
+				String image = jsonObjectDriver.has("image") ? jsonObjectDriver.get("image").getAsString() : null;
+				String imagePort = jsonObjectDriver.has("imagePort") ? jsonObjectDriver.get("imagePort").getAsString() : null;
+				String imageProperties = jsonObjectDriver.has("imageProperties") ? jsonObjectDriver.get("imageProperties").getAsString() : null;
+				String url = jsonObjectDriver.has("url") ? jsonObjectDriver.get("url").getAsString() : null;
+
+				if (image == null && url == null) throw new IllegalArgumentException("Missing 'image' and 'url' entry in driver configuration (need either one).");
+
+				HttpDriver driver = new HttpDriver();
+
+				if (url != null) {
+
+					driver.setRegisterUri(url + "1.0/identifiers");
+					driver.setUpdateUri(url + "1.0/identifiers");
+					driver.setDeactivateUri(url + "1.0/identifiers");
+				} else {
+
+					String httpDriverUri = image.substring(image.indexOf("/") + 1);
+					if (httpDriverUri.contains(":")) httpDriverUri = httpDriverUri.substring(0, httpDriverUri.indexOf(":"));
+					httpDriverUri = "http://" + httpDriverUri + ":" + (imagePort != null ? imagePort : "8080" ) + "/";
+
+					driver.setRegisterUri(httpDriverUri + "1.0/identifiers");
+					driver.setUpdateUri(httpDriverUri + "1.0/identifiers");
+					driver.setDeactivateUri(httpDriverUri + "1.0/identifiers");
+
+					if ("true".equals(imageProperties)) {
+
+						driver.setPropertiesUri(httpDriverUri + "1.0/properties");
+					}
+				}
+
+				String name = "driver";
+				if (image != null) name += "-" + image;
+				if (image == null || drivers.containsKey(name)) name += "-" + Integer.toString(i);
+
+				drivers.put(name, driver);
+
+				if (log.isInfoEnabled()) log.info("Added driver '" + name + "' at " + driver.getRegisterUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+			}
+		}
+
+		LocalUniRegistrar localUniRegistrar = new LocalUniRegistrar();
+		localUniRegistrar.setDrivers(drivers);
+
+		return localUniRegistrar;
 	}
 
 	@Override
@@ -53,26 +122,54 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
-		// select driver
+		// prepare register state
 
-		Driver driver = this.getDrivers().get(driverId);
-		if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-		if (log.isDebugEnabled()) log.debug("Attemping to register " + registerRequest + " with driver " + driver.getClass());
+		RegisterState registerState = RegisterState.build();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		RegisterState registerState = driver.register(registerRequest);
+		// execute extensions (before)
+
+		if (! extensionStatus.skipExtensionsBefore()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.beforeRegister(driverId, registerRequest, registerState, this));
+				if (extensionStatus.skipExtensionsBefore()) break;
+			}
+		}
+
+		// select and execute driver
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(driverId);
+			if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
+			if (log.isDebugEnabled()) log.debug("Attemping to register " + registerRequest + " with driver " + driver.getClass());
+
+			RegisterState driverRegisterState = driver.register(registerRequest);
+			registerState.setJobId(driverRegisterState.getJobId());
+			registerState.setDidState(driverRegisterState.getDidState());
+			registerState.setMethodMetadata(driverRegisterState.getMethodMetadata());
+
+			registerState.getRegistrarMetadata().put("driverId", driverId);
+		}
+
+		// execute extensions (after)
+
+		if (! extensionStatus.skipExtensionsAfter()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.afterRegister(driverId, registerRequest, registerState, this));
+				if (extensionStatus.skipExtensionsAfter()) break;
+			}
+		}
 
 		// stop time
 
 		long stop = System.currentTimeMillis();
 
-		// add REGISTRAR METADATA
-
-		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
-		registrarMetadata.put("driverId", driverId);
-		registrarMetadata.put("driver", driver.getClass().getSimpleName());
-		registrarMetadata.put("duration", Long.valueOf(stop - start));
-
-		registerState.setRegistrarMetadata(registrarMetadata);
+		registerState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -91,26 +188,54 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
-		// select driver
+		// prepare update state
 
-		Driver driver = this.getDrivers().get(driverId);
-		if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-		if (log.isDebugEnabled()) log.debug("Attemping to update " + updateRequest + " with driver " + driver.getClass());
+		UpdateState updateState = UpdateState.build();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		UpdateState updateState = driver.update(updateRequest);
+		// execute extensions (before)
+
+		if (! extensionStatus.skipExtensionsBefore()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.beforeUpdate(driverId, updateRequest, updateState, this));
+				if (extensionStatus.skipExtensionsBefore()) break;
+			}
+		}
+
+		// select and execute driver
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(driverId);
+			if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
+			if (log.isDebugEnabled()) log.debug("Attemping to update " + updateRequest + " with driver " + driver.getClass());
+
+			UpdateState driverUpdateState = driver.update(updateRequest);
+			updateState.setJobId(driverUpdateState.getJobId());
+			updateState.setDidState(driverUpdateState.getDidState());
+			updateState.setMethodMetadata(driverUpdateState.getMethodMetadata());
+
+			updateState.getRegistrarMetadata().put("driverId", driverId);
+		}
+
+		// execute extensions (after)
+
+		if (! extensionStatus.skipExtensionsAfter()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.afterUpdate(driverId, updateRequest, updateState, this));
+				if (extensionStatus.skipExtensionsAfter()) break;
+			}
+		}
 
 		// stop time
 
 		long stop = System.currentTimeMillis();
 
-		// add REGISTRAR METADATA
-
-		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
-		registrarMetadata.put("driverId", driverId);
-		registrarMetadata.put("driver", driver.getClass().getSimpleName());
-		registrarMetadata.put("duration", Long.valueOf(stop - start));
-
-		updateState.setRegistrarMetadata(registrarMetadata);
+		updateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -129,26 +254,54 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
-		// select driver
+		// prepare deactivate state
 
-		Driver driver = this.getDrivers().get(driverId);
-		if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-		if (log.isDebugEnabled()) log.debug("Attemping to deactivate " + deactivateRequest + " with driver " + driver.getClass());
+		DeactivateState deactivateState = DeactivateState.build();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		DeactivateState deactivateState = driver.deactivate(deactivateRequest);
+		// execute extensions (before)
+
+		if (! extensionStatus.skipExtensionsBefore()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.beforeDeactivate(driverId, deactivateRequest, deactivateState, this));
+				if (extensionStatus.skipExtensionsBefore()) break;
+			}
+		}
+
+		// select and execute driver
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(driverId);
+			if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
+			if (log.isDebugEnabled()) log.debug("Attemping to deactivate " + deactivateRequest + " with driver " + driver.getClass());
+
+			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
+			deactivateState.setJobId(driverDeactivateState.getJobId());
+			deactivateState.setDidState(driverDeactivateState.getDidState());
+			deactivateState.setMethodMetadata(driverDeactivateState.getMethodMetadata());
+
+			deactivateState.getRegistrarMetadata().put("driverId", driverId);
+		}
+
+		// execute extensions (after)
+
+		if (! extensionStatus.skipExtensionsAfter()) {
+
+			for (Extension extension : this.getExtensions()) {
+
+				extensionStatus.or(extension.afterDeactivate(driverId, deactivateRequest, deactivateState, this));
+				if (extensionStatus.skipExtensionsAfter()) break;
+			}
+		}
 
 		// stop time
 
 		long stop = System.currentTimeMillis();
 
-		// add REGISTRAR METADATA
-
-		Map<String, Object> registrarMetadata = new LinkedHashMap<String, Object> ();
-		registrarMetadata.put("driverId", driverId);
-		registrarMetadata.put("driver", driver.getClass().getSimpleName());
-		registrarMetadata.put("duration", Long.valueOf(stop - start));
-
-		deactivateState.setRegistrarMetadata(registrarMetadata);
+		deactivateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -200,5 +353,15 @@ public class LocalUniRegistrar implements UniRegistrar {
 	public void setDrivers(Map<String, Driver> drivers) {
 
 		this.drivers = drivers;
+	}
+
+	public List<Extension> getExtensions() {
+
+		return this.extensions;
+	}
+
+	public void setExtensions(List<Extension> extensions) {
+
+		this.extensions = extensions;
 	}
 }
