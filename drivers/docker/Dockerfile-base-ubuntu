@@ -22,7 +22,7 @@ RUN mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DrepoUrl=htt
 
 # build driver
 
-ADD . /opt/uni-registrar-java
+ADD ./registrar/java/ /opt/uni-registrar-java
 
 RUN cd /opt/uni-registrar-java && mvn clean install -N -DskipTests && \
     cd /opt/uni-registrar-java/uni-registrar-core && mvn install -N -DskipTests && \
