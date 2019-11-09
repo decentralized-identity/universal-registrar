@@ -16,15 +16,14 @@ RUN mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DrepoUrl=htt
 # build uni-registrar-web
 
 ADD ./registrar/java/ /opt/uni-registrar-java
-ADD ./config.json /opt/uni-registrar-java/
+ADD ./config.json /opt/uni-registrar-java/uni-registrar-web/
 
-RUN cd /opt/uni-registrar-java && mvn clean && \
-    cd /opt/uni-registrar-java && mvn install -N -DskipTests && \
-    cd /opt/uni-registrar-java/uni-registrar-core && mvn install -N -DskipTests && \
-    cd /opt/uni-registrar-java/driver && mvn install -N -DskipTests && \
-    cd /opt/uni-registrar-java/driver-http && mvn install -N -DskipTests && \
-    cd /opt/uni-registrar-java/uni-registrar-local && mvn install -N -DskipTests && \
-    cd /opt/uni-registrar-java/uni-registrar-web && mvn install -N -DskipTests
+RUN cd /opt/uni-registrar-java && mvn clean install -N -DskipTests && mvn clean && \
+    cd /opt/uni-registrar-java/uni-registrar-core && mvn clean install -N -DskipTests && mvn clean && \
+    cd /opt/uni-registrar-java/driver && mvn clean install -N -DskipTests && mvn clean && \
+    cd /opt/uni-registrar-java/driver-http && mvn clean install -N -DskipTests && mvn clean && \
+    cd /opt/uni-registrar-java/uni-registrar-local && mvn clean install -N -DskipTests && mvn clean && \
+    cd /opt/uni-registrar-java/uni-registrar-web && mvn clean install package -N -DskipTests
 
 # done
 

@@ -149,7 +149,7 @@ public class RegisterState {
 			return this.toJson();
 		} catch (JsonProcessingException ex) {
 
-			throw new RuntimeException(ex.getMessage(), ex);
+			return ex.getMessage();
 		}
 	}
 }

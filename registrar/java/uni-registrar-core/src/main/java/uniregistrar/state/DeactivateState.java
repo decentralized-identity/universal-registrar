@@ -33,7 +33,7 @@ public class DeactivateState {
 	private Map<String, Object> methodMetadata;
 
 	public DeactivateState() {
-		
+
 	}
 
 	public DeactivateState(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String state) {
@@ -149,7 +149,7 @@ public class DeactivateState {
 			return this.toJson();
 		} catch (JsonProcessingException ex) {
 
-			throw new RuntimeException(ex.getMessage(), ex);
+			return ex.getMessage();
 		}
 	}
 }

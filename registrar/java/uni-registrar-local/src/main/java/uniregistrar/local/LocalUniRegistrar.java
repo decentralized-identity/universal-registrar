@@ -64,6 +64,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 				JsonObject jsonObjectDriver = (JsonObject) jsonElementsDrivers.next();
 
+				String id = jsonObjectDriver.has("id") ? jsonObjectDriver.get("id").getAsString() : null;
 				String image = jsonObjectDriver.has("image") ? jsonObjectDriver.get("image").getAsString() : null;
 				String imagePort = jsonObjectDriver.has("imagePort") ? jsonObjectDriver.get("imagePort").getAsString() : null;
 				String imageProperties = jsonObjectDriver.has("imageProperties") ? jsonObjectDriver.get("imageProperties").getAsString() : null;
@@ -94,13 +95,16 @@ public class LocalUniRegistrar implements UniRegistrar {
 					}
 				}
 
-				String name = "driver";
-				if (image != null) name += "-" + image;
-				if (image == null || drivers.containsKey(name)) name += "-" + Integer.toString(i);
+				if (id == null) {
 
-				drivers.put(name, driver);
+					id = "driver";
+					if (image != null) id += "-" + image;
+					if (image == null || drivers.containsKey(id)) id += "-" + Integer.toString(i);
+				}
 
-				if (log.isInfoEnabled()) log.info("Added driver '" + name + "' at " + driver.getRegisterUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+				drivers.put(id, driver);
+
+				if (log.isInfoEnabled()) log.info("Added driver '" + id + "' at " + driver.getRegisterUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
 			}
 		}
 
