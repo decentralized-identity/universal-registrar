@@ -11,7 +11,6 @@ import java.util.concurrent.ExecutionException;
 import org.abstractj.kalium.NaCl;
 import org.abstractj.kalium.NaCl.Sodium;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.bitcoinj.core.Base58;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
@@ -31,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import com.github.jsonldjava.utils.JsonUtils;
 
 import did.Service;
+import io.leonard.Base58;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;

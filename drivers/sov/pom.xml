@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
@@ -24,15 +25,21 @@
 		<profile>
 
 			<id>default</id>
-			<activation><activeByDefault>true</activeByDefault></activation>
-			<properties><packaging.type>jar</packaging.type></properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<packaging.type>jar</packaging.type>
+			</properties>
 
 		</profile>
 
 		<profile>
 
 			<id>war</id>
-			<properties><packaging.type>war</packaging.type></properties>
+			<properties>
+				<packaging.type>war</packaging.type>
+			</properties>
 			<build>
 				<plugins>
 					<plugin>
@@ -114,21 +121,15 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20160810</version>
+			<groupId>io.leonard</groupId>
+			<artifactId>base58</artifactId>
+			<version>0.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.bitcoinj</groupId>
-			<artifactId>bitcoinj-core</artifactId>
-			<version>0.15.2</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-		    <groupId>org.abstractj.kalium</groupId>
-		    <artifactId>kalium</artifactId>
-		    <version>0.8.0</version>
+			<groupId>org.abstractj.kalium</groupId>
+			<artifactId>kalium</artifactId>
+			<version>0.8.0</version>
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
