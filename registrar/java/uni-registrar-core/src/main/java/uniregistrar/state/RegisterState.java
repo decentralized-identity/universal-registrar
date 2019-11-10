@@ -7,14 +7,17 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@JsonPropertyOrder({ "jobId", "didState", "registrarMetadata", "methodMetadata" })
+@JsonIgnoreProperties(ignoreUnknown=true)
 public class RegisterState {
 
 	public static final String MIME_TYPE = "application/json";
@@ -46,6 +49,11 @@ public class RegisterState {
 	 */
 
 	@JsonCreator
+	public static RegisterState build(@JsonProperty(value="jobId", required=true) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="registrarMetadata", required=true) Map<String, Object> registrarMetadata, @JsonProperty(value="methodMetadata", required=true) Map<String, Object> methodMetadata) {
+
+		return new RegisterState(jobId, didState, registrarMetadata, methodMetadata);
+	}
+
 	public static RegisterState build() {
 
 		return new RegisterState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), new HashMap<String, Object> ());
@@ -68,22 +76,6 @@ public class RegisterState {
 	public String toJson() throws JsonProcessingException {
 
 		return objectMapper.writeValueAsString(this);
-	}
-
-	/*
-	 * Static methods
-	 */
-
-	@JsonIgnore
-	public static String getState(RegisterState registerState) {
-
-		return (String) registerState.getDidState().get("state");
-	}
-
-	@JsonIgnore
-	public static void setState(RegisterState registerState, String state) {
-
-		registerState.getDidState().put("state", state);
 	}
 
 	/*

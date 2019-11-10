@@ -23,7 +23,7 @@ import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.DeactivateState;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RegisterStateFinished;
+import uniregistrar.state.SetRegisterStateFinished;
 import uniregistrar.state.UpdateState;
 
 public class DidV1Driver extends AbstractDriver implements Driver {
@@ -198,7 +198,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 		secret.put("privateKeys", jsonKeys);
 
 		RegisterState registerState = RegisterState.build();
-		RegisterStateFinished.setStateFinished(registerState, identifier, secret);
+		SetRegisterStateFinished.setStateFinished(registerState, identifier, secret);
 		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}

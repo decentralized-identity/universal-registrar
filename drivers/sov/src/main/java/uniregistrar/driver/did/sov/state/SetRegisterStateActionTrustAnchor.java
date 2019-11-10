@@ -1,47 +1,40 @@
 package uniregistrar.driver.did.sov.state;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RegisterStateAction;
+import uniregistrar.state.SetRegisterStateAction;
 
-public class RegisterStateActionTrustAnchor {
+public class SetRegisterStateActionTrustAnchor {
 
-	private RegisterStateActionTrustAnchor() {
+	private SetRegisterStateActionTrustAnchor() {
 
 	}
 
-	@JsonIgnore
 	public static boolean isStateActionTrustAnchor(RegisterState registerState) {
 
-		return "trustanchor".equals(RegisterStateAction.getStateAction(registerState));
+		return "trustanchor".equals(SetRegisterStateAction.getStateAction(registerState));
 	}
 
-	@JsonIgnore
 	public static String getStateActionTrustAnchorDid(RegisterState registerState) {
 
 		if (! isStateActionTrustAnchor(registerState)) return null;
 		return (String) registerState.getDidState().get("did");
 	}
 
-	@JsonIgnore
 	public static String getStateActionTrustAnchorVerkey(RegisterState registerState) {
 
 		if (! isStateActionTrustAnchor(registerState)) return null;
 		return (String) registerState.getDidState().get("verkey");
 	}
 
-	@JsonIgnore
 	public static String getStateActionTrustAnchorUrl(RegisterState registerState) {
 
 		if (! isStateActionTrustAnchor(registerState)) return null;
 		return (String) registerState.getDidState().get("url");
 	}
 
-	@JsonIgnore
 	public static void setStateActionTrustAnchor(RegisterState registerState, String did, String verkey, String url) {
 
-		RegisterStateAction.setStateAction(registerState, "trustanchor");
+		SetRegisterStateAction.setStateAction(registerState, "trustanchor");
 		registerState.getDidState().put("did", did);
 		registerState.getDidState().put("verkey", verkey);
 		registerState.getDidState().put("url", url);

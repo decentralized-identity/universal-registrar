@@ -1,30 +1,25 @@
 package uniregistrar.state;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+public class SetRegisterStateFailed {
 
-public class RegisterStateFailed {
-
-	private RegisterStateFailed() {
+	private SetRegisterStateFailed() {
 
 	}
 
-	@JsonIgnore
 	public static boolean isStateFailed(RegisterState registerState) {
 
-		return "failed".equals(RegisterState.getState(registerState));
+		return "failed".equals(SetRegisterState.getState(registerState));
 	}
 
-	@JsonIgnore
 	public static String getStateFailedReason(RegisterState registerState) {
 
 		if (! isStateFailed(registerState)) return null;
 		return (String) registerState.getDidState().get("reason");
 	}
 
-	@JsonIgnore
 	public static void setStateFailed(RegisterState registerState, String reason) {
 
-		RegisterState.setState(registerState, "failed");
+		SetRegisterState.setState(registerState, "failed");
 		registerState.getDidState().put("reason", reason);
 	}
 }

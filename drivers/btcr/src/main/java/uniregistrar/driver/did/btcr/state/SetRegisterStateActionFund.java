@@ -1,40 +1,34 @@
 package uniregistrar.driver.did.btcr.state;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RegisterStateAction;
+import uniregistrar.state.SetRegisterStateAction;
 
-public class RegisterStateActionFund {
+public class SetRegisterStateActionFund {
 
-	private RegisterStateActionFund() {
+	private SetRegisterStateActionFund() {
 
 	}
 
-	@JsonIgnore
 	public static boolean isStateActionFund(RegisterState registerState) {
 
-		return "fund".equals(RegisterStateAction.getStateAction(registerState));
+		return "fund".equals(SetRegisterStateAction.getStateAction(registerState));
 	}
 
-	@JsonIgnore
 	public static String getStateActionFundBitcoinAddress(RegisterState registerState) {
 
 		if (! isStateActionFund(registerState)) return null;
 		return (String) registerState.getDidState().get("bitcoinAddress");
 	}
 
-	@JsonIgnore
 	public static String getStateActionFundSatoshis(RegisterState registerState) {
 
 		if (! isStateActionFund(registerState)) return null;
 		return (String) registerState.getDidState().get("satoshis");
 	}
 
-	@JsonIgnore
 	public static void setStateActionFund(RegisterState registerState, String bitcoinAddress, String satoshis) {
 
-		RegisterStateAction.setStateAction(registerState, "fund");
+		SetRegisterStateAction.setStateAction(registerState, "fund");
 		registerState.getDidState().put("bitcoinAddress", bitcoinAddress);
 		registerState.getDidState().put("satoshis", satoshis);
 	}

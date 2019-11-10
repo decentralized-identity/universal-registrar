@@ -51,13 +51,13 @@ import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
-import uniregistrar.driver.did.btcr.state.RegisterStateWaitConfirm;
+import uniregistrar.driver.did.btcr.state.SetRegisterStateWaitConfirm;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.DeactivateState;
 import uniregistrar.state.RegisterState;
-import uniregistrar.state.RegisterStateFinished;
+import uniregistrar.state.SetRegisterStateFinished;
 import uniregistrar.state.UpdateState;
 
 public class DidBtcrDriver extends AbstractDriver implements Driver {
@@ -329,7 +329,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		RegisterState registerState = RegisterState.build();
-		RegisterStateWaitConfirm.setStateWaitConfirm(registerState);
+		SetRegisterStateWaitConfirm.setStateWaitConfirm(registerState);
 		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
@@ -376,7 +376,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			methodMetadata.put("transactionHash", transactionHash);
 
 			RegisterState registerState = RegisterState.build();
-			RegisterStateWaitConfirm.setStateWaitConfirm(registerState);
+			SetRegisterStateWaitConfirm.setStateWaitConfirm(registerState);
 			registerState.setMethodMetadata(methodMetadata);
 		}
 
@@ -416,7 +416,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		secret.put("privateKeyHex", privateKeyAsHex);
 
 		RegisterState registerState = RegisterState.build();
-		RegisterStateFinished.setStateFinished(registerState, identifier, secret);
+		SetRegisterStateFinished.setStateFinished(registerState, identifier, secret);
 		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
