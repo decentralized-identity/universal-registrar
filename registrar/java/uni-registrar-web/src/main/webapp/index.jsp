@@ -6,7 +6,7 @@
 <head>
 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Universal Resolver</title>
+<title>Universal Registrar</title>
 <link rel="stylesheet" target="_blank" href="style.css" TYPE="text/css" MEDIA="screen">
 <link rel="shortcut icon" href="favicon.ico" />
 
@@ -17,7 +17,7 @@
 
 <body>
 
-	<h1>Universal Resolver</h1>
+	<h1>Universal Registrar</h1>
 
 </body>
 </html>
