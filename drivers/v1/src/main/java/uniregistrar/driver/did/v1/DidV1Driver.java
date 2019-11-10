@@ -83,6 +83,12 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		// read options
 
+		String keytype = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("keytype");
+		if (keytype == null || keytype.trim().isEmpty()) keytype = null;
+
+		String ledger = registerRequest.getOptions() == null ? null : (String) registerRequest.getOptions().get("ledger");
+		if (ledger == null || ledger.trim().isEmpty()) ledger = null;
+
 		// register
 
 		int exitCode;
@@ -91,10 +97,19 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		try {
 
-			Process process = Runtime.getRuntime().exec("/opt/did-cli/./node_modules/.bin/did generate -r");
+			StringBuffer command = new StringBuffer("/opt/did-client/did generate");
+			if (keytype != null) command.append(" -t " + keytype);
+			if (ledger != null) command.append(" -m " + ledger);
+			command.append(" -r");
+
+			if (log.isDebugEnabled()) log.debug("Executing command: " + command);
+
+			Process process = Runtime.getRuntime().exec(command.toString());
 			exitCode = process.waitFor();
 			stdOutReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			stdErrReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+			if (log.isDebugEnabled()) log.debug("Executed command: " + command + " (" + exitCode + ")");
 		} catch (IOException | InterruptedException ex) {
 
 			throw new RegistrationException("Cannot generate DID: " + ex.getMessage(), ex);
