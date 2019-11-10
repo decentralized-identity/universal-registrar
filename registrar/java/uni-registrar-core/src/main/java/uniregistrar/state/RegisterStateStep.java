@@ -24,16 +24,17 @@ public class RegisterStateStep {
 	}
 
 	@JsonIgnore
-	public static String getFinishedSecret(RegisterState registerState) {
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getFinishedSecret(RegisterState registerState) {
 
 		if (! isStateFinished(registerState)) return null;
-		return (String) registerState.getDidState().get("secret");
+		return (Map<String, Object>) registerState.getDidState().get("secret");
 	}
 
 	@JsonIgnore
 	public static void setStateFinished(RegisterState registerState, String identifier, Map<String, Object> secret) {
 
-		registerState.getDidState().put("state", "finished");
+		RegisterState.setState(registerState, "finished");
 		registerState.getDidState().put("identifier", identifier);
 		registerState.getDidState().put("secret", secret);
 	}

@@ -5,6 +5,7 @@ import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -44,6 +45,7 @@ public class DeactivateState {
 	 * Factory methods
 	 */
 
+	@JsonCreator
 	public static DeactivateState build() {
 
 		return new DeactivateState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), new HashMap<String, Object> ());

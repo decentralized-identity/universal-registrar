@@ -24,10 +24,11 @@ public class RegisterStateFinished {
 	}
 
 	@JsonIgnore
-	public static String getStateFinishedSecret(RegisterState registerState) {
+	@SuppressWarnings("unchecked")
+	public static Map<String, Object> getStateFinishedSecret(RegisterState registerState) {
 
 		if (! isStateFinished(registerState)) return null;
-		return (String) registerState.getDidState().get("secret");
+		return (Map<String, Object>) registerState.getDidState().get("secret");
 	}
 
 	@JsonIgnore
