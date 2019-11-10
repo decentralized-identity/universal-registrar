@@ -8,9 +8,9 @@
 	<bean name="UniRegistrar" class="uniregistrar.local.LocalUniRegistrar">
 		<property name="drivers">
 			<util:map>
-				<entry key="did:btcr"><ref bean="DidBtcrDriver" /></entry>
-				<entry key="did:sov"><ref bean="DidSovDriver" /></entry>
-				<entry key="did:v1"><ref bean="DidV1Driver" /></entry>
+				<entry key="driver-did-btcr"><ref bean="DidBtcrDriver" /></entry>
+				<entry key="driver-did-sov"><ref bean="DidSovDriver" /></entry>
+				<entry key="driver-did-v1"><ref bean="DidV1Driver" /></entry>
 			</util:map>
 		</property>
 	</bean>
