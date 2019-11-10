@@ -76,18 +76,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 				if (url != null) {
 
-					driver.setRegisterUri(url + "1.0/identifiers");
-					driver.setUpdateUri(url + "1.0/identifiers");
-					driver.setDeactivateUri(url + "1.0/identifiers");
+					driver.setRegisterUri(url + "1.0/register");
+					driver.setUpdateUri(url + "1.0/update");
+					driver.setDeactivateUri(url + "1.0/deactivate");
 				} else {
 
 					String httpDriverUri = image.substring(image.indexOf("/") + 1);
 					if (httpDriverUri.contains(":")) httpDriverUri = httpDriverUri.substring(0, httpDriverUri.indexOf(":"));
 					httpDriverUri = "http://" + httpDriverUri + ":" + (imagePort != null ? imagePort : "8080" ) + "/";
 
-					driver.setRegisterUri(httpDriverUri + "1.0/identifiers");
-					driver.setUpdateUri(httpDriverUri + "1.0/identifiers");
-					driver.setDeactivateUri(httpDriverUri + "1.0/identifiers");
+					driver.setRegisterUri(httpDriverUri + "1.0/register");
+					driver.setUpdateUri(httpDriverUri + "1.0/update");
+					driver.setDeactivateUri(httpDriverUri + "1.0/deactivate");
 
 					if ("true".equals(imageProperties)) {
 
@@ -151,9 +151,13 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (log.isDebugEnabled()) log.debug("Attemping to register " + registerRequest + " with driver " + driver.getClass());
 
 			RegisterState driverRegisterState = driver.register(registerRequest);
-			registerState.setJobId(driverRegisterState.getJobId());
-			registerState.setDidState(driverRegisterState.getDidState());
-			registerState.setMethodMetadata(driverRegisterState.getMethodMetadata());
+
+			if (driverRegisterState != null) {
+
+				registerState.setJobId(driverRegisterState.getJobId());
+				registerState.setDidState(driverRegisterState.getDidState());
+				registerState.setMethodMetadata(driverRegisterState.getMethodMetadata());
+			}
 
 			registerState.getRegistrarMetadata().put("driverId", driverId);
 		}

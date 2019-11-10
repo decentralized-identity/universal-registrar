@@ -32,18 +32,12 @@ public class RegisterState {
 	@JsonProperty
 	private Map<String, Object> methodMetadata;
 
-	public RegisterState() {
-
-	}
-
-	public RegisterState(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String state) {
+	private RegisterState(String jobId, Map<String, Object> didState, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata) {
 
 		this.jobId = jobId;
-		this.didState = new HashMap<String, Object> ();
+		this.didState = didState;
 		this.registrarMetadata = registrarMetadata;
 		this.methodMetadata = methodMetadata;
-
-		this.setState(state);
 	}
 
 	/*
@@ -52,7 +46,7 @@ public class RegisterState {
 
 	public static RegisterState build() {
 
-		return new RegisterState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), null);
+		return new RegisterState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), new HashMap<String, Object> ());
 	}
 
 	/*
@@ -72,6 +66,22 @@ public class RegisterState {
 	public String toJson() throws JsonProcessingException {
 
 		return objectMapper.writeValueAsString(this);
+	}
+
+	/*
+	 * Static methods
+	 */
+
+	@JsonIgnore
+	public static String getState(RegisterState registerState) {
+
+		return (String) registerState.getDidState().get("state");
+	}
+
+	@JsonIgnore
+	public static void setState(RegisterState registerState, String state) {
+
+		registerState.getDidState().put("state", state);
 	}
 
 	/*
@@ -124,18 +134,6 @@ public class RegisterState {
 	public final void setMethodMetadata(Map<String, Object> methodMetadata) {
 
 		this.methodMetadata = methodMetadata;
-	}
-
-	@JsonIgnore
-	public final String getState() {
-
-		return this.getDidState() == null ? null : (String) this.getDidState().get("state");
-	}
-
-	@JsonIgnore
-	public final void setState(String state) {
-
-		if (this.getDidState() != null && state != null) this.getDidState().put("state", state);
 	}
 
 	/*

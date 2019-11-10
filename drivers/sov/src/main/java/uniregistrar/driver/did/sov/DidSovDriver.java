@@ -273,7 +273,9 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		secret.put("naclSecretKey", Base58.encode(naclSecretKey));
 		secret.put("naclDid", Base58.encode(naclDid));
 
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
+		RegisterState registerState = RegisterState.build();
+		RegisterStateFinished.setStateFinished(registerState, identifier, secret);
+		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
 

@@ -51,7 +51,7 @@ import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.did.btcr.diddoccontinuation.DIDDocContinuation;
 import uniregistrar.driver.did.btcr.diddoccontinuation.LocalFileDIDDocContinuation;
-import uniregistrar.driver.did.btcr.state.RegisterStateWaitDidBtcrConfirm;
+import uniregistrar.driver.did.btcr.state.RegisterStateWaitConfirm;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
@@ -328,7 +328,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		methodMetadata.put("changeAddress", "" + changeAddress);
 		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
-		RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
+		RegisterState registerState = RegisterState.build();
+		RegisterStateWaitConfirm.setStateWaitConfirm(registerState);
+		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
 
@@ -373,8 +375,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			methodMetadata.put("chain", chain);
 			methodMetadata.put("transactionHash", transactionHash);
 
-			RegisterState registerState = new RegisterStateWaitDidBtcrConfirm(jobId, null, methodMetadata);
-			return registerState;
+			RegisterState registerState = RegisterState.build();
+			RegisterStateWaitConfirm.setStateWaitConfirm(registerState);
+			registerState.setMethodMetadata(methodMetadata);
 		}
 
 		// store continuation DID Document
@@ -412,7 +415,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		secret.put("privateKeyWif", privateKeyAsWif);
 		secret.put("privateKeyHex", privateKeyAsHex);
 
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
+		RegisterState registerState = RegisterState.build();
+		RegisterStateFinished.setStateFinished(registerState, identifier, secret);
+		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
 

@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
@@ -30,8 +29,6 @@ import uniregistrar.state.UpdateState;
 public class DidV1Driver extends AbstractDriver implements Driver {
 
 	private static Logger log = LoggerFactory.getLogger(DidV1Driver.class);
-
-	private static final Gson gson = new Gson();
 
 	private Map<String, Object> properties;
 
@@ -185,7 +182,9 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeys", jsonKeys);
 
-		RegisterState registerState = new RegisterStateFinished(null, null, methodMetadata, identifier, secret);
+		RegisterState registerState = RegisterState.build();
+		RegisterStateFinished.setStateFinished(registerState, identifier, secret);
+		registerState.setMethodMetadata(methodMetadata);
 		return registerState;
 	}
 

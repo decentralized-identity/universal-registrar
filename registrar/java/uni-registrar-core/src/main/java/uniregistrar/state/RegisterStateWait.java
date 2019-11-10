@@ -1,44 +1,38 @@
 package uniregistrar.state;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RegisterStateWait extends RegisterState {
+public class RegisterStateWait {
 
-	public RegisterStateWait(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String wait, String waitTime) {
+	private RegisterStateWait() {
 
-		super(jobId, registrarMetadata, methodMetadata, "wait");
-
-		this.setWait(wait);
-		this.setWaitTime(waitTime);
-	}
-
-	/*
-	 * Getters and setters
-	 */
-
-	@JsonIgnore
-	public final String getWait() {
-
-		return this.getDidState() == null ? null : (String) this.getDidState().get("wait");
 	}
 
 	@JsonIgnore
-	public final void setWait(String wait) {
+	public static boolean isStateWait(RegisterState registerState) {
 
-		if (this.getDidState() != null && wait != null) this.getDidState().put("wait", wait);
+		return "wait".equals(RegisterState.getState(registerState));
 	}
 
 	@JsonIgnore
-	public final String getWaitTime() {
+	public static String getStateWait(RegisterState registerState) {
 
-		return this.getDidState() == null ? null : (String) this.getDidState().get("waitTime");
+		if (! isStateWait(registerState)) return null;
+		return (String) registerState.getDidState().get("wait");
 	}
 
 	@JsonIgnore
-	public final void setWaitTime(String waitTime) {
+	public static String getStateWaittime(RegisterState registerState) {
 
-		if (this.getDidState() != null && waitTime != null) this.getDidState().put("waitTime", waitTime);
+		if (! isStateWait(registerState)) return null;
+		return (String) registerState.getDidState().get("waittime");
+	}
+
+	@JsonIgnore
+	public static void setStateWait(RegisterState registerState, String wait, String waittime) {
+
+		RegisterState.setState(registerState, "wait");
+		registerState.getDidState().put("wait", wait);
+		registerState.getDidState().put("waittime", waittime);
 	}
 }

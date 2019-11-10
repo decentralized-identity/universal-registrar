@@ -1,31 +1,30 @@
 package uniregistrar.state;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RegisterStateFailed extends RegisterState {
+public class RegisterStateFailed {
 
-	public RegisterStateFailed(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String reason) {
+	private RegisterStateFailed() {
 
-		super(jobId, registrarMetadata, methodMetadata, "failed");
-
-		this.setReason(reason);
-	}
-
-	/*
-	 * Getters and setters
-	 */
-
-	@JsonIgnore
-	public final String getReason() {
-
-		return this.getDidState() == null ? null : (String) this.getDidState().get("reason");
 	}
 
 	@JsonIgnore
-	public final void setReason(String reason) {
+	public static boolean isStateFailed(RegisterState registerState) {
 
-		if (this.getDidState() != null && reason != null) this.getDidState().put("reason", reason);
+		return "failed".equals(RegisterState.getState(registerState));
+	}
+
+	@JsonIgnore
+	public static String getStateFailedReason(RegisterState registerState) {
+
+		if (! isStateFailed(registerState)) return null;
+		return (String) registerState.getDidState().get("reason");
+	}
+
+	@JsonIgnore
+	public static void setStateFailed(RegisterState registerState, String reason) {
+
+		RegisterState.setState(registerState, "failed");
+		registerState.getDidState().put("reason", reason);
 	}
 }

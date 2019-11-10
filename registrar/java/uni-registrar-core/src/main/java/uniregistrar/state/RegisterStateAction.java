@@ -1,31 +1,30 @@
 package uniregistrar.state;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RegisterStateAction extends RegisterState {
+public class RegisterStateAction {
 
-	public RegisterStateAction(String jobId, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata, String action) {
+	private RegisterStateAction() {
 
-		super(jobId, registrarMetadata, methodMetadata, "action");
-
-		this.setAction(action);
-	}
-
-	/*
-	 * Getters and setters
-	 */
-
-	@JsonIgnore
-	public final String getAction() {
-
-		return this.getDidState() == null ? null : (String) this.getDidState().get("action");
 	}
 
 	@JsonIgnore
-	public final void setAction(String action) {
+	public static boolean isStateAction(RegisterState registerState) {
 
-		if (this.getDidState() != null && action != null) this.getDidState().put("action", action);
+		return "action".equals(RegisterState.getState(registerState));
+	}
+
+	@JsonIgnore
+	public static String getStateAction(RegisterState registerState) {
+
+		if (! isStateAction(registerState)) return null;
+		return (String) registerState.getDidState().get("action");
+	}
+
+	@JsonIgnore
+	public static void setStateAction(RegisterState registerState, String action) {
+
+		RegisterState.setState(registerState, "action");
+		registerState.getDidState().put("action", action);
 	}
 }

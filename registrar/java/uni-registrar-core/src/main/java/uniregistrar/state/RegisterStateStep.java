@@ -4,27 +4,27 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-public class RegisterStateFinished {
+public class RegisterStateStep {
 
-	private RegisterStateFinished() {
+	private RegisterStateStep() {
 
 	}
 
 	@JsonIgnore
 	public static boolean isStateFinished(RegisterState registerState) {
 
-		return "finished".equals(RegisterState.getState(registerState));
+		return "finished".equals((String) registerState.getDidState().get("state"));
 	}
 
 	@JsonIgnore
-	public static String getStateFinishedIdentifier(RegisterState registerState) {
+	public static String getFinishedIdentifier(RegisterState registerState) {
 
 		if (! isStateFinished(registerState)) return null;
 		return (String) registerState.getDidState().get("identifier");
 	}
 
 	@JsonIgnore
-	public static String getStateFinishedSecret(RegisterState registerState) {
+	public static String getFinishedSecret(RegisterState registerState) {
 
 		if (! isStateFinished(registerState)) return null;
 		return (String) registerState.getDidState().get("secret");
@@ -33,8 +33,9 @@ public class RegisterStateFinished {
 	@JsonIgnore
 	public static void setStateFinished(RegisterState registerState, String identifier, Map<String, Object> secret) {
 
-		RegisterState.setState(registerState, "finished");
+		registerState.getDidState().put("state", "finished");
 		registerState.getDidState().put("identifier", identifier);
 		registerState.getDidState().put("secret", secret);
 	}
+
 }
