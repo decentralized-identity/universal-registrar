@@ -9,12 +9,14 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.apache.cxf.rs.security.jose.jwk.JsonWebKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.util.Base64URL;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
@@ -194,15 +196,16 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		// REGISTRATION STATE FINISHED: SECRET
 
-		JsonWebKey jsonWebKey = new JsonWebKey()
-				.setKeyProperty(JsonWebKey.KEY_TYPE, "OKP")
-				.setKeyProperty(JsonWebKey.EC_CURVE, "Ed25519")
-				.setKeyProperty(JsonWebKey.EC_X_COORDINATE, "x")
-				.setKeyProperty(JsonWebKey.EC_PRIVATE_KEY, "d");
+		Base64URL xParameter = Base64URL.encode("x");
+		Base64URL dParameter = Base64URL.encode("d");
+
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
+				.d(dParameter)
+				.build();
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeys", jsonKeys);
-		secret.put("jwk", jsonWebKey.asMap());
+		secret.put("jwk", jsonWebKey);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 

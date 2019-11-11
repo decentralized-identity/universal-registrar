@@ -101,12 +101,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-rs-security-jose</artifactId>
-			<version>3.3.4</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>info.weboftrust</groupId>
 			<artifactId>btc-tx-lookup-java</artifactId>
 			<version>0.1-SNAPSHOT</version>
@@ -116,6 +110,12 @@
 			<groupId>org.bitcoinj</groupId>
 			<artifactId>bitcoinj-core</artifactId>
 			<version>0.15.2</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.nimbusds</groupId>
+			<artifactId>nimbus-jose-jwt</artifactId>
+			<version>8.2.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>

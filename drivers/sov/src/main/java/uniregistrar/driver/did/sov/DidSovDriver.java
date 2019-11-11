@@ -10,10 +10,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.abstractj.kalium.NaCl;
 import org.abstractj.kalium.NaCl.Sodium;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
-import org.apache.cxf.rs.security.jose.jwk.JsonWebKey;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
 import org.hyperledger.indy.sdk.did.Did;
@@ -31,6 +29,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.jsonldjava.utils.JsonUtils;
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.util.Base64URL;
 
 import did.Service;
 import io.leonard.Base58;
@@ -260,12 +261,14 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 
 		// REGISTRATION STATE FINISHED: SECRET
 
-		byte[] publicKeyBytes = new byte[Sodium.CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
-		byte[] secretKeyBytes = new byte[Sodium.CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
-		NaCl.sodium().crypto_sign_ed25519_seed_keypair(publicKeyBytes, secretKeyBytes, newSeed.getBytes());
+		byte[] publicKeyBytesBuffer = new byte[Sodium.CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
+		byte[] secretKeyBytesBuffer = new byte[Sodium.CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
+		NaCl.sodium().crypto_sign_ed25519_seed_keypair(publicKeyBytesBuffer, secretKeyBytesBuffer, newSeed.getBytes());
+		byte[] publicKeyBytes = publicKeyBytesBuffer;
+		byte[] secretKeyBytes = Arrays.copyOf(secretKeyBytesBuffer, 32);
 		byte[] didBytes = Arrays.copyOf(publicKeyBytes, 16);
-		String publicKeyBase64url = Base64.encodeBase64URLSafeString(publicKeyBytes);
-		String secretKeyBase64url = Base64.encodeBase64URLSafeString(secretKeyBytes);
+		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
+		Base64URL dParameter = Base64URL.encode(secretKeyBytes);
 		String publicKeyHex = Hex.encodeHexString(publicKeyBytes);
 		String secretKeyHex = Hex.encodeHexString(secretKeyBytes);
 		String did = Base58.encode(didBytes);
@@ -275,17 +278,15 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 			throw new RegistrationException("Generated DID does not match registered DID: " + did + " != " + newDid);
 		}
 
-		JsonWebKey jsonWebKey = new JsonWebKey()
-				.setKeyProperty(JsonWebKey.KEY_TYPE, "OKP")
-				.setKeyProperty(JsonWebKey.EC_CURVE, "Ed25519")
-				.setKeyProperty(JsonWebKey.EC_X_COORDINATE, publicKeyBase64url)
-				.setKeyProperty(JsonWebKey.EC_PRIVATE_KEY, secretKeyBase64url);
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
+				.d(dParameter)
+				.build();
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("seed", newSeed);
 		secret.put("publicKeyHex", publicKeyHex);
 		secret.put("secretKeyHex", secretKeyHex);
-		secret.put("jwk", jsonWebKey.asMap());
+		secret.put("jwk", jsonWebKey.toJSONObject());
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 

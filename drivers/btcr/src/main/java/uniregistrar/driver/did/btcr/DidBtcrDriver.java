@@ -9,9 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.cxf.rs.security.jose.jwk.JsonWebKey;
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.Context;
@@ -38,6 +35,10 @@ import org.bitcoinj.wallet.SendRequest;
 import org.bouncycastle.math.ec.ECPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.nimbusds.jose.jwk.Curve;
+import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.util.Base64URL;
 
 import did.Authentication;
 import did.DIDDocument;
@@ -418,22 +419,21 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		ECKey ecKey = ECKey.fromPrivateAndPrecalculatedPublic(privateKeyBytes, publicKeyBytes);
 		ECPoint publicKeyPoint = ecKey.getPubKeyPoint();
-		String privateKeyBase64url = Base64.encodeBase64URLSafeString(privateKeyBytes);
-		String publicKeyHex = Hex.encodeHexString(publicKeyBytes);
-		String privateKeyHex = Hex.encodeHexString(privateKeyBytes);
+		Base64URL xParameter = Base64URL.encode(publicKeyPoint.getAffineXCoord().getEncoded());
+		Base64URL yParameter = Base64URL.encode(publicKeyPoint.getAffineYCoord().getEncoded());
+		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+		String publicKeyHex = ecKey.getPublicKeyAsHex();
+		String privateKeyHex = ecKey.getPrivateKeyAsHex();
 
-		JsonWebKey jsonWebKey = new JsonWebKey()
-				.setKeyProperty(JsonWebKey.KEY_TYPE, JsonWebKey.KEY_TYPE_ELLIPTIC)
-				.setKeyProperty(JsonWebKey.EC_CURVE, "P-256K")
-				.setKeyProperty(JsonWebKey.EC_X_COORDINATE, publicKeyPoint.getXCoord().toBigInteger())
-				.setKeyProperty(JsonWebKey.EC_Y_COORDINATE, publicKeyPoint.getYCoord().toBigInteger())
-				.setKeyProperty(JsonWebKey.EC_PRIVATE_KEY, privateKeyBase64url);
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.ECKey.Builder(Curve.P_256K, xParameter, yParameter)
+				.d(dParameter)
+				.build();
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("publicKeyHex", publicKeyHex);
 		secret.put("privateKeyHex", privateKeyHex);
 		secret.put("privateKeyWif", privateKeyAsWif);
-		secret.put("jwk", jsonWebKey.asMap());
+		secret.put("jwk", jsonWebKey);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 

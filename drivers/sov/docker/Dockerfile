@@ -6,7 +6,7 @@ MAINTAINER Markus Sabadello <markus@danubetech.com>
 # build dependencies
 
 RUN apt-get -y update && \
-    apt-get install -y --no-install-recommends software-properties-common gnupg && \
+    apt-get install -y --no-install-recommends software-properties-common gnupg libsodium23 && \
     apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68DB5E88 && \
     add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial stable" && \
     apt-get install -y libindy=1.12.0 && \
