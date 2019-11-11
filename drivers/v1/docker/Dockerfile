@@ -25,6 +25,7 @@ RUN cd /opt/ && \
 # build driver-did-v1
 
 ADD . /opt/driver-did-v1
+
 RUN cd /opt/driver-did-v1 && mvn clean install package -N -DskipTests
 
 # variables
