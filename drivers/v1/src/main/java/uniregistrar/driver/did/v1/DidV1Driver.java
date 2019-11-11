@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.apache.cxf.rs.security.jose.jwk.JsonWebKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -187,19 +188,33 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 			}
 		}
 
-		// REGISTRATION STATE: finished
+		// REGISTRATION STATE FINISHED: IDENTIFIER
+
+		String identifier = newDid;
+
+		// REGISTRATION STATE FINISHED: SECRET
+
+		JsonWebKey jsonWebKey = new JsonWebKey()
+				.setKeyProperty(JsonWebKey.KEY_TYPE, "OKP")
+				.setKeyProperty(JsonWebKey.EC_CURVE, "Ed25519")
+				.setKeyProperty(JsonWebKey.EC_X_COORDINATE, "x")
+				.setKeyProperty(JsonWebKey.EC_PRIVATE_KEY, "d");
+
+		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
+		secret.put("privateKeys", jsonKeys);
+		secret.put("jwk", jsonWebKey.asMap());
+
+		// REGISTRATION STATE FINISHED: METHOD METADATA
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("didDocumentLocation", didDocumentLocation);
 
-		String identifier = newDid;
-
-		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("privateKeys", jsonKeys);
+		// done
 
 		RegisterState registerState = RegisterState.build();
 		SetRegisterStateFinished.setStateFinished(registerState, identifier, secret);
 		registerState.setMethodMetadata(methodMetadata);
+
 		return registerState;
 	}
 

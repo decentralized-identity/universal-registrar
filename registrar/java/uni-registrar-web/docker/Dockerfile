@@ -30,4 +30,4 @@ RUN cd /opt/uni-registrar-java && mvn clean install -N -DskipTests && mvn clean 
 EXPOSE 9080
 
 RUN chmod a+rx /opt/uni-registrar-java/uni-registrar-web/docker/run-uni-registrar-web.sh
-CMD "/opt/uni-registrar-java/docker/run-uni-registrar-web.sh"
+CMD "/opt/uni-registrar-java/uni-registrar-web/docker/run-uni-registrar-web.sh"
