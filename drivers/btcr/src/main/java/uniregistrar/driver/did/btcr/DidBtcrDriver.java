@@ -391,7 +391,10 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 			RegisterState registerState = RegisterState.build();
 			SetRegisterStateWaitConfirm.setStateWaitConfirm(registerState);
+			registerState.setJobId(jobId);
 			registerState.setMethodMetadata(methodMetadata);
+
+			return registerState;
 		}
 
 		// store continuation DID Document
@@ -433,7 +436,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		secret.put("publicKeyHex", publicKeyHex);
 		secret.put("privateKeyHex", privateKeyHex);
 		secret.put("privateKeyWif", privateKeyAsWif);
-		secret.put("jwk", jsonWebKey);
+		secret.put("jwk", jsonWebKey.toJSONObject());
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 

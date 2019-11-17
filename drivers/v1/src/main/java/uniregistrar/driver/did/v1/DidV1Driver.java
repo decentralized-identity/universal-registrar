@@ -205,7 +205,7 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("privateKeys", jsonKeys);
-		secret.put("jwk", jsonWebKey);
+		secret.put("jwk", jsonWebKey.toJSONObject());
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
