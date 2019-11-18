@@ -2,15 +2,16 @@ package uniregistrar.driver.did.sov;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import org.abstractj.kalium.NaCl;
 import org.abstractj.kalium.NaCl.Sodium;
-import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.hyperledger.indy.sdk.IndyException;
 import org.hyperledger.indy.sdk.LibIndy;
@@ -31,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import com.github.jsonldjava.utils.JsonUtils;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 
 import did.Service;
@@ -262,31 +264,28 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		// REGISTRATION STATE FINISHED: SECRET
 
 		byte[] publicKeyBytesBuffer = new byte[Sodium.CRYPTO_SIGN_ED25519_PUBLICKEYBYTES];
-		byte[] secretKeyBytesBuffer = new byte[Sodium.CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
-		NaCl.sodium().crypto_sign_ed25519_seed_keypair(publicKeyBytesBuffer, secretKeyBytesBuffer, newSeed.getBytes());
+		byte[] privateKeyBytesBuffer = new byte[Sodium.CRYPTO_SIGN_ED25519_SECRETKEYBYTES];
+		NaCl.sodium().crypto_sign_ed25519_seed_keypair(publicKeyBytesBuffer, privateKeyBytesBuffer, newSeed.getBytes());
 		byte[] publicKeyBytes = publicKeyBytesBuffer;
-		byte[] secretKeyBytes = Arrays.copyOf(secretKeyBytesBuffer, 32);
+		byte[] privateKeyBytes = Arrays.copyOf(privateKeyBytesBuffer, 32);
 		byte[] didBytes = Arrays.copyOf(publicKeyBytes, 16);
-		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
-		Base64URL dParameter = Base64URL.encode(secretKeyBytes);
-		String publicKeyHex = Hex.encodeHexString(publicKeyBytes);
-		String secretKeyHex = Hex.encodeHexString(secretKeyBytes);
+		String publicKeyBase58 = Base58.encode(publicKeyBytes);
+		String privateKeyBase58 = Base58.encode(privateKeyBytes);
 		String did = Base58.encode(didBytes);
 
-		if (! did.equals(newDid)) {
+		if (! did.equals(newDid)) throw new RegistrationException("Generated DID does not match registered DID: " + did + " != " + newDid);
 
-			throw new RegistrationException("Generated DID does not match registered DID: " + did + " != " + newDid);
-		}
-
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
-				.d(dParameter)
-				.build();
+		List<Map<String, Object>> keys = new ArrayList<Map<String, Object>> ();
+		Map<String, Object> jsonKey = new HashMap<String, Object> ();
+		JWK jsonWebKey = privateKeyToJWK(publicKeyBytes, privateKeyBytes, identifier);
+		jsonKey.put("publicKeyBase58", publicKeyBase58);
+		jsonKey.put("privateKeyBase58", privateKeyBase58);
+		jsonKey.put("privateKeyJwk", jsonWebKey.toJSONObject());
+		keys.add(jsonKey);
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("seed", newSeed);
-		secret.put("publicKeyHex", publicKeyHex);
-		secret.put("secretKeyHex", secretKeyHex);
-		secret.put("jwk", jsonWebKey.toJSONObject());
+		secret.put("keys", keys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
@@ -496,6 +495,32 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		}
 
 		if (log.isInfoEnabled()) log.info("Opened " + this.poolMap.size() + " pools: " + this.poolMap.keySet());
+	}
+
+	/*
+	 * Helper methods
+	 */
+
+	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String url, String purpose) {
+
+		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
+		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
+				.d(dParameter)
+				.keyID(url)
+				.keyUse(purpose == null ? null : new KeyUse(purpose))
+				.build();
+
+		return jsonWebKey;
+	}
+
+	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String identifier) {
+
+		String url = identifier + "#keys-1";
+		String purpose = null;
+
+		return privateKeyToJWK(publicKeyBytes, privateKeyBytes, url, purpose);
 	}
 
 	/*

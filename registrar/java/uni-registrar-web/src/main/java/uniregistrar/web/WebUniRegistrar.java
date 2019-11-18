@@ -1,6 +1,7 @@
 package uniregistrar.web;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
 
@@ -13,11 +14,11 @@ import org.springframework.web.HttpRequestHandler;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
-import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.DeactivateRequest;
+import uniregistrar.request.RegisterRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.RegisterState;
 import uniregistrar.state.DeactivateState;
+import uniregistrar.state.RegisterState;
 import uniregistrar.state.UpdateState;
 
 public abstract class WebUniRegistrar extends HttpServlet implements HttpRequestHandler, UniRegistrar {
@@ -77,7 +78,7 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	 * Helper methods
 	 */
 
-	protected static void sendResponse(HttpServletResponse response, int status, String contentType, String body) throws IOException {
+	protected static void sendResponse(HttpServletResponse response, int status, String contentType, Object body) throws IOException {
 
 		response.setStatus(status);
 
@@ -85,12 +86,24 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 
 		response.setHeader("Access-Control-Allow-Origin", "*");
 
-		if (body != null) {
+		if (body instanceof String) {
 
-			PrintWriter writer = response.getWriter();
-			writer.write(body);
-			writer.flush();
-			writer.close();
+			PrintWriter printWriter = response.getWriter();
+			printWriter.write((String) body);
+			printWriter.flush();
+			printWriter.close();
+		} else if (body instanceof byte[]) {
+
+			OutputStream outputStream = response.getOutputStream();
+			outputStream.write((byte[]) body);
+			outputStream.flush();
+			outputStream.close();
+		} else {
+
+			PrintWriter printWriter = response.getWriter();
+			printWriter.write(body.toString());
+			printWriter.flush();
+			printWriter.close();
 		}
 	}
 

@@ -5,8 +5,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,10 +17,14 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 
+import io.leonard.Base58;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.AbstractDriver;
 import uniregistrar.driver.Driver;
@@ -196,16 +203,17 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		// REGISTRATION STATE FINISHED: SECRET
 
-		Base64URL xParameter = Base64URL.encode("x");
-		Base64URL dParameter = Base64URL.encode("d");
+		List<JsonNode> keys = new ArrayList<JsonNode> ();
+		for (Iterator<Map.Entry<String, JsonNode>> i = jsonKeys.fields(); i.hasNext(); ) {
 
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
-				.d(dParameter)
-				.build();
+			ObjectNode jsonKey = (ObjectNode) i.next().getValue();
+			JWK jsonWebKey = privateKeyToJWK(jsonKey);
+			jsonKey.putPOJO("privateKeyJwk", jsonWebKey.toJSONObject());
+			keys.add(jsonKey);
+		}
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("privateKeys", jsonKeys);
-		secret.put("jwk", jsonWebKey.toJSONObject());
+		secret.put("keys", keys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
@@ -242,6 +250,30 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 	/*
 	 * Helper methods
 	 */
+
+	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String url, String purpose) {
+
+		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
+		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
+				.d(dParameter)
+				.keyID(url)
+				.keyUse(purpose == null ? null : new KeyUse(purpose))
+				.build();
+
+		return jsonWebKey;
+	}
+
+	private static JWK privateKeyToJWK(ObjectNode jsonKey) {
+
+		byte[] publicKeyBytes = Base58.decode(((TextNode) jsonKey.get("publicKeyBase58")).asText());
+		byte[] privateKeyBytes = Base58.decode(((TextNode) jsonKey.get("privateKeyBase58")).asText());
+		String url = ((TextNode) jsonKey.get("id")).asText();
+		String purpose = null;
+
+		return privateKeyToJWK(publicKeyBytes, privateKeyBytes, url, purpose);
+	}
 
 	/*
 	 * Getters and setters

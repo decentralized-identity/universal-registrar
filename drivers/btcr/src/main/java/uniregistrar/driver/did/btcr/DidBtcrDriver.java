@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,6 +39,7 @@ import org.slf4j.LoggerFactory;
 
 import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
+import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.util.Base64URL;
 
 import did.Authentication;
@@ -231,9 +233,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// find wallet app kit
 
-		WalletAppKit walletAppKit = null;
-		if ("MAINNET".equals(chain)) walletAppKit = this.getWalletAppKitMainnet();
-		if ("TESTNET".equals(chain)) walletAppKit = this.getWalletAppKitTestnet();
+		WalletAppKit walletAppKit = this.chainToWalletAppKit(chain);
 		if (walletAppKit == null) throw new RegistrationException("Unknown network: " + chain);
 
 		Context.propagate(new Context(walletAppKit.params()));
@@ -310,38 +310,37 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 
 		// determine private key
 
-		byte[] publicKeyBytes = null;
-		byte[] privateKeyBytes = null;
-		String privateKeyAsWif = null;
+		ECKey privateKey = null;
 
 		KeyBag decryptingKeyBag = new DecryptingKeyBag(walletAppKit.wallet(), sendRequest.aesKey);
 		for (TransactionInput input : transaction.getInputs()) {
 
 			RedeemData redeemData = input.getConnectedRedeemData(decryptingKeyBag);
-			publicKeyBytes = redeemData.keys.get(0).getPubKey();
-			privateKeyBytes = redeemData.keys.get(0).getPrivKeyBytes();
-			privateKeyAsWif = redeemData.keys.get(0).getPrivateKeyAsWiF(walletAppKit.params());
+			privateKey = redeemData.keys.get(0);
 		}
 
 		// REGISTER STATE WAIT: JOBID
 
-		DidBtcrJob job = new DidBtcrJob(chain, transactionHash, didContinuationUri, publicKeyBytes, privateKeyBytes, privateKeyAsWif, registerRequest.getAddServices(), registerRequest.getAddPublicKeys(), registerRequest.getAddAuthentications());
-		jobId = this.newJob(job);
+		DidBtcrJob job = new DidBtcrJob(chain, transactionHash, didContinuationUri, privateKey, registerRequest.getAddServices(), registerRequest.getAddPublicKeys(), registerRequest.getAddAuthentications());
+		String newjobId = this.newJob(job);
 
 		// REGISTER STATE WAIT: METHOD METADATA
+
+		String publicKeyHex = privateKey.getPublicKeyAsHex();
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
 		methodMetadata.put("transactionHash", transactionHash);
 		methodMetadata.put("balance", Double.valueOf(balance));
 		methodMetadata.put("changeAddress", "" + changeAddress);
+		methodMetadata.put("publicKeyHex", "" + publicKeyHex);
 		methodMetadata.put("didContinuationUri", "" + didContinuationUri);
 
 		// done
 
 		RegisterState registerState = RegisterState.build();
 		SetRegisterStateWaitConfirm.setStateWaitConfirm(registerState);
-		registerState.setJobId(jobId);
+		registerState.setJobId(newjobId);
 		registerState.setMethodMetadata(methodMetadata);
 
 		return registerState;
@@ -354,9 +353,7 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		String chain = job.getChain();
 		String transactionHash = job.getTransactionHash();
 		URI didContinuationUri = job.getDidContinuationUri();
-		byte[] publicKeyBytes = job.getPublicKeyBytes();
-		byte[] privateKeyBytes = job.getPrivateKeyBytes();
-		String privateKeyAsWif = job.getPrivateKeyAsWif();
+		ECKey privateKey = job.getPrivateKey();
 		List<Service> addServices = job.getAddServices();
 		List<PublicKey> addPublicKeys = job.getAddPublicKeys();
 		List<Authentication> addAuthentications = job.getAddAuthentications();
@@ -414,33 +411,33 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			}
 		}
 
+		// job is finished now
+
+		this.finishJob(jobId);
+
 		// REGISTRATION STATE FINISHED: IDENTIFIER
 
 		String identifier = did;
 
 		// REGISTRATION STATE FINISHED: SECRET
 
-		ECKey ecKey = ECKey.fromPrivateAndPrecalculatedPublic(privateKeyBytes, publicKeyBytes);
-		ECPoint publicKeyPoint = ecKey.getPubKeyPoint();
-		Base64URL xParameter = Base64URL.encode(publicKeyPoint.getAffineXCoord().getEncoded());
-		Base64URL yParameter = Base64URL.encode(publicKeyPoint.getAffineYCoord().getEncoded());
-		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
-		String publicKeyHex = ecKey.getPublicKeyAsHex();
-		String privateKeyHex = ecKey.getPrivateKeyAsHex();
+		String publicKeyHex = privateKey.getPublicKeyAsHex();
+		String privateKeyHex = privateKey.getPrivateKeyAsHex();
+		String privateKeyWif = privateKey.getPrivateKeyAsWiF(chainToNetworkParameters(chain));
 
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.ECKey.Builder(Curve.P_256K, xParameter, yParameter)
-				.d(dParameter)
-				.build();
+		List<Map<String, Object>> keys = new ArrayList<Map<String, Object>> ();
+		Map<String, Object> jsonKey = new HashMap<String, Object> ();
+		JWK jsonWebKey = privateKeyToJWK(privateKey, identifier);
+		jsonKey.put("publicKeyHex", publicKeyHex);
+		jsonKey.put("privateKeyHex", privateKeyHex);
+		jsonKey.put("privateKeyWif", privateKeyWif);
+		jsonKey.put("privateKeyJwk", jsonWebKey.toJSONObject());
+		keys.add(jsonKey);
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("publicKeyHex", publicKeyHex);
-		secret.put("privateKeyHex", privateKeyHex);
-		secret.put("privateKeyWif", privateKeyAsWif);
-		secret.put("jwk", jsonWebKey.toJSONObject());
+		secret.put("keys", keys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
-
-		this.finishJob(jobId);
 
 		Map<String, Object> methodMetadata = new LinkedHashMap<String, Object> ();
 		methodMetadata.put("chain", chain);
@@ -539,6 +536,47 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	 * Helper methods
 	 */
 
+	private static JWK privateKeyToJWK(ECKey privateKey, String url, String purpose) {
+
+		ECPoint publicKeyPoint = privateKey.getPubKeyPoint();
+		byte[] privateKeyBytes = privateKey.getPrivKeyBytes();
+		Base64URL xParameter = Base64URL.encode(publicKeyPoint.getAffineXCoord().getEncoded());
+		Base64URL yParameter = Base64URL.encode(publicKeyPoint.getAffineYCoord().getEncoded());
+		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+
+		JWK jsonWebKey = new com.nimbusds.jose.jwk.ECKey.Builder(Curve.P_256K, xParameter, yParameter)
+				.d(dParameter)
+				.keyID(url)
+				.keyUse(purpose == null ? null : new KeyUse(purpose))
+				.build();
+
+		return jsonWebKey;
+	}
+
+	private static JWK privateKeyToJWK(ECKey privateKey, String identifier) {
+
+		String url = identifier + "#key-0";
+		String purpose = null;
+
+		return privateKeyToJWK(privateKey, url, purpose);
+	}
+
+	private static NetworkParameters chainToNetworkParameters(String chain) {
+
+		if ("MAINNET".equals(chain)) return MainNetParams.get();
+		if ("TESTNET".equals(chain)) return TestNet3Params.get();
+
+		return null;
+	}
+
+	private WalletAppKit chainToWalletAppKit(String chain) {
+
+		if ("MAINNET".equals(chain)) return this.getWalletAppKitMainnet();
+		if ("TESTNET".equals(chain)) return this.getWalletAppKitTestnet();
+
+		return null;
+	}
+
 	private static String stripTxref(String txref) {
 
 		return txref.substring(txref.indexOf(":") + 1);
@@ -553,21 +591,17 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		private String chain;
 		private String transactionHash;
 		private URI didContinuationUri;
-		private byte[] publicKeyBytes;
-		private byte[] privateKeyBytes;
-		private String privateKeyAsWif;
+		private ECKey privateKey;
 		private List<Service> addServices;
 		private List<PublicKey> addPublicKeys;
 		private List<Authentication> addAuthentications;
 
-		private DidBtcrJob(String chain, String transactionHash, URI didContinuationUri, byte[] publicKeyBytes, byte[] privateKeyBytes, String privateKeyAsWif, List<Service> addServices, List<PublicKey> addPublicKeys, List<Authentication> addAuthentications) {
+		private DidBtcrJob(String chain, String transactionHash, URI didContinuationUri, ECKey privateKey, List<Service> addServices, List<PublicKey> addPublicKeys, List<Authentication> addAuthentications) {
 
 			this.chain = chain;
 			this.transactionHash = transactionHash;
 			this.didContinuationUri = didContinuationUri;
-			this.publicKeyBytes = publicKeyBytes;
-			this.privateKeyBytes = privateKeyBytes;
-			this.privateKeyAsWif = privateKeyAsWif;
+			this.privateKey = privateKey;
 			this.addServices = addServices;
 			this.addPublicKeys = addPublicKeys;
 			this.addAuthentications = addAuthentications;
@@ -588,19 +622,9 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 			return this.didContinuationUri;
 		}
 
-		private byte[] getPublicKeyBytes() {
+		private ECKey getPrivateKey() {
 
-			return this.publicKeyBytes;
-		}
-
-		private byte[] getPrivateKeyBytes() {
-
-			return this.privateKeyBytes;
-		}
-
-		private String getPrivateKeyAsWif() {
-
-			return this.privateKeyAsWif;
+			return this.privateKey;
 		}
 
 		private List<Service> getAddServices() {
