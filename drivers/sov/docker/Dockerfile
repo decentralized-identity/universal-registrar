@@ -28,7 +28,7 @@ ENV uniregistrar_driver_did_sov_trustAnchorSeed=
 
 # done
 
-EXPOSE 8080
+EXPOSE 9080
 
 RUN chmod a+rx /opt/driver-did-sov/docker/run-driver-did-sov.sh
 CMD "/opt/driver-did-sov/docker/run-driver-did-sov.sh"

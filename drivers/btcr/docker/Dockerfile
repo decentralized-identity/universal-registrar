@@ -35,7 +35,7 @@ ENV uniregistrar_driver_did_btcr_rpcUrlTestnet=http://user:pass@localhost:18332/
 
 # done
 
-EXPOSE 8080
+EXPOSE 9080
 
 RUN chmod a+rx /opt/driver-did-btcr/docker/run-driver-did-btcr.sh
 CMD "/opt/driver-did-btcr/docker/run-driver-did-btcr.sh"
