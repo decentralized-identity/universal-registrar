@@ -1,0 +1,120 @@
+openapi: 3.0.0
+servers:
+# Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/universal-registrar/universal-registrar/1.0.0
+  - url: /1.0/
+info:
+  description: Universal Registrar
+  version: "1.0.0"
+  title: Universal Registrar
+  contact:
+    email: markus@danubetech.com
+paths:
+  /register:
+    post:
+      summary: Registers a DID.
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        description: Parameters for registering the DID.
+      responses:
+        '200':
+          description: successfully registered!
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The register state.
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+  /update:
+    post:
+      summary: Updates a DID.
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRequest'
+        description: Parameters for updating the DID.
+      responses:
+        '200':
+          description: successfully updated!
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The update state.
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+  /deactivate:
+    post:
+      summary: Deactivates a DID.
+      operationId: deactivate
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateRequest'
+        description: Parameters for deactivating the DID.
+      responses:
+        '200':
+          description: successfully deactivated!
+          content:
+            application/json:
+              schema:
+                type: object
+                description: The deactivate state.
+        '400':
+          description: invalid input!
+        '500':
+          description: error!
+components:
+  schemas:
+    RegisterRequest:
+      type: object
+      properties:
+        jobId:
+          type: string
+        options:
+          type: object
+        secret:
+          type: object
+        addServices:
+          type: array
+          items:
+            type: object
+        addPublicKeys:
+          type: array
+          items:
+            type: object
+        addAuthentications:
+          type: array
+          items:
+            type: object
+    UpdateRequest:
+      type: object
+      properties:
+        jobId:
+          type: string
+        options:
+          type: object
+        secret:
+          type: object
+    DeactivateRequest:
+      type: object
+      properties:
+        jobId:
+          type: string
+        options:
+          type: object
+        secret:
+          type: object
