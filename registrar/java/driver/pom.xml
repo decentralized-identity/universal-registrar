@@ -25,12 +25,6 @@
 			<version>0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.danubetech</groupId>
-			<artifactId>key-formats-java</artifactId>
-			<version>0.1-SNAPSHOT</version>
-			<scope>compile</scope>
-		</dependency>
 	</dependencies>
 
 </project>
