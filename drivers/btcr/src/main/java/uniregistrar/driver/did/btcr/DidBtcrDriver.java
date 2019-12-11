@@ -33,14 +33,11 @@ import org.bitcoinj.wallet.DecryptingKeyBag;
 import org.bitcoinj.wallet.KeyBag;
 import org.bitcoinj.wallet.RedeemData;
 import org.bitcoinj.wallet.SendRequest;
-import org.bouncycastle.math.ec.ECPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.nimbusds.jose.jwk.Curve;
+import com.danubetech.keyformats.PrivateKeyToJWK;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.util.Base64URL;
 
 import did.Authentication;
 import did.DIDDocument;
@@ -424,18 +421,20 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 		String publicKeyHex = privateKey.getPublicKeyAsHex();
 		String privateKeyHex = privateKey.getPrivateKeyAsHex();
 		String privateKeyWif = privateKey.getPrivateKeyAsWiF(chainToNetworkParameters(chain));
+		JWK jsonWebKey = privateKeyToJWK(privateKey);
+		String publicKeyDIDURL = identifierToPublicKeyDIDURL(identifier);
 
-		List<Map<String, Object>> keys = new ArrayList<Map<String, Object>> ();
+		List<Map<String, Object>> jsonKeys = new ArrayList<Map<String, Object>> ();
 		Map<String, Object> jsonKey = new HashMap<String, Object> ();
-		JWK jsonWebKey = privateKeyToJWK(privateKey, identifier);
 		jsonKey.put("publicKeyHex", publicKeyHex);
 		jsonKey.put("privateKeyHex", privateKeyHex);
 		jsonKey.put("privateKeyWif", privateKeyWif);
 		jsonKey.put("privateKeyJwk", jsonWebKey.toJSONObject());
-		keys.add(jsonKey);
+		jsonKey.put("publicKeyDIDURL", publicKeyDIDURL);
+		jsonKeys.add(jsonKey);
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("keys", keys);
+		secret.put("keys", jsonKeys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
@@ -536,29 +535,17 @@ public class DidBtcrDriver extends AbstractDriver implements Driver {
 	 * Helper methods
 	 */
 
-	private static JWK privateKeyToJWK(ECKey privateKey, String url, String purpose) {
+	private static JWK privateKeyToJWK(ECKey privateKey) {
 
-		ECPoint publicKeyPoint = privateKey.getPubKeyPoint();
-		byte[] privateKeyBytes = privateKey.getPrivKeyBytes();
-		Base64URL xParameter = Base64URL.encode(publicKeyPoint.getAffineXCoord().getEncoded());
-		Base64URL yParameter = Base64URL.encode(publicKeyPoint.getAffineYCoord().getEncoded());
-		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+		String kid = null;
+		String use = null;
 
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.ECKey.Builder(Curve.P_256K, xParameter, yParameter)
-				.d(dParameter)
-				.keyID(url)
-				.keyUse(purpose == null ? null : new KeyUse(purpose))
-				.build();
-
-		return jsonWebKey;
+		return PrivateKeyToJWK.P_256KPrivateKeyToJWK(privateKey, kid, use);
 	}
 
-	private static JWK privateKeyToJWK(ECKey privateKey, String identifier) {
+	private static String identifierToPublicKeyDIDURL(String identifier) {
 
-		String url = identifier + "#key-0";
-		String purpose = null;
-
-		return privateKeyToJWK(privateKey, url, purpose);
+		return identifier + "#key-0";
 	}
 
 	private static NetworkParameters chainToNetworkParameters(String chain) {

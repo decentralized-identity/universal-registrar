@@ -29,11 +29,9 @@ import org.hyperledger.indy.sdk.wallet.WalletExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.danubetech.keyformats.PrivateKeyToJWK;
 import com.github.jsonldjava.utils.JsonUtils;
-import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.util.Base64URL;
 
 import did.Service;
 import io.leonard.Base58;
@@ -272,20 +270,22 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 		String publicKeyBase58 = Base58.encode(publicKeyBytes);
 		String privateKeyBase58 = Base58.encode(privateKeyBytes);
 		String did = Base58.encode(didBytes);
+		JWK jsonWebKey = privateKeyToJWK(privateKeyBytes, publicKeyBytes);
+		String publicKeyDIDURL = identifierToPublicKeyDIDURL(identifier);
 
 		if (! did.equals(newDid)) throw new RegistrationException("Generated DID does not match registered DID: " + did + " != " + newDid);
 
-		List<Map<String, Object>> keys = new ArrayList<Map<String, Object>> ();
+		List<Map<String, Object>> jsonKeys = new ArrayList<Map<String, Object>> ();
 		Map<String, Object> jsonKey = new HashMap<String, Object> ();
-		JWK jsonWebKey = privateKeyToJWK(publicKeyBytes, privateKeyBytes, identifier);
 		jsonKey.put("publicKeyBase58", publicKeyBase58);
 		jsonKey.put("privateKeyBase58", privateKeyBase58);
 		jsonKey.put("privateKeyJwk", jsonWebKey.toJSONObject());
-		keys.add(jsonKey);
+		jsonKey.put("publicKeyDIDURL", publicKeyDIDURL);
+		jsonKeys.add(jsonKey);
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
 		secret.put("seed", newSeed);
-		secret.put("keys", keys);
+		secret.put("keys", jsonKeys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
@@ -501,26 +501,17 @@ public class DidSovDriver extends AbstractDriver implements Driver {
 	 * Helper methods
 	 */
 
-	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String url, String purpose) {
+	private static JWK privateKeyToJWK(byte[] privateKeyBytes, byte[] publicKeyBytes) {
 
-		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
-		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
+		String kid = null;
+		String use = null;
 
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
-				.d(dParameter)
-				.keyID(url)
-				.keyUse(purpose == null ? null : new KeyUse(purpose))
-				.build();
-
-		return jsonWebKey;
+		return PrivateKeyToJWK.Ed25519PrivateKeyBytesToJWK(privateKeyBytes, publicKeyBytes, kid, use);
 	}
 
-	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String identifier) {
+	private static String identifierToPublicKeyDIDURL(String identifier) {
 
-		String url = identifier + "#keys-1";
-		String purpose = null;
-
-		return privateKeyToJWK(publicKeyBytes, privateKeyBytes, url, purpose);
+		return identifier + "#keys-1";
 	}
 
 	/*

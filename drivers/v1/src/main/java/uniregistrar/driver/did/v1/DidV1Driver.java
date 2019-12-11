@@ -15,14 +15,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.danubetech.keyformats.PrivateKeyToJWK;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import com.nimbusds.jose.jwk.Curve;
 import com.nimbusds.jose.jwk.JWK;
-import com.nimbusds.jose.jwk.KeyUse;
-import com.nimbusds.jose.util.Base64URL;
 
 import io.leonard.Base58;
 import uniregistrar.RegistrationException;
@@ -173,16 +171,16 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 		// read DID document
 
 		FileReader didDocumentReader = null;
-		JsonNode jsonKeys = null;
+		JsonNode fileJsonKeys = null;
 
 		try {
 
 			didDocumentReader = new FileReader(new File(didDocumentLocation));
 
-			JsonNode jsonNode = new ObjectMapper().readTree(didDocumentReader);
-			if (log.isDebugEnabled()) log.debug("JSON OBJECT: " + jsonNode);
+			JsonNode fileJsonNode = new ObjectMapper().readTree(didDocumentReader);
+			if (log.isDebugEnabled()) log.debug("JSON OBJECT: " + fileJsonNode);
 
-			jsonKeys = jsonNode.get("keys");
+			fileJsonKeys = fileJsonNode.get("keys");
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Process read error: " + ex.getMessage(), ex);
@@ -203,17 +201,20 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 
 		// REGISTRATION STATE FINISHED: SECRET
 
-		List<JsonNode> keys = new ArrayList<JsonNode> ();
-		for (Iterator<Map.Entry<String, JsonNode>> i = jsonKeys.fields(); i.hasNext(); ) {
+		List<JsonNode> jsonKeys = new ArrayList<JsonNode> ();
+		for (Iterator<Map.Entry<String, JsonNode>> i = fileJsonKeys.fields(); i.hasNext(); ) {
 
 			ObjectNode jsonKey = (ObjectNode) i.next().getValue();
 			JWK jsonWebKey = privateKeyToJWK(jsonKey);
+			String publicKeyDIDURL = identifierToPublicKeyDIDURL(jsonKey);
+
 			jsonKey.putPOJO("privateKeyJwk", jsonWebKey.toJSONObject());
-			keys.add(jsonKey);
+			jsonKey.put("publicKeyDIDURL", publicKeyDIDURL);
+			jsonKeys.add(jsonKey);
 		}
 
 		Map<String, Object> secret = new LinkedHashMap<String, Object> ();
-		secret.put("keys", keys);
+		secret.put("keys", jsonKeys);
 
 		// REGISTRATION STATE FINISHED: METHOD METADATA
 
@@ -251,28 +252,19 @@ public class DidV1Driver extends AbstractDriver implements Driver {
 	 * Helper methods
 	 */
 
-	private static JWK privateKeyToJWK(byte[] publicKeyBytes, byte[] privateKeyBytes, String url, String purpose) {
-
-		Base64URL xParameter = Base64URL.encode(publicKeyBytes);
-		Base64URL dParameter = Base64URL.encode(privateKeyBytes);
-
-		JWK jsonWebKey = new com.nimbusds.jose.jwk.OctetKeyPair.Builder(Curve.Ed25519, xParameter)
-				.d(dParameter)
-				.keyID(url)
-				.keyUse(purpose == null ? null : new KeyUse(purpose))
-				.build();
-
-		return jsonWebKey;
-	}
-
 	private static JWK privateKeyToJWK(ObjectNode jsonKey) {
 
 		byte[] publicKeyBytes = Base58.decode(((TextNode) jsonKey.get("publicKeyBase58")).asText());
 		byte[] privateKeyBytes = Base58.decode(((TextNode) jsonKey.get("privateKeyBase58")).asText());
-		String url = ((TextNode) jsonKey.get("id")).asText();
-		String purpose = null;
+		String kid = null;
+		String use = null;
 
-		return privateKeyToJWK(publicKeyBytes, privateKeyBytes, url, purpose);
+		return PrivateKeyToJWK.Ed25519PrivateKeyBytesToJWK(privateKeyBytes, publicKeyBytes, kid, use);
+	}
+
+	private static String identifierToPublicKeyDIDURL(ObjectNode jsonKey) {
+
+		return ((TextNode) jsonKey.get("id")).asText();
 	}
 
 	/*

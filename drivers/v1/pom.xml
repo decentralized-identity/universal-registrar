@@ -101,12 +101,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.nimbusds</groupId>
-			<artifactId>nimbus-jose-jwt</artifactId>
-			<version>8.2.1</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>io.leonard</groupId>
 			<artifactId>base58</artifactId>
 			<version>0.0.2</version>
