@@ -1,4 +1,4 @@
-# Universal Registrar
+# Universal Registrar — API Documentation
 
 Similar to the [Universal Resolver](https://github.com/decentralized-identity/universal-resolver), the Universal Registrar also makes use of "drivers" to allow registration of various types of identifiers (e.g. different DID methods, or naming systems such as BNS or ENS).
 

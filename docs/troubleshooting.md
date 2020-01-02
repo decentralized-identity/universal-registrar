@@ -1,4 +1,4 @@
-## Troubleshooting
+# Universal Registrar — Troubleshooting
 
 If docker-compose complains about wrong versions then you probably have a too old docker-compose version.
 
