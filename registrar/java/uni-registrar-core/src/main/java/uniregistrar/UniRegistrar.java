@@ -13,8 +13,8 @@ public interface UniRegistrar {
 
 	public static final String PROPERTIES_MIME_TYPE = "application/json";
 
-	public RegisterState register(String driverName, RegisterRequest registerRequest) throws RegistrationException;
-	public UpdateState update(String driverName, UpdateRequest updateRequest) throws RegistrationException;
-	public DeactivateState deactivate(String driverName, DeactivateRequest deactivateRequest) throws RegistrationException;
+	public RegisterState register(String driverId, RegisterRequest registerRequest) throws RegistrationException;
+	public UpdateState update(String driverId, UpdateRequest updateRequest) throws RegistrationException;
+	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException;
 	public Map<String, Map<String, Object>> properties() throws RegistrationException;
 }
