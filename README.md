@@ -27,9 +27,9 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 
 | Driver Name | Driver Version | DID Spec Version | DID Method Spec Version | Docker Image |
 | ----------- | -------------- | ---------------- | ----------------------- | ------------ |
-| [did-btcr](https://github.com/decentralized-identity/universal-registrar/tree/master/drivers/btcr/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
-| [did-sov](https://github.com/decentralized-identity/universal-registrar/tree/master/drivers/sov/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
-| [did-v1](https://github.com/decentralized-identity/universal-registrar/tree/master/drivers/v1/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
+| [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
+| [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
+| [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
 
 ## More Information
 
