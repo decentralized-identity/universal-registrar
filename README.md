@@ -17,7 +17,9 @@ You can deploy the Universal Registrar on your local machine by cloning this Git
 
 You should then be able to create/update/deactivate identifiers locally using simple `curl` requests as follows:
 
-	... TODO ...
+	curl -d '{"options":{"ledger":"test","keytype": "ed25519"}}' -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-v1'
+	curl -d '{"options":{"network":"builder"}}' -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-sov'
+	curl -d '{"options":{"chain":"TESTNET"}}' -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-btcr'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
