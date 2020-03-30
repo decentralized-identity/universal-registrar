@@ -22,6 +22,9 @@ public class DeactivateRequest {
 	private String jobId;
 
 	@JsonProperty
+	private String identifier;
+
+	@JsonProperty
 	private Map<String, Object> options;
 
 	@JsonProperty

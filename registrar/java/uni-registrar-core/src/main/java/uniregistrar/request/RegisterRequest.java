@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import did.Authentication;
+import did.DIDDocument;
 import did.PublicKey;
 import did.Service;
 
@@ -31,6 +32,9 @@ public class RegisterRequest {
 
 	@JsonProperty
 	private Map<String, Object> secret;
+
+	@JsonProperty
+	private DIDDocument didDocument;
 
 	@JsonProperty
 	private List<Service> addServices;

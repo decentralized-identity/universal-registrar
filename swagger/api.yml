@@ -88,6 +88,8 @@ components:
           type: object
         secret:
           type: object
+        didDocument:
+          type: object
         addServices:
           type: array
           items:
@@ -105,14 +107,32 @@ components:
       properties:
         jobId:
           type: string
+        identifier:
+          type: string
         options:
           type: object
         secret:
           type: object
+        didDocument:
+          type: object
+        addServices:
+          type: array
+          items:
+            type: object
+        addPublicKeys:
+          type: array
+          items:
+            type: object
+        addAuthentications:
+          type: array
+          items:
+            type: object
     DeactivateRequest:
       type: object
       properties:
         jobId:
+          type: string
+        identifier:
           type: string
         options:
           type: object

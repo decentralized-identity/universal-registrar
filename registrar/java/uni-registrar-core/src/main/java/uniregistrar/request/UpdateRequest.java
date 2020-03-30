@@ -2,6 +2,7 @@ package uniregistrar.request;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -11,6 +12,11 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import did.Authentication;
+import did.DIDDocument;
+import did.PublicKey;
+import did.Service;
 
 public class UpdateRequest {
 
@@ -22,10 +28,25 @@ public class UpdateRequest {
 	private String jobId;
 
 	@JsonProperty
+	private String identifier;
+
+	@JsonProperty
 	private Map<String, Object> options;
 
 	@JsonProperty
 	private Map<String, Object> secret;
+
+	@JsonProperty
+	private DIDDocument didDocument;
+
+	@JsonProperty
+	private List<Service> addServices;
+
+	@JsonProperty
+	private List<PublicKey> addPublicKeys;
+
+	@JsonProperty
+	private List<Authentication> addAuthentications;
 
 	public UpdateRequest() {
 
