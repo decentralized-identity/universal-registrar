@@ -36,6 +36,17 @@ services:
       uniregistrar_driver_did_v1_trustAnchorSeed: ${uniregistrar_driver_did_v1_trustAnchorSeed}
     ports:
       - "9083:9080"
+  driver-did-trustbloc:
+    container_name: driver-did-trustbloc
+    image: docker.pkg.github.com/trustbloc/trustbloc-did-method/did-method-rest:0.1.3-snapshot-fc80179
+    environment:
+      - DID_METHOD_HOST_URL=0.0.0.0:9084
+      - DID_METHOD_TLS_SYSTEMCERTPOOL=true
+      - DID_METHOD_DOMAIN=testnet.trustbloc.dev
+      - DID_METHOD_MODE=registrar
+    ports:
+      - "9084:9084"
+    command: start
   uni-registrar-web:
     image: universalregistrar/uni-registrar-web:latest
     ports:

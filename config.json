@@ -12,6 +12,9 @@
 			"image": "universalregistrar/driver-did-v1",
 			"imageProperties": "true",
 			"tag": "latest"
+		}, {
+			"image": "trustbloc/driver-did-trustbloc",
+			"url": "http://driver-did-trustbloc:9084/"
 		}
 	]
 }

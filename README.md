@@ -8,6 +8,14 @@ See https://uniregistrar.io/ for a publicly hosted instance of a Universal Regis
 
 ## Quick Start
 
+In order to access driver-did-trustbloc image you have to create personal token with read:packages and repo permissions ([personal token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)).
+ 
+Run the following command using your newly generated personal token:
+
+```
+docker login -u <username> -p <github token with read:packages and repo permission> docker.pkg.github.com
+```
+
 You can deploy the Universal Registrar on your local machine by cloning this Github repository, and using `docker-compose` to build and run the Universal Registrar as well as its drivers:
 
 	git clone https://github.com/decentralized-identity/universal-registrar
@@ -19,7 +27,8 @@ You should then be able to create/update/deactivate identifiers locally using si
 
 	curl -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}' 
 	curl -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-sov' -d '{"options":{"network":"danube"}}' 
-	curl -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-btcr' -d '{"options":{"chain":"TESTNET"}}' 
+	curl -X POST 'http://localhost:9080/1.0/register?driver-universalregistrar%2Fdriver-did-btcr' -d '{"options":{"chain":"TESTNET"}}'
+	curl -X POST 'http://localhost:9080/1.0/register?driver-trustbloc%2Fdriver-did-trustbloc' -d '{"jobId":"1"}' 
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -32,6 +41,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
 | [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
 | [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
+| [did-trustbloc](https://github.com/trustbloc/trustbloc-did-method/) | 0.1.3-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://github.com/trustbloc/trustbloc-did-method/blob/master/docs/spec/trustbloc-did-method.md) | [trustbloc/driver-did-trustbloc](https://github.com/trustbloc/trustbloc-did-method/packages/143414)
 
 ## More Information
 
