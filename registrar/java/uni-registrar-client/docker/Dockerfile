@@ -5,10 +5,16 @@ MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 USER root
 
+# install dependencies
+
+ARG GITHUB_READ_PACKAGES_OWNER
+ARG GITHUB_READ_PACKAGES_TOKEN
+ADD ./registrar/java/settings.xml /root/.m2/
+
 # build dependencies
 
-RUN cd /opt/ && git clone https://github.com/decentralized-identity/did-common-java.git
-RUN cd /opt/did-common-java/ && mvn clean install -DskipTests
+RUN cd /opt/ && git clone https://github.com/decentralized-identity/did-common-java.git && \
+    cd /opt/did-common-java/ && mvn clean install -DskipTests
 
 # build uni-registrar-client
 
