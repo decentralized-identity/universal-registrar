@@ -1,7 +1,6 @@
 package uniregistrar.web.servlet;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +29,7 @@ public class UpdateServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		String driverId = URLDecoder.decode(request.getQueryString(), "UTF-8");
+		String driverId = request.getParameter("driverId");
 
 		UpdateRequest updateRequest;
 
