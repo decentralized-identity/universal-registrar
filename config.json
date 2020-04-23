@@ -23,6 +23,9 @@
 			"method": "web",
 			"url": "http://driver-did-web:9080/",
 			"propertiesEndpoint": "true"
+		}, {
+			"method": "example",
+			"url": "http://driver-did-example:9080/"
 		}
 	]
 }

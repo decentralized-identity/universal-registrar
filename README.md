@@ -23,6 +23,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/register?method=key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
 	curl -X POST 'http://localhost:9080/1.0/register?method=ion' -d '{}'
 	curl -X POST 'http://localhost:9080/1.0/register?method=web' -d '{}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=example' -d '{}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
