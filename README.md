@@ -20,6 +20,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}' 
 	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-sov' -d '{"options":{"network":"danube"}}' 
 	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-btcr' -d '{"options":{"chain":"TESTNET"}}' 
+	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -32,6 +33,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
 | [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
 | [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
+| [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/) | 1.0.0 | [1.0 WD](https://w3c.github.io/did-core/) | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
 
 ## More Information
 
