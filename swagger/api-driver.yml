@@ -2,12 +2,12 @@ openapi: 3.0.0
 servers:
 # Added by API Auto Mocking Plugin
   - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/universal-registrar/universal-registrar/1.0.0
+    url: https://virtserver.swaggerhub.com/universal-registrar/universal-registrar-driver/1.0.0
   - url: /1.0/
 info:
-  description: Universal Registrar
+  description: Universal Registrar Driver
   version: "1.0.0"
-  title: Universal Registrar
+  title: Universal Registrar Driver
   contact:
     email: markus@danubetech.com
 paths:
@@ -15,14 +15,6 @@ paths:
     post:
       summary: Registers a DID.
       operationId: register
-      parameters:
-        - in: query
-          required: true
-          name: driverId
-          schema:
-            type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
       requestBody:
         content:
           application/json:
@@ -43,14 +35,6 @@ paths:
     post:
       summary: Updates a DID.
       operationId: update
-      parameters:
-        - in: query
-          required: true
-          name: driverId
-          schema:
-            type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
       requestBody:
         content:
           application/json:
@@ -71,14 +55,6 @@ paths:
     post:
       summary: Deactivates a DID.
       operationId: deactivate
-      parameters:
-        - in: query
-          required: true
-          name: driverId
-          schema:
-            type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
       requestBody:
         content:
           application/json:
