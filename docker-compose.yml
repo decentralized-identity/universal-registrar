@@ -36,6 +36,10 @@ services:
       uniregistrar_driver_did_v1_trustAnchorSeed: ${uniregistrar_driver_did_v1_trustAnchorSeed}
     ports:
       - "9083:9080"
+  driver-did-key:
+    image: universalregistrar/driver-did-key:latest
+    ports:
+      - "9084:9080"
   uni-registrar-web:
     image: universalregistrar/uni-registrar-web:latest
     ports:

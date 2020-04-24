@@ -12,6 +12,9 @@
 			"image": "universalregistrar/driver-did-v1",
 			"imageProperties": "true",
 			"tag": "latest"
+		}, {
+			"image": "universalregistrar/driver-did-key",
+			"tag": "latest"
 		}
 	]
 }
