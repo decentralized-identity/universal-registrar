@@ -50,7 +50,7 @@ public class UpdateState {
 	 */
 
 	@JsonCreator
-	public static UpdateState build(@JsonProperty(value="jobId", required=true) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="registrarMetadata", required=true) Map<String, Object> registrarMetadata, @JsonProperty(value="methodMetadata", required=true) Map<String, Object> methodMetadata) {
+	public static UpdateState build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="registrarMetadata", required=false) Map<String, Object> registrarMetadata, @JsonProperty(value="methodMetadata", required=false) Map<String, Object> methodMetadata) {
 
 		return new UpdateState(jobId, didState, registrarMetadata, methodMetadata);
 	}

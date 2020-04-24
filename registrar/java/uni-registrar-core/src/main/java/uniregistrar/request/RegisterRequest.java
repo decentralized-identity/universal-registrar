@@ -2,7 +2,6 @@ package uniregistrar.request;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
@@ -13,10 +12,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import did.Authentication;
 import did.DIDDocument;
-import did.PublicKey;
-import did.Service;
 
 public class RegisterRequest {
 
@@ -36,27 +32,16 @@ public class RegisterRequest {
 	@JsonProperty
 	private DIDDocument didDocument;
 
-	@JsonProperty
-	private List<Service> addServices;
-
-	@JsonProperty
-	private List<PublicKey> addPublicKeys;
-
-	@JsonProperty
-	private List<Authentication> addAuthentications;
-
 	public RegisterRequest() {
 
 	}
 
-	public RegisterRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, List<Service> addServices, List<PublicKey> addPublicKeys, List<Authentication> addAuthentications) {
+	public RegisterRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
 
 		this.jobId = jobId;
 		this.options = options;
 		this.secret = secret;
-		this.addServices = addServices;
-		this.addPublicKeys = addPublicKeys;
-		this.addAuthentications = addAuthentications;
+		this.didDocument = didDocument;
 	}
 
 	/*
@@ -118,40 +103,16 @@ public class RegisterRequest {
 		this.secret = secret;
 	}
 
-	@JsonGetter
-	public List<Service> getAddServices() {
-
-		return this.addServices;
-	}
-
 	@JsonSetter
-	public void setAddServices(List<Service> addServices) {
+	public final void setDidDocument(DIDDocument didDocument) {
 
-		this.addServices = addServices;
+		this.didDocument = didDocument;
 	}
 
 	@JsonGetter
-	public List<PublicKey> getAddPublicKeys() {
+	public final DIDDocument getDidDocument() {
 
-		return this.addPublicKeys;
-	}
-
-	@JsonSetter
-	public void setAddPublicKeys(List<PublicKey> addPublicKeys) {
-
-		this.addPublicKeys = addPublicKeys;
-	}
-
-	@JsonGetter
-	public List<Authentication> getAddAuthentications() {
-
-		return this.addAuthentications;
-	}
-
-	@JsonSetter
-	public void setAddAuthentications(List<Authentication> addAuthentications) {
-
-		this.addAuthentications = addAuthentications;
+		return this.didDocument;
 	}
 
 	/*
