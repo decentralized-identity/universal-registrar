@@ -29,8 +29,6 @@ public class RegisterServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		String driverId = request.getParameter("driverId");
-
 		RegisterRequest registerRequest;
 
 		try {
@@ -42,6 +40,8 @@ public class RegisterServlet extends WebUniRegistrar {
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
 			return;
 		}
+
+		String driverId = request.getParameter("driverId");
 
 		if (log.isInfoEnabled()) log.info("Incoming register request for driver " + driverId + ": " + registerRequest);
 

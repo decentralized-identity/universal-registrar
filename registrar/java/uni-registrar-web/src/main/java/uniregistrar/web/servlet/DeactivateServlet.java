@@ -29,8 +29,6 @@ public class DeactivateServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		String driverId = request.getParameter("driverId");
-
 		DeactivateRequest deactivateRequest;
 
 		try {
@@ -42,6 +40,8 @@ public class DeactivateServlet extends WebUniRegistrar {
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
 			return;
 		}
+
+		String driverId = request.getParameter("driverId");
 
 		if (log.isInfoEnabled()) log.info("Incoming deactivate request for driver " + driverId + ": " + deactivateRequest);
 
