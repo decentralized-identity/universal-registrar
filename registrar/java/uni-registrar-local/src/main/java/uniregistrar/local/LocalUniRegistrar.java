@@ -83,7 +83,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 					String httpDriverUri = image.substring(image.indexOf("/") + 1);
 					if (httpDriverUri.contains(":")) httpDriverUri = httpDriverUri.substring(0, httpDriverUri.indexOf(":"));
-					httpDriverUri = "http://" + httpDriverUri + ":" + (imagePort != null ? imagePort : "8080" ) + "/";
+					httpDriverUri = "http://" + httpDriverUri + ":" + (imagePort != null ? imagePort : "9080" ) + "/";
 
 					driver.setRegisterUri(httpDriverUri + "1.0/register");
 					driver.setUpdateUri(httpDriverUri + "1.0/update");
