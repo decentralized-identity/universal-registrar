@@ -15,6 +15,9 @@
 		}, {
 			"image": "universalregistrar/driver-did-key",
 			"tag": "latest"
+		}, {
+			"image": "trustbloc/driver-did-trustbloc",
+			"tag": "0.1.3"
 		}
 	]
 }

@@ -40,6 +40,16 @@ services:
     image: universalregistrar/driver-did-key:latest
     ports:
       - "9084:9080"
+  driver-did-trustbloc:
+    image: trustbloc/driver-did-trustbloc:0.1.3
+    environment:
+      DID_METHOD_HOST_URL: ${DID_METHOD_HOST_URL}
+      DID_METHOD_TLS_SYSTEMCERTPOOL: ${DID_METHOD_TLS_SYSTEMCERTPOOL}
+      DID_METHOD_MODE: ${DID_METHOD_MODE}
+      DID_METHOD_DOMAIN: ${DID_METHOD_DOMAIN}
+    ports:
+      - "9085:9080"
+    command: start
   uni-registrar-web:
     image: universalregistrar/uni-registrar-web:latest
     ports:
