@@ -83,6 +83,18 @@ public class UpdateRequest {
 	}
 
 	@JsonGetter
+	public final String getIdentifier() {
+
+		return this.identifier;
+	}
+
+	@JsonSetter
+	public final void setIdentifier(String identifier) {
+
+		this.identifier = identifier;
+	}
+
+	@JsonGetter
 	public final Map<String, Object> getOptions() {
 
 		return this.options;
