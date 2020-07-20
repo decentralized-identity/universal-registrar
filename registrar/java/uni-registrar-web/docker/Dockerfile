@@ -1,6 +1,6 @@
 # Dockerfile for universalregistrar/uni-registrar-web
 
-FROM maven:3-jdk-8
+FROM maven:3-jdk-11
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 USER root
