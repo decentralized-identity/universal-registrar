@@ -5,7 +5,7 @@
 	<groupId>decentralized-identity</groupId>
 	<artifactId>uni-registrar</artifactId>
 	<packaging>pom</packaging>
-	<version>0.2-SNAPSHOT</version>
+	<version>0.1-SNAPSHOT</version>
 	<name>uni-registrar</name>
 	<description>A Universal Registrar for decentralized identity.</description>
 	<url>https://uniregistrar.io/</url>
