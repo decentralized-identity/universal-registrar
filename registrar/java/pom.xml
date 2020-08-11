@@ -57,14 +57,14 @@
 	</modules>
 
 	<issueManagement>
-		<url>https://github.com/decentralized-identity/uni-registrar/issues</url>
+		<url>https://github.com/decentralized-identity/universal-registrar/issues</url>
 		<system>GitHub Issues</system>
 	</issueManagement>
 
 	<scm>
-		<url>https://github.com/decentralized-identity/uni-registrar</url>
-		<connection>scm:git:git://github.com/decentralized-identity/uni-registrar.git</connection>
-		<developerConnection>scm:git:git@github.com:decentralized-identity/uni-registrar.git</developerConnection>
+		<url>https://github.com/decentralized-identity/universal-registrar</url>
+		<connection>scm:git:git://github.com/decentralized-identity/universal-registrar.git</connection>
+		<developerConnection>scm:git:git@github.com:decentralized-identity/universal-registrar.git</developerConnection>
 	</scm>
 
 	<properties>
