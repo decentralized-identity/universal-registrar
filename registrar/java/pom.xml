@@ -25,6 +25,26 @@
 		</developer>
 	</developers>
 
+	<modules>
+		<module>uni-registrar-core</module>
+		<module>uni-registrar-local</module>
+		<module>uni-registrar-client</module>
+		<module>uni-registrar-web</module>
+		<module>driver</module>
+		<module>driver-http</module>
+	</modules>
+
+	<scm>
+		<url>https://github.com/decentralized-identity/universal-registrar</url>
+		<connection>scm:git:git://github.com/decentralized-identity/universal-registrar.git</connection>
+		<developerConnection>scm:git:git@github.com:decentralized-identity/universal-registrar.git</developerConnection>
+	</scm>
+
+	<issueManagement>
+		<url>https://github.com/decentralized-identity/universal-registrar/issues</url>
+		<system>GitHub Issues</system>
+	</issueManagement>
+
 	<distributionManagement>
 		<snapshotRepository>
 			<id>danubetech-maven-snapshots</id>
@@ -42,26 +62,6 @@
 			<url>https://repo.danubetech.com/repository/maven-public</url>
 		</repository>
 	</repositories>
-
-	<modules>
-		<module>uni-registrar-core</module>
-		<module>uni-registrar-local</module>
-		<module>uni-registrar-client</module>
-		<module>uni-registrar-web</module>
-		<module>driver</module>
-		<module>driver-http</module>
-	</modules>
-
-	<issueManagement>
-		<url>https://github.com/decentralized-identity/universal-registrar/issues</url>
-		<system>GitHub Issues</system>
-	</issueManagement>
-
-	<scm>
-		<url>https://github.com/decentralized-identity/universal-registrar</url>
-		<connection>scm:git:git://github.com/decentralized-identity/universal-registrar.git</connection>
-		<developerConnection>scm:git:git@github.com:decentralized-identity/universal-registrar.git</developerConnection>
-	</scm>
 
 	<properties>
 		<!--    Project Properties      -->
