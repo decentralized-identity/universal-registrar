@@ -6,38 +6,45 @@ services:
   driver-did-btcr:
     image: universalregistrar/driver-did-btcr:latest
     environment:
-      uniregistrar_driver_did_btcr_Mainnet: ${uniregistrar_driver_did_btcr_Mainnet}
-      uniregistrar_driver_did_btcr_Testnet: ${uniregistrar_driver_did_btcr_Testnet}
-      uniregistrar_driver_did_btcr_Regtest: ${uniregistrar_driver_did_btcr_Regtest}
-      uniregistrar_driver_did_btcr_methodPrefix: ${uniregistrar_driver_did_btcr_methodPrefix}
-      uniregistrar_driver_did_btcr_mainnetPrefix: ${uniregistrar_driver_did_btcr_mainnetPrefix}
-      uniregistrar_driver_did_btcr_testnetPrefix: ${uniregistrar_driver_did_btcr_testnetPrefix}
-      uniregistrar_driver_did_btcr_regtestPrefix: ${uniregistrar_driver_did_btcr_regtestPrefix}
-      uniregistrar_driver_did_btcr_didDocContinuation: ${uniregistrar_driver_did_btcr_didDocContinuation}
-      uniregistrar_driver_did_btcr_basePath: ${uniregistrar_driver_did_btcr_basePath}
-      uniregistrar_driver_did_btcr_baseUri: ${uniregistrar_driver_did_btcr_baseUri}
-      uniregistrar_driver_did_btcr_privateKeyMainnet: ${uniregistrar_driver_did_btcr_privateKeyMainnet}
-      uniregistrar_driver_did_btcr_privateKeyTestnet: ${uniregistrar_driver_did_btcr_privateKeyTestnet}
-      uniregistrar_driver_did_btcr_privateKeyRegtest: ${uniregistrar_driver_did_btcr_privateKeyRegtest}
-      uniregistrar_driver_did_btcr_walletPathMainnet: ${uniregistrar_driver_did_btcr_walletPathMainnet}
-      uniregistrar_driver_did_btcr_walletPathTestnet: ${uniregistrar_driver_did_btcr_walletPathTestnet}
-      uniregistrar_driver_did_btcr_walletPathRegtest: ${uniregistrar_driver_did_btcr_walletPathRegtest}
-      uniregistrar_driver_did_btcr_walletPrefixMainnet: ${uniregistrar_driver_did_btcr_walletPrefixMainnet}
-      uniregistrar_driver_did_btcr_walletPrefixTestnet: ${uniregistrar_driver_did_btcr_walletPrefixTestnet}
-      uniregistrar_driver_did_btcr_walletPrefixRegtest: ${uniregistrar_driver_did_btcr_walletPrefixRegtest}
-      uniregistrar_driver_did_btcr_requiredTxDepth: ${uniregistrar_driver_did_btcr_requiredTxDepth}
-      uniregistrar_driver_did_btcr_targetFundAmount: ${uniregistrar_driver_did_btcr_targetFundAmount}
-      uniregistrar_driver_did_btcr_utxoUpkeepMainnet: ${uniregistrar_driver_did_btcr_utxoUpkeepMainnet}
-      uniregistrar_driver_did_btcr_utxoUpkeepTestnet: ${uniregistrar_driver_did_btcr_utxoUpkeepTestnet}
-      uniregistrar_driver_did_btcr_utxoUpkeepRegtest: ${uniregistrar_driver_did_btcr_utxoUpkeepRegtest}
-      uniregistrar_driver_did_btcr_utxoProducing: ${uniregistrar_driver_did_btcr_utxoProducing}
-      uniregistrar_driver_did_btcr_rpcUrlMainnet: ${uniregistrar_driver_did_btcr_rpcUrlMainnet}
-      uniregistrar_driver_did_btcr_rpcUrlTestnet: ${uniregistrar_driver_did_btcr_rpcUrlTestnet}
-      uniregistrar_driver_did_btcr_rpcUrlRegtest: ${uniregistrar_driver_did_btcr_rpcUrlRegtest}
-      uniregistrar_driver_did_btcr_peerMainnet: ${uniregistrar_driver_did_btcr_peerMainnet}
-      uniregistrar_driver_did_btcr_peerTestnet: ${uniregistrar_driver_did_btcr_peerTestnet}
-      uniregistrar_driver_did_btcr_bitcoinConnection: ${uniregistrar_driver_did_btcr_bitcoinConnection}
-      uniregistrar_driver_did_btcr_followDeactivation: ${uniregistrar_driver_did_btcr_followDeactivation}
+      uniregistrar_driver_did_btcr_Mainnet=${uniregistrar_driver_did_btcr_Mainnet}
+      uniregistrar_driver_did_btcr_Testnet=${uniregistrar_driver_did_btcr_Testnet}
+      uniregistrar_driver_did_btcr_Regtest=${uniregistrar_driver_did_btcr_Regtest}
+      uniregistrar_driver_did_btcr_methodPrefix=${uniregistrar_driver_did_btcr_methodPrefix}
+      uniregistrar_driver_did_btcr_testnetPrefix=${uniregistrar_driver_did_btcr_testnetPrefix}
+      uniregistrar_driver_did_btcr_mainnetPrefix=${uniregistrar_driver_did_btcr_mainnetPrefix}
+      uniregistrar_driver_did_btcr_regtestPrefix=${uniregistrar_driver_did_btcr_regtestPrefix}
+      uniregistrar_driver_did_btcr_basePath=${uniregistrar_driver_did_btcr_basePath}
+      uniregistrar_driver_did_btcr_baseUri=${uniregistrar_driver_did_btcr_baseUri}
+      uniregistrar_driver_did_btcr_privateKeyMainnet=${uniregistrar_driver_did_btcr_privateKeyMainnet}
+      uniregistrar_driver_did_btcr_privateKeyTestnet=${uniregistrar_driver_did_btcr_privateKeyTestnet}
+      uniregistrar_driver_did_btcr_privateKeyRegtest=${uniregistrar_driver_did_btcr_privateKeyRegtest}
+      uniregistrar_driver_did_btcr_walletPathMainnet=${uniregistrar_driver_did_btcr_walletPathMainnet}
+      uniregistrar_driver_did_btcr_walletPathTestnet=${uniregistrar_driver_did_btcr_walletPathTestnet}
+      uniregistrar_driver_did_btcr_walletPathRegtest=${uniregistrar_driver_did_btcr_walletPathRegtest}
+      uniregistrar_driver_did_btcr_walletPrefixMainnet=${uniregistrar_driver_did_btcr_walletPrefixMainnet}
+      uniregistrar_driver_did_btcr_walletPrefixTestnet=${uniregistrar_driver_did_btcr_walletPrefixTestnet}
+      uniregistrar_driver_did_btcr_walletPrefixRegtest=${uniregistrar_driver_did_btcr_walletPrefixRegtest}
+      uniregistrar_driver_did_btcr_requiredTxDepth=${uniregistrar_driver_did_btcr_requiredTxDepth}
+      uniregistrar_driver_did_btcr_targetFundAmount=${uniregistrar_driver_did_btcr_targetFundAmount}
+      uniregistrar_driver_did_btcr_utxoUpkeepMainnet=${uniregistrar_driver_did_btcr_utxoUpkeepMainnet}
+      uniregistrar_driver_did_btcr_utxoUpkeepTestnet=${uniregistrar_driver_did_btcr_utxoUpkeepTestnet}
+      uniregistrar_driver_did_btcr_utxoUpkeepRegtest=${uniregistrar_driver_did_btcr_utxoUpkeepRegtest}
+      uniregistrar_driver_did_btcr_utxoProducingMainnet=${uniregistrar_driver_did_btcr_utxoProducingMainnet}
+      uniregistrar_driver_did_btcr_utxoProducingTestnet=${uniregistrar_driver_did_btcr_utxoProducingTestnet}
+      uniregistrar_driver_did_btcr_utxoProducingRegtest=${uniregistrar_driver_did_btcr_utxoProducingRegtest}
+      uniregistrar_driver_did_btcr_checkIntervalMainnet=${uniregistrar_driver_did_btcr_checkIntervalMainnet}
+      uniregistrar_driver_did_btcr_checkIntervalTestnet=${uniregistrar_driver_did_btcr_checkIntervalTestnet}
+      uniregistrar_driver_did_btcr_checkIntervalRegtest=${uniregistrar_driver_did_btcr_checkIntervalRegtest}
+      uniregistrar_driver_did_btcr_rpcUrlMainnet=${uniregistrar_driver_did_btcr_rpcUrlMainnet}
+      uniregistrar_driver_did_btcr_rpcUrlTestnet=${uniregistrar_driver_did_btcr_rpcUrlTestnet}
+      uniregistrar_driver_did_btcr_rpcUrlRegtest=${uniregistrar_driver_did_btcr_rpcUrlRegtest}
+      uniregistrar_driver_did_btcr_peerMainnet=${uniregistrar_driver_did_btcr_peerMainnet}
+      uniregistrar_driver_did_btcr_peerTestnet=${uniregistrar_driver_did_btcr_peerTestnet}
+      uniregistrar_driver_did_btcr_bitcoinConnection=${uniregistrar_driver_did_btcr_bitcoinConnection}
+      uniregistrar_driver_did_btcr_followDeactivation=${uniregistrar_driver_did_btcr_followDeactivation}
+      uniregistrar_driver_did_btcr_overWriteDidDocs=${uniregistrar_driver_did_btcr_overWriteDidDocs}
+      uniregistrar_driver_did_btcr_rpcCertMainnet=${uniregistrar_driver_did_btcr_rpcCertMainnet}
+      uniregistrar_driver_did_btcr_rpcCertTestnet=${uniregistrar_driver_did_btcr_rpcCertTestnet}
     volumes:
       - "${uniregistrar_driver_did_btcr_basePath}:${uniregistrar_driver_did_btcr_basePath}"
     ports:
