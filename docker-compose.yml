@@ -45,8 +45,6 @@ services:
       uniregistrar_driver_did_btcr_overWriteDidDocs=${uniregistrar_driver_did_btcr_overWriteDidDocs}
       uniregistrar_driver_did_btcr_rpcCertMainnet=${uniregistrar_driver_did_btcr_rpcCertMainnet}
       uniregistrar_driver_did_btcr_rpcCertTestnet=${uniregistrar_driver_did_btcr_rpcCertTestnet}
-    volumes:
-      - "${uniregistrar_driver_did_btcr_basePath}:${uniregistrar_driver_did_btcr_basePath}"
     ports:
       - "9081:9080"
   driver-did-sov:
