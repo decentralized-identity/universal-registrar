@@ -1,5 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>uni-registrar-web</artifactId>
@@ -13,26 +13,18 @@
 	</parent>
 
 	<build>
-	
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>3.2.2</version>
 			</plugin>
 			<plugin>
 				<groupId>org.eclipse.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>9.4.18.v20190429</version>
 				<configuration>
 					<jettyConfig>
 						${basedir}/src/test/resources/jetty.xml
 					</jettyConfig>
-					<jettyEnvXml>
-						${basedir}/src/test/resources/jetty-env.xml
-					</jettyEnvXml>
-					<contextPath>/</contextPath>
 					<useTestClasspath>true</useTestClasspath>
 					<systemProperties>
 						<systemProperty>
@@ -49,6 +41,10 @@
 						</systemProperty>
 					</systemProperties>
 					<webApp>
+						<contextPath>/</contextPath>
+						<jettyEnvXml>
+							${basedir}/src/test/resources/jetty-env.xml
+						</jettyEnvXml>
 						<webInfIncludeJarPattern>^$</webInfIncludeJarPattern>
 						<containerIncludeJarPattern>^$</containerIncludeJarPattern>
 					</webApp>
@@ -57,46 +53,51 @@
 					<dependency>
 						<groupId>org.slf4j</groupId>
 						<artifactId>slf4j-api</artifactId>
-						<version>1.7.25</version>
+						<version>${slf4j.version}</version>
 						<scope>compile</scope>
 					</dependency>
 					<dependency>
 						<groupId>org.slf4j</groupId>
 						<artifactId>jcl-over-slf4j</artifactId>
-						<version>1.7.25</version>
+						<version>${slf4j.version}</version>
 						<scope>compile</scope>
 					</dependency>
 					<dependency>
 						<groupId>org.slf4j</groupId>
 						<artifactId>slf4j-log4j12</artifactId>
-						<version>1.7.25</version>
+						<version>${slf4j.version}</version>
 						<scope>compile</scope>
 					</dependency>
 				</dependencies>
 			</plugin>
-		
 		</plugins>
-	
 	</build>
 
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
+			<artifactId>javax.servlet-api</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>decentralized-identity</groupId>
 			<artifactId>uni-registrar-local</artifactId>
-			<version>0.1-SNAPSHOT</version>
-			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
-			<version>3.2.15.RELEASE</version>
-			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
 		</dependency>
 	</dependencies>
 

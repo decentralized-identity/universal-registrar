@@ -73,7 +73,7 @@ public class RegisterServlet extends WebUniRegistrar {
 
 		if (registerStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + registerRequest + ".");
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + registerRequest + ": " + registerStateString);
 			return;
 		}
 
