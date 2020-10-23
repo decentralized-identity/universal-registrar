@@ -32,12 +32,8 @@
 							<value>9080</value>
 						</systemProperty>
 						<systemProperty>
-							<name>slf4j</name>
-							<value>true</value>
-						</systemProperty>
-						<systemProperty>
-							<name>log4j.configuration</name>
-							<value>file:${basedir}/src/test/resources/log4j.properties</value>
+							<name>log4j2.configurationFile</name>
+							<value>file:${basedir}/src/test/resources/log4j2-test.properties</value>
 						</systemProperty>
 					</systemProperties>
 					<webApp>
