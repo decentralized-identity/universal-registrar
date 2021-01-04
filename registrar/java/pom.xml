@@ -65,7 +65,7 @@
 
 	<properties>
 
-		<!--    Project Properties      -->
+		<!-- Project Properties -->
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -73,7 +73,7 @@
 		<java.version>11</java.version>
 		<project.build.timestamp>${maven.build.timestamp}</project.build.timestamp>
 
-		<!--    Dependency Versions     -->
+		<!-- Dependency Versions -->
 
 		<key-formats-java.version>0.2.0</key-formats-java.version>
 		<did-common-java.version>0.3-SNAPSHOT</did-common-java.version>
@@ -97,7 +97,7 @@
 		<mockito-core.version>3.4.4</mockito-core.version>
 		<junit.version>4.13.1</junit.version>
 
-		<!--    Plugin Versions     -->
+		<!-- Plugin Versions -->
 
 		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
 		<maven-war-plugin.version>3.2.3</maven-war-plugin.version>
@@ -108,7 +108,6 @@
 	</properties>
 
 	<build>
-
 		<resources>
 			<resource>
 				<directory>${project.basedir}/src/main/resources/</directory>
@@ -128,7 +127,6 @@
 				</includes>
 			</resource>
 		</resources>
-
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -156,12 +154,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>${maven-surefire-plugin.version}</version>
-					<configuration>
-						<workingDirectory>${basedir}/../tmp</workingDirectory>
-						<argLine>
-							--illegal-access=permit
-						</argLine>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
@@ -182,6 +174,23 @@
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>${maven-release-plugin.version}</version>
+					<configuration>
+						<tagNameFormat>v@{project.version}</tagNameFormat>
+						<scmReleaseCommitComment>Latest Release @{releaseLabel}</scmReleaseCommitComment>
+						<pomFileName>pom.xml</pomFileName>
+					</configuration>
+					<dependencies>
+						<dependency>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-scm-plugin</artifactId>
+							<version>${maven-scm-plugin.version}</version>
+						</dependency>
+					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${maven-war-plugin.version}</version>
 				</plugin>
@@ -199,31 +208,8 @@
 		</pluginManagement>
 	</build>
 
-	<dependencies>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-		</dependency>
-	</dependencies>
-
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>decentralized-identity</groupId>
-				<artifactId>uni-registrar-driver</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>decentralized-identity</groupId>
-				<artifactId>uni-registrar-driver-http</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>decentralized-identity</groupId>
-				<artifactId>uni-registrar-client</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>decentralized-identity</groupId>
 				<artifactId>uni-registrar-core</artifactId>
@@ -236,7 +222,22 @@
 			</dependency>
 			<dependency>
 				<groupId>decentralized-identity</groupId>
+				<artifactId>uni-registrar-client</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>decentralized-identity</groupId>
 				<artifactId>uni-registrar-web</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>decentralized-identity</groupId>
+				<artifactId>uni-registrar-driver</artifactId>
+				<version>${project.parent.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>decentralized-identity</groupId>
+				<artifactId>uni-registrar-driver-http</artifactId>
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
@@ -376,4 +377,12 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+	</dependencies>
+
 </project>

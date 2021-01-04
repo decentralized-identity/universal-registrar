@@ -21,7 +21,6 @@
 		<dependency>
 			<groupId>decentralized-identity</groupId>
 			<artifactId>uni-registrar-core</artifactId>
-			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
