@@ -31,14 +31,12 @@ jobs:
             ci/data/gh-workflows/dockerhub password | DOCKER_PASSWORD ;
             ci/data/gh-workflows/maven username | MAVEN_USERNAME ;
             ci/data/gh-workflows/maven password | MAVEN_PASSWORD
-      - name: Pull parent image
-        run: docker pull universalregistrar/uni-registrar-web
       - name: Build image
         run: |
           docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
           --build-arg DANUBETECH_MAVEN_INTERNAL_USERNAME=${{ env.MAVEN_USERNAME }} \
           --build-arg DANUBETECH_MAVEN_INTERNAL_PASSWORD=${{ env.MAVEN_PASSWORD }}
-      - name: Login user to repo
-        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login "${{ env.REPO_NAME }}" -u "${{ env.DOCKER_USERNAME }}" --password-stdin
-      - name: Push image
-        run: docker push "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}"
+      - name: Login user to Dockerhub
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+      - name: Push image to Dockerhub
+        run: docker push "${{ env.IMAGE_NAME }}"
