@@ -1,0 +1,34 @@
+name: Maven deploy snapshot to Danubetech Nexus
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'LICENSE'
+      - 'docs'
+    branches-ignore:
+      - 'release-**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.1.1
+        with:
+          url: https://vault.danubetech.com
+          token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+          tlsSkipVerify: true
+          secrets: |
+            ci/data/gh-workflows/maven username | MAVEN_USERNAME ;
+            ci/data/gh-workflows/maven password | MAVEN_PASSWORD
+      - name: Run maven deploy action
+        uses: danubetech/github-action-maven-deploy@master
+        with:
+          server_id: danubetech-maven-snapshots
+          path_to_pom: /github/workspace/registrar/java
+        env:
+          MAVEN_USERNAME: ${{ env.MAVEN_USERNAME }}
+          MAVEN_PASSWORD: ${{ env.MAVEN_PASSWORD }}
