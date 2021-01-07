@@ -1,0 +1,44 @@
+name: Docker build/deploy image to Dockerhub
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'LICENSE'
+      - 'docs'
+    branches: [gh-workflows]
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: universalregistrar/uni-registrar-web
+  PATH_TO_DOCKERFILE: $GITHUB_WORKSPACE/registrar/java/uni-registrar-web/docker/Dockerfile
+  BUILD_CONTEXT: $GITHUB_WORKSPACE
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.1.1
+        with:
+          url: https://vault.danubetech.com
+          token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+          tlsSkipVerify: true
+          secrets: |
+            ci/data/gh-workflows/dockerhub username | DOCKER_USERNAME ;
+            ci/data/gh-workflows/dockerhub password | DOCKER_PASSWORD ;
+            ci/data/gh-workflows/maven username | MAVEN_USERNAME ;
+            ci/data/gh-workflows/maven password | MAVEN_PASSWORD
+      - name: Pull parent image
+        run: docker pull universalregistrar/uni-registrar-web
+      - name: Build image
+        run: |
+          docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
+          --build-arg DANUBETECH_MAVEN_INTERNAL_USERNAME=${{ env.MAVEN_USERNAME }} \
+          --build-arg DANUBETECH_MAVEN_INTERNAL_PASSWORD=${{ env.MAVEN_PASSWORD }}
+      - name: Login user to repo
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login "${{ env.REPO_NAME }}" -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+      - name: Push image
+        run: docker push "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}"
