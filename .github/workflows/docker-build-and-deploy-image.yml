@@ -7,7 +7,7 @@ on:
       - 'README.md'
       - 'LICENSE'
       - 'docs'
-    branches: [gh-workflows]
+    branches: [main]
   workflow_dispatch:
 
 env:
