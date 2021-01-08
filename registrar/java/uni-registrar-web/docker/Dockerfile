@@ -25,4 +25,4 @@ COPY --from=build /opt/universal-registrar/uni-registrar-web/config.json /var/li
 # done
 
 EXPOSE 9080
-CMD ["java", "-jar", "/usr/local/jetty/start.jar", "-Djetty.http.port=9080"]
+CMD java -jar /usr/local/jetty/start.jar -Djetty.http.port=9080
