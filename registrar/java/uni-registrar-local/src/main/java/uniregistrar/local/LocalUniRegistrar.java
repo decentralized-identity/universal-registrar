@@ -28,10 +28,10 @@ import uniregistrar.driver.http.HttpDriver;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.RegisterRequest;
+import uniregistrar.request.CreateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.DeactivateState;
-import uniregistrar.state.RegisterState;
+import uniregistrar.state.CreateState;
 import uniregistrar.state.UpdateState;
 
 public class LocalUniRegistrar implements UniRegistrar {
@@ -115,10 +115,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public RegisterState register(String driverId, RegisterRequest registerRequest) throws RegistrationException {
+	public CreateState create(String driverId, CreateRequest createRequest) throws RegistrationException {
 
 		if (driverId == null) throw new NullPointerException();
-		if (registerRequest == null) throw new NullPointerException();
+		if (createRequest == null) throw new NullPointerException();
 
 		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
 
@@ -128,7 +128,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// prepare register state
 
-		RegisterState registerState = RegisterState.build();
+		CreateState createState = CreateState.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// execute extensions (before)
@@ -137,7 +137,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			for (Extension extension : this.getExtensions()) {
 
-				extensionStatus.or(extension.beforeRegister(driverId, registerRequest, registerState, this));
+				extensionStatus.or(extension.beforeRegister(driverId, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -148,18 +148,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(driverId);
 			if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-			if (log.isDebugEnabled()) log.debug("Attemping to register " + registerRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attemping to register " + createRequest + " with driver " + driver.getClass());
 
-			RegisterState driverRegisterState = driver.register(registerRequest);
+			CreateState driverCreateState = driver.register(createRequest);
 
-			if (driverRegisterState != null) {
+			if (driverCreateState != null) {
 
-				registerState.setJobId(driverRegisterState.getJobId());
-				registerState.setDidState(driverRegisterState.getDidState());
-				registerState.setMethodMetadata(driverRegisterState.getMethodMetadata());
+				createState.setJobId(driverCreateState.getJobId());
+				createState.setDidState(driverCreateState.getDidState());
+				createState.setMethodMetadata(driverCreateState.getMethodMetadata());
 			}
 
-			registerState.getRegistrarMetadata().put("driverId", driverId);
+			createState.getRegistrarMetadata().put("driverId", driverId);
 		}
 
 		// execute extensions (after)
@@ -168,7 +168,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			for (Extension extension : this.getExtensions()) {
 
-				extensionStatus.or(extension.afterRegister(driverId, registerRequest, registerState, this));
+				extensionStatus.or(extension.afterRegister(driverId, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
@@ -177,11 +177,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long stop = System.currentTimeMillis();
 
-		registerState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
+		createState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
-		return registerState;
+		return createState;
 	}
 
 	@Override

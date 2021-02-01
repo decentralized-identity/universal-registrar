@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
-import uniregistrar.request.RegisterRequest;
+import uniregistrar.request.CreateRequest;
 import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.RegisterState;
+import uniregistrar.state.CreateState;
 import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
 
@@ -54,10 +54,10 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public RegisterState register(String driverId, RegisterRequest registerRequest) throws RegistrationException {
+	public CreateState create(String driverId, CreateRequest createRequest) throws RegistrationException {
 
 		if (driverId == null) throw new NullPointerException();
-		if (registerRequest == null) throw new NullPointerException();
+		if (createRequest == null) throw new NullPointerException();
 
 		// prepare HTTP request
 
@@ -67,21 +67,21 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try {
 
-			body = registerRequest.toJson();
+			body = createRequest.toJson();
 		} catch (JsonProcessingException ex) {
 
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(RegisterRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", RegisterState.MIME_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(CreateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", CreateState.MIME_TYPE);
 
 		// execute HTTP request
 
-		RegisterState registerState;
+		CreateState createState;
 
-		if (log.isDebugEnabled()) log.debug("Request for register request " + registerRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for register request " + createRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -100,21 +100,21 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() > 200) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve REGISTER STATE for register request " + registerRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
-			registerState = RegisterState.fromJson(httpBody);
+			createState = CreateState.fromJson(httpBody);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve REGISTER STATE for register request " + registerRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved REGISTER STATE for for register request " + registerRequest + " (" + uriString + "): " + registerState);
+		if (log.isDebugEnabled()) log.debug("Retrieved REGISTER STATE for for register request " + createRequest + " (" + uriString + "): " + createState);
 
 		// done
 
-		return registerState;
+		return createState;
 	}
 
 	@Override

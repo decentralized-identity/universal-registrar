@@ -15,10 +15,10 @@ import org.springframework.web.HttpRequestHandler;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.RegisterRequest;
+import uniregistrar.request.CreateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.DeactivateState;
-import uniregistrar.state.RegisterState;
+import uniregistrar.state.CreateState;
 import uniregistrar.state.UpdateState;
 
 public abstract class WebUniRegistrar extends HttpServlet implements HttpRequestHandler, UniRegistrar {
@@ -51,9 +51,9 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
-	public RegisterState register(String driverId, RegisterRequest registerRequest) throws RegistrationException {
+	public CreateState create(String driverId, CreateRequest createRequest) throws RegistrationException {
 
-		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().register(driverId, registerRequest);
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().create(driverId, createRequest);
 	}
 
 	@Override

@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
 
-public class RegisterRequest {
+public class CreateRequest {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -31,11 +31,11 @@ public class RegisterRequest {
 	@JsonProperty
 	private DIDDocument didDocument;
 
-	public RegisterRequest() {
+	public CreateRequest() {
 
 	}
 
-	public RegisterRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
+	public CreateRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
 
 		this.jobId = jobId;
 		this.options = options;
@@ -47,14 +47,14 @@ public class RegisterRequest {
 	 * Serialization
 	 */
 
-	public static RegisterRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static CreateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(json, RegisterRequest.class);
+		return objectMapper.readValue(json, CreateRequest.class);
 	}
 
-	public static RegisterRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static CreateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(reader, RegisterRequest.class);
+		return objectMapper.readValue(reader, CreateRequest.class);
 	}
 
 	public String toJson() throws JsonProcessingException {
