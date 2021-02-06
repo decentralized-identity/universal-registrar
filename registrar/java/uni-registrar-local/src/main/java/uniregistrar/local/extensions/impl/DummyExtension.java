@@ -8,14 +8,14 @@ import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.local.extensions.Extension.AbstractExtension;
-import uniregistrar.request.RegisterRequest;
-import uniregistrar.state.RegisterState;
+import uniregistrar.request.CreateRequest;
+import uniregistrar.state.CreateState;
 
 public class DummyExtension extends AbstractExtension implements Extension {
 
 	private static Logger log = LoggerFactory.getLogger(DummyExtension.class);
 
-	public ExtensionStatus afterRegister(String driverId, RegisterRequest registerRequest, RegisterState registerState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+	public ExtensionStatus afterRegister(String driverId, CreateRequest createRequest, CreateState createState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
 
 		if (log.isDebugEnabled()) log.debug("Dummy extension called!");
 

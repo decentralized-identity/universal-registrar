@@ -14,7 +14,7 @@
 		</property>
 	</bean>
 
-	<bean name="RegisterServlet" class="uniregistrar.web.servlet.RegisterServlet">
+	<bean name="CreateServlet" class="uniregistrar.web.servlet.CreateServlet">
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 

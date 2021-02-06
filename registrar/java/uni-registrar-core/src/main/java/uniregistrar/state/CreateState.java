@@ -18,7 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @JsonPropertyOrder({ "jobId", "didState", "registrarMetadata", "methodMetadata" })
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class RegisterState {
+public class CreateState {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -36,7 +36,7 @@ public class RegisterState {
 	@JsonProperty
 	private Map<String, Object> methodMetadata;
 
-	private RegisterState(String jobId, Map<String, Object> didState, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata) {
+	private CreateState(String jobId, Map<String, Object> didState, Map<String, Object> registrarMetadata, Map<String, Object> methodMetadata) {
 
 		this.jobId = jobId;
 		this.didState = didState;
@@ -49,28 +49,28 @@ public class RegisterState {
 	 */
 
 	@JsonCreator
-	public static RegisterState build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="registrarMetadata", required=false) Map<String, Object> registrarMetadata, @JsonProperty(value="methodMetadata", required=false) Map<String, Object> methodMetadata) {
+	public static CreateState build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="registrarMetadata", required=false) Map<String, Object> registrarMetadata, @JsonProperty(value="methodMetadata", required=false) Map<String, Object> methodMetadata) {
 
-		return new RegisterState(jobId, didState, registrarMetadata, methodMetadata);
+		return new CreateState(jobId, didState, registrarMetadata, methodMetadata);
 	}
 
-	public static RegisterState build() {
+	public static CreateState build() {
 
-		return new RegisterState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), new HashMap<String, Object> ());
+		return new CreateState(null, new HashMap<String, Object> (), new HashMap<String, Object> (), new HashMap<String, Object> ());
 	}
 
 	/*
 	 * Serialization
 	 */
 
-	public static RegisterState fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static CreateState fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(json, RegisterState.class);
+		return objectMapper.readValue(json, CreateState.class);
 	}
 
-	public static RegisterState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static CreateState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 
-		return objectMapper.readValue(reader, RegisterState.class);
+		return objectMapper.readValue(reader, CreateState.class);
 	}
 
 	public String toJson() throws JsonProcessingException {

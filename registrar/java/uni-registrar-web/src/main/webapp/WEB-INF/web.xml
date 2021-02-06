@@ -14,13 +14,13 @@
 
 	<servlet>
 		<description></description>
-		<display-name>RegisterServlet</display-name>
-		<servlet-name>RegisterServlet</servlet-name>
+		<display-name>CreateServlet</display-name>
+		<servlet-name>CreateServlet</servlet-name>
 		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>RegisterServlet</servlet-name>
-		<url-pattern>/1.0/register</url-pattern>
+		<servlet-name>CreateServlet</servlet-name>
+		<url-pattern>/1.0/create</url-pattern>
 	</servlet-mapping>
 
 	<servlet>

@@ -10,8 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uniregistrar.request.RegisterRequest;
-import uniregistrar.state.RegisterState;
+import uniregistrar.request.CreateRequest;
+import uniregistrar.state.CreateState;
 
 public class RegisterServlet extends AbstractServlet implements Servlet {
 
@@ -32,11 +32,11 @@ public class RegisterServlet extends AbstractServlet implements Servlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		RegisterRequest registerRequest = RegisterRequest.fromJson(request.getReader());
+		CreateRequest createRequest = CreateRequest.fromJson(request.getReader());
 
-		if (log.isInfoEnabled()) log.info("Incoming register request: " + registerRequest);
+		if (log.isInfoEnabled()) log.info("Incoming register request: " + createRequest);
 
-		if (registerRequest == null) {
+		if (createRequest == null) {
 
 			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No register request found.");
 			return;
@@ -44,32 +44,32 @@ public class RegisterServlet extends AbstractServlet implements Servlet {
 
 		// invoke the driver
 
-		RegisterState registerState;
+		CreateState createState;
 		String registerStateString;
 
 		try {
 
-			registerState = InitServlet.getDriver().register(registerRequest);
-			registerStateString = registerState == null ? null : registerState.toJson();
+			createState = InitServlet.getDriver().register(createRequest);
+			registerStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Driver reported for " + registerRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + registerRequest + ": " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Driver reported for " + createRequest + ": " + ex.getMessage(), ex);
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + createRequest + ": " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Register state for " + registerRequest + ": " + registerStateString);
+		if (log.isInfoEnabled()) log.info("Register state for " + createRequest + ": " + registerStateString);
 
 		// no register state?
 
-		if (registerState == null) {
+		if (createState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + registerRequest);
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + createRequest);
 			return;
 		}
 
 		// write register state
 
-		sendResponse(response, HttpServletResponse.SC_OK, RegisterState.MIME_TYPE, registerStateString);
+		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MIME_TYPE, registerStateString);
 	}
 }

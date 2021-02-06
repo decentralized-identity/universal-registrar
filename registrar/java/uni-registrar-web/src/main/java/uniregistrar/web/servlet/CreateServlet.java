@@ -1,23 +1,21 @@
 package uniregistrar.web.servlet;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uniregistrar.request.CreateRequest;
+import uniregistrar.state.CreateState;
+import uniregistrar.web.WebUniRegistrar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uniregistrar.request.RegisterRequest;
-import uniregistrar.state.RegisterState;
-import uniregistrar.web.WebUniRegistrar;
-
-public class RegisterServlet extends WebUniRegistrar {
+public class CreateServlet extends WebUniRegistrar {
 
 	private static final long serialVersionUID = 5659041840241560964L;
 
-	protected static Logger log = LoggerFactory.getLogger(RegisterServlet.class);
+	protected static Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -29,11 +27,11 @@ public class RegisterServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		RegisterRequest registerRequest;
+		CreateRequest createRequest;
 
 		try {
 
-			registerRequest = RegisterRequest.fromJson(request.getReader());
+			createRequest = CreateRequest.fromJson(request.getReader());
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Request problem: " + ex.getMessage(), ex);
@@ -43,9 +41,9 @@ public class RegisterServlet extends WebUniRegistrar {
 
 		String driverId = request.getParameter("driverId");
 
-		if (log.isInfoEnabled()) log.info("Incoming register request for driver " + driverId + ": " + registerRequest);
+		if (log.isInfoEnabled()) log.info("Incoming register request for driver " + driverId + ": " + createRequest);
 
-		if (registerRequest == null) {
+		if (createRequest == null) {
 
 			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No register request found.");
 			return;
@@ -53,27 +51,27 @@ public class RegisterServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		RegisterState registerState;
+		CreateState createState;
 		String registerStateString;
 
 		try {
 
-			registerState = this.register(driverId, registerRequest);
-			registerStateString = registerState == null ? null : registerState.toJson();
+			createState = this.create(driverId, createRequest);
+			registerStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Register problem for " + registerRequest + ": " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Register problem for " + registerRequest + ": " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Register problem for " + createRequest + ": " + ex.getMessage(), ex);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Register problem for " + createRequest + ": " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Register state for " + registerRequest + ": " + registerStateString);
+		if (log.isInfoEnabled()) log.info("Register state for " + createRequest + ": " + registerStateString);
 
 		// no register state?
 
 		if (registerStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + registerRequest + ": " + registerStateString);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + createRequest + ": " + registerStateString);
 			return;
 		}
 

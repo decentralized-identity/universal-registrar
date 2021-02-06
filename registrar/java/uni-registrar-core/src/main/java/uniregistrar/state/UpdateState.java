@@ -84,15 +84,15 @@ public class UpdateState {
 	 */
 
 	@JsonIgnore
-	public static String getState(RegisterState registerState) {
+	public static String getState(CreateState createState) {
 
-		return (String) registerState.getDidState().get("state");
+		return (String) createState.getDidState().get("state");
 	}
 
 	@JsonIgnore
-	public static void setState(RegisterState registerState, String state) {
+	public static void setState(CreateState createState, String state) {
 
-		registerState.getDidState().put("state", state);
+		createState.getDidState().put("state", state);
 	}
 
 	/*
