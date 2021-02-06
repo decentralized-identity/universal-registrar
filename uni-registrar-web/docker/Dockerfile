@@ -5,7 +5,7 @@ MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # build uni-registrar-web
 
-ADD ./registrar/java/ /opt/universal-registrar
+ADD . /opt/universal-registrar
 ADD config.json /opt/universal-registrar/uni-registrar-web/
 RUN cd /opt/universal-registrar && mvn clean install -N -DskipTests
 RUN cd /opt/universal-registrar/uni-registrar-core && mvn clean install -N -DskipTests
