@@ -76,7 +76,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 				if (url != null) {
 
-					driver.setRegisterUri(url + "1.0/register");
+					driver.setCreateUri(url + "1.0/create");
 					driver.setUpdateUri(url + "1.0/update");
 					driver.setDeactivateUri(url + "1.0/deactivate");
 				} else {
@@ -85,7 +85,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 					if (httpDriverUri.contains(":")) httpDriverUri = httpDriverUri.substring(0, httpDriverUri.indexOf(":"));
 					httpDriverUri = "http://" + httpDriverUri + ":" + (imagePort != null ? imagePort : "9080" ) + "/";
 
-					driver.setRegisterUri(httpDriverUri + "1.0/register");
+					driver.setCreateUri(httpDriverUri + "1.0/create");
 					driver.setUpdateUri(httpDriverUri + "1.0/update");
 					driver.setDeactivateUri(httpDriverUri + "1.0/deactivate");
 
@@ -104,7 +104,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 				drivers.put(id, driver);
 
-				if (log.isInfoEnabled()) log.info("Added driver '" + id + "' at " + driver.getRegisterUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+				if (log.isInfoEnabled()) log.info("Added driver '" + id + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
 			}
 		}
 
@@ -126,7 +126,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
-		// prepare register state
+		// prepare create state
 
 		CreateState createState = CreateState.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
@@ -137,7 +137,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			for (Extension extension : this.getExtensions()) {
 
-				extensionStatus.or(extension.beforeRegister(driverId, createRequest, createState, this));
+				extensionStatus.or(extension.beforeCreate(driverId, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -148,9 +148,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(driverId);
 			if (driver == null) throw new RegistrationException("Unknown driver: " + driverId);
-			if (log.isDebugEnabled()) log.debug("Attemping to register " + createRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attemping to create " + createRequest + " with driver " + driver.getClass());
 
-			CreateState driverCreateState = driver.register(createRequest);
+			CreateState driverCreateState = driver.create(createRequest);
 
 			if (driverCreateState != null) {
 
@@ -168,7 +168,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			for (Extension extension : this.getExtensions()) {
 
-				extensionStatus.or(extension.afterRegister(driverId, createRequest, createState, this));
+				extensionStatus.or(extension.afterCreate(driverId, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}

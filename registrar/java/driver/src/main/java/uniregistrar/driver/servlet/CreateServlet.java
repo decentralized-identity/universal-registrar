@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 import uniregistrar.request.CreateRequest;
 import uniregistrar.state.CreateState;
 
-public class RegisterServlet extends AbstractServlet implements Servlet {
+public class CreateServlet extends AbstractServlet implements Servlet {
 
 	private static final long serialVersionUID = 7431292074564723539L;
 
-	private static Logger log = LoggerFactory.getLogger(RegisterServlet.class);
+	private static Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
-	public RegisterServlet() {
+	public CreateServlet() {
 
 		super();
 	}
@@ -34,23 +34,23 @@ public class RegisterServlet extends AbstractServlet implements Servlet {
 
 		CreateRequest createRequest = CreateRequest.fromJson(request.getReader());
 
-		if (log.isInfoEnabled()) log.info("Incoming register request: " + createRequest);
+		if (log.isInfoEnabled()) log.info("Incoming create request: " + createRequest);
 
 		if (createRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No register request found.");
+			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No create request found.");
 			return;
 		}
 
 		// invoke the driver
 
 		CreateState createState;
-		String registerStateString;
+		String createStateString;
 
 		try {
 
-			createState = InitServlet.getDriver().register(createRequest);
-			registerStateString = createState == null ? null : createState.toJson();
+			createState = InitServlet.getDriver().create(createRequest);
+			createStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported for " + createRequest + ": " + ex.getMessage(), ex);
@@ -58,18 +58,18 @@ public class RegisterServlet extends AbstractServlet implements Servlet {
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Register state for " + createRequest + ": " + registerStateString);
+		if (log.isInfoEnabled()) log.info("Create state for " + createRequest + ": " + createStateString);
 
-		// no register state?
+		// no create state?
 
 		if (createState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + createRequest);
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest);
 			return;
 		}
 
-		// write register state
+		// write create state
 
-		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MIME_TYPE, registerStateString);
+		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MIME_TYPE, createStateString);
 	}
 }

@@ -37,13 +37,13 @@ public class HttpDriver implements Driver {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
-	public static final URI DEFAULT_REGISTER_URI = null;
+	public static final URI DEFAULT_CREATE_URI = null;
 	public static final URI DEFAULT_UPDATE_URI = null;
 	public static final URI DEFAULT_DEACTIVATE_URI = null;
 	public static final URI DEFAULT_PROPERTIES_URI = null;
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
-	private URI registerUri = DEFAULT_REGISTER_URI;
+	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
@@ -53,11 +53,11 @@ public class HttpDriver implements Driver {
 	}
 
 	@Override
-	public CreateState register(CreateRequest createRequest) throws RegistrationException {
+	public CreateState create(CreateRequest createRequest) throws RegistrationException {
 
 		// prepare HTTP request
 
-		String uriString = this.getRegisterUri().toString();
+		String uriString = this.getCreateUri().toString();
 
 		String body;
 
@@ -77,7 +77,7 @@ public class HttpDriver implements Driver {
 
 		CreateState createState;
 
-		if (log.isDebugEnabled()) log.debug("Request for register request " + createRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for create request " + createRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -96,17 +96,17 @@ public class HttpDriver implements Driver {
 
 			if (httpResponse.getStatusLine().getStatusCode() > 200) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			createState = CreateState.fromJson(httpBody);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved REGISTER STATE for for register request " + createRequest + " (" + uriString + "): " + createState);
+		if (log.isDebugEnabled()) log.debug("Retrieved CREATE STATE for for create request " + createRequest + " (" + uriString + "): " + createState);
 
 		// done
 
@@ -242,7 +242,7 @@ public class HttpDriver implements Driver {
 
 		Map<String, Object> httpProperties = new HashMap<String, Object> ();
 
-		if (this.getRegisterUri() != null) httpProperties.put("registerUri", this.getRegisterUri().toString());
+		if (this.getCreateUri() != null) httpProperties.put("createUri", this.getCreateUri().toString());
 		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
 		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
@@ -332,19 +332,19 @@ public class HttpDriver implements Driver {
 		this.httpClient = httpClient;
 	}
 
-	public URI getRegisterUri() {
+	public URI getCreateUri() {
 
-		return this.registerUri;
+		return this.createUri;
 	}
 
-	public void setRegisterUri(URI registerUri) {
+	public void setCreateUri(URI createUri) {
 
-		this.registerUri = registerUri;
+		this.createUri = createUri;
 	}
 
-	public void setRegisterUri(String registerUri) {
+	public void setCreateUri(String createUri) {
 
-		this.registerUri = URI.create(registerUri);
+		this.createUri = URI.create(createUri);
 	}
 
 	public URI getUpdateUri() {

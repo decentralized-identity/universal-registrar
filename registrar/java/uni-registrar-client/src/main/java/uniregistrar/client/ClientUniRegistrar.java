@@ -38,13 +38,13 @@ public class ClientUniRegistrar implements UniRegistrar {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
-	public static final URI DEFAULT_REGISTER_URI = URI.create("http://localhost:8080/1.0/register");
+	public static final URI DEFAULT_CREATE_URI = URI.create("http://localhost:8080/1.0/create");
 	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:8080/1.0/update");
 	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:8080/1.0/deactivate");
 	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:8080/1.0/properties");
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
-	private URI registerUri = DEFAULT_REGISTER_URI;
+	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
@@ -61,7 +61,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		// prepare HTTP request
 
-		String uriString = this.getRegisterUri().toString() + "?driverId=" + urlEncode(driverId);
+		String uriString = this.getCreateUri().toString() + "?driverId=" + urlEncode(driverId);
 
 		String body;
 
@@ -81,7 +81,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		CreateState createState;
 
-		if (log.isDebugEnabled()) log.debug("Request for register request " + createRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for create request " + createRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -100,17 +100,17 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() > 200) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			createState = CreateState.fromJson(httpBody);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve REGISTER STATE for register request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved REGISTER STATE for for register request " + createRequest + " (" + uriString + "): " + createState);
+		if (log.isDebugEnabled()) log.debug("Retrieved CREATE STATE for for create request " + createRequest + " (" + uriString + "): " + createState);
 
 		// done
 
@@ -324,19 +324,19 @@ public class ClientUniRegistrar implements UniRegistrar {
 		this.httpClient = httpClient;
 	}
 
-	public URI getRegisterUri() {
+	public URI getCreateUri() {
 
-		return this.registerUri;
+		return this.createUri;
 	}
 
-	public void setRegisterUri(URI registerUri) {
+	public void setCreateUri(URI createUri) {
 
-		this.registerUri = registerUri;
+		this.createUri = createUri;
 	}
 
-	public void setRegisterUri(String registerUri) {
+	public void setCreateUri(String createUri) {
 
-		this.registerUri = URI.create(registerUri);
+		this.createUri = URI.create(createUri);
 	}
 
 	public URI getUpdateUri() {

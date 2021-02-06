@@ -14,7 +14,7 @@ public interface Driver {
 
 	public static final String PROPERTIES_MIME_TYPE = "application/json";
 
-	public CreateState register(CreateRequest createRequest) throws RegistrationException;
+	public CreateState create(CreateRequest createRequest) throws RegistrationException;
 	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException;
 	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException;
 	public Map<String, Object> properties() throws RegistrationException;

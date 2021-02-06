@@ -34,49 +34,49 @@ public class CreateServlet extends WebUniRegistrar {
 			createRequest = CreateRequest.fromJson(request.getReader());
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Request problem: " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Create problem: " + ex.getMessage(), ex);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem: " + ex.getMessage());
 			return;
 		}
 
 		String driverId = request.getParameter("driverId");
 
-		if (log.isInfoEnabled()) log.info("Incoming register request for driver " + driverId + ": " + createRequest);
+		if (log.isInfoEnabled()) log.info("Incoming create request for driver " + driverId + ": " + createRequest);
 
 		if (createRequest == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No register request found.");
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No create request found.");
 			return;
 		}
 
 		// execute the request
 
 		CreateState createState;
-		String registerStateString;
+		String createStateString;
 
 		try {
 
 			createState = this.create(driverId, createRequest);
-			registerStateString = createState == null ? null : createState.toJson();
+			createStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Register problem for " + createRequest + ": " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Register problem for " + createRequest + ": " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Create problem for " + createRequest + ": " + ex.getMessage(), ex);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem for " + createRequest + ": " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Register state for " + createRequest + ": " + registerStateString);
+		if (log.isInfoEnabled()) log.info("Create state for " + createRequest + ": " + createStateString);
 
-		// no register state?
+		// no create state?
 
-		if (registerStateString == null) {
+		if (createStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No register state for " + createRequest + ": " + registerStateString);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest + ": " + createStateString);
 			return;
 		}
 
-		// write register state
+		// write create state
 
-		WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, registerStateString);
+		WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, createStateString);
 	}
 }
