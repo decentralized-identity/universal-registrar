@@ -18,17 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Log workspace filesystem
-        run: |
-          echo
-          echo **Root-folder:**
-          ls -al /
-          echo
-          echo **GITHUB_WORKSPACE value:**
-          echo $GITHUB_WORKSPACE
-          echo
-          echo **workspace folder:**
-          ls -al $GITHUB_WORKSPACE
       - name: Import Secrets
         uses: hashicorp/vault-action@v2.1.1
         with:
