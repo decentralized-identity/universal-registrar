@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	id="WebApp_ID" version="2.5" metadata-complete="true">
+
+	<display-name>uni-registrar-web</display-name>
+
+	<welcome-file-list>
+		<welcome-file>index.jsp</welcome-file>
+	</welcome-file-list>
+
+	<!-- SERVLETS -->
+
+	<servlet>
+		<description></description>
+		<display-name>CreateServlet</display-name>
+		<servlet-name>CreateServlet</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>CreateServlet</servlet-name>
+		<url-pattern>/1.0/create</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>UpdateServlet</display-name>
+		<servlet-name>UpdateServlet</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>UpdateServlet</servlet-name>
+		<url-pattern>/1.0/update</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>DeactivateServlet</display-name>
+		<servlet-name>DeactivateServlet</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>DeactivateServlet</servlet-name>
+		<url-pattern>/1.0/deactivate</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<description></description>
+		<display-name>PropertiesServlet</display-name>
+		<servlet-name>PropertiesServlet</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>PropertiesServlet</servlet-name>
+		<url-pattern>/1.0/properties</url-pattern>
+		<url-pattern>/1.0/properties/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- LISTENERS -->
+
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
+</web-app>
