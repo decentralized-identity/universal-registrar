@@ -10,6 +10,9 @@ on:
     branches-ignore:
       - 'release-**'
 
+env:
+  PATH_TO_POM: $GITHUB_WORKSPACE/uni-registrar-web
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,7 +31,7 @@ jobs:
         uses: danubetech/github-action-maven-deploy@master
         with:
           server_id: danubetech-maven-snapshots
-          path_to_pom: /github/workspace/registrar/java
+          path_to_pom: PATH_TO_POM
         env:
           MAVEN_USERNAME: ${{ env.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ env.MAVEN_PASSWORD }}
