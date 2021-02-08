@@ -31,7 +31,7 @@ jobs:
         uses: danubetech/github-action-maven-deploy@master
         with:
           server_id: danubetech-maven-snapshots
-          path_to_pom: $env.PATH_TO_POM
+          path_to_pom: ${{ env.PATH_TO_POM }}
         env:
           MAVEN_USERNAME: ${{ env.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ env.MAVEN_PASSWORD }}
