@@ -1,36 +1,34 @@
 openapi: 3.0.0
-servers:
-# Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/universal-registrar/universal-registrar-driver/1.0.0
-  - url: /1.0/
 info:
-  description: Universal Registrar Driver
-  version: "1.0.0"
   title: Universal Registrar Driver
+  description: Universal Registrar Driver
   contact:
     email: markus@danubetech.com
+  version: 1.0.0
+servers:
+  - url: /1.0/
 paths:
-  /register:
+  /create:
     post:
-      summary: Registers a DID.
-      operationId: register
+      summary: Creates a DID.
+      operationId: create
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: '#/components/schemas/CreateRequest'
       responses:
-        '200':
-          description: successfully registered!
+        "200":
+          description: successfully createed!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterState'
-        '400':
+                $ref: '#/components/schemas/CreateState'
+        "400":
           description: invalid input!
-        '500':
+        "500":
           description: error!
+      x-swagger-router-controller: Default
   /update:
     post:
       summary: Updates a DID.
@@ -41,16 +39,17 @@ paths:
             schema:
               $ref: '#/components/schemas/UpdateRequest'
       responses:
-        '200':
+        "200":
           description: successfully updated!
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateState'
-        '400':
+        "400":
           description: invalid input!
-        '500':
+        "500":
           description: error!
+      x-swagger-router-controller: Default
   /deactivate:
     post:
       summary: Deactivates a DID.
@@ -61,148 +60,196 @@ paths:
             schema:
               $ref: '#/components/schemas/DeactivateRequest'
       responses:
-        '200':
+        "200":
           description: successfully deactivated!
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeactivateState'
-        '400':
+        "400":
           description: invalid input!
-        '500':
+        "500":
           description: error!
+      x-swagger-router-controller: Default
 components:
   schemas:
-    RegisterRequest:
-      description: Request parameters for the register operation.
+    CreateRequest:
       type: object
-      additionalProperties: false
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
           type: object
-          example: {"chain": "testnet"}
+          example:
+            chain: testnet
         secret:
           type: object
-          example: {"seed": "72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ"}
+          example:
+            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
         didDocument:
           type: object
+      additionalProperties: false
+      description: Request parameters for the create operation.
     UpdateRequest:
-      description: Request parameters for the update operation.
-      type: object
-      additionalProperties: false
       required:
         - identifier
+      type: object
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         identifier:
           type: string
-          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+          example: did:sov:WRfXPg8dantKVubE3HX8pw
         options:
           type: object
         secret:
           type: object
         didDocument:
           type: object
-    DeactivateRequest:
-      description: Request parameters for the deactivate operation.
-      type: object
       additionalProperties: false
+      description: Request parameters for the update operation.
+    DeactivateRequest:
       required:
         - identifier
+      type: object
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         identifier:
           type: string
-          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+          example: did:sov:WRfXPg8dantKVubE3HX8pw
         options:
           type: object
         secret:
           type: object
-    RegisterState:
-      description: The state after a register operation.
-      type: object
       additionalProperties: false
+      description: Request parameters for the deactivate operation.
+    CreateState:
       required:
         - didState
+      type: object
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-              example: "finished"
-            identifier:
-              type: string
-              example: "did:sov:WRfXPg8dantKVubE3HX8pw"
-            secret:
-              type: object
-              example: {
-  "keys": [
-    {
-      "privateKeyJwk": {
-        "kty": "OKP",
-        "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
-        "crv": "Ed25519",
-        "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
-      },
-      "publicKeyDIDURL": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1"
-    }
-  ]
-}
+          $ref: '#/components/schemas/CreateState_didState'
         registrarMetadata:
           type: object
         methodMetadata:
           type: object
+      additionalProperties: false
+      description: The state after a create operation.
+      example:
+        jobId: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          identifier: did:sov:WRfXPg8dantKVubE3HX8pw
+          state: finished
+          secret:
+            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
+            keys:
+              - privateKeyJwk:
+                  kty: OKP
+                  d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+                  crv: Ed25519
+                  x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+                publicKeyDIDURL: did:sov:WRfXPg8dantKVubE3HX8pw#key-1
+        methodMetadata: {}
+        registrarMetadata: {}
     UpdateState:
+      required:
+        - didState
+      type: object
+      properties:
+        jobId:
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          $ref: '#/components/schemas/UpdateState_didState'
+        registrarMetadata:
+          type: object
+        methodMetadata:
+          type: object
+      additionalProperties: false
       description: The state after an update operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+      example:
+        jobId: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-            secret:
-              type: object
-        registrarMetadata:
-          type: object
-        methodMetadata:
-          type: object
+          state: state
+          secret: {}
+        methodMetadata: {}
+        registrarMetadata: {}
     DeactivateState:
-      description: The state after a deactivate operation.
-      type: object
-      additionalProperties: false
       required:
         - didState
+      type: object
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
+          $ref: '#/components/schemas/DeactivateState_didState'
         registrarMetadata:
           type: object
         methodMetadata:
           type: object
+      additionalProperties: false
+      description: The state after a deactivate operation.
+      example:
+        jobId: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          state: state
+        methodMetadata: {}
+        registrarMetadata: {}
+    CreateState_didState:
+      type: object
+      properties:
+        state:
+          type: string
+          example: finished
+        identifier:
+          type: string
+          example: did:sov:WRfXPg8dantKVubE3HX8pw
+        secret:
+          type: object
+          example:
+            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
+            keys:
+              - privateKeyJwk:
+                  kty: OKP
+                  d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+                  crv: Ed25519
+                  x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+                publicKeyDIDURL: did:sov:WRfXPg8dantKVubE3HX8pw#key-1
+      example:
+        identifier: did:sov:WRfXPg8dantKVubE3HX8pw
+        state: finished
+        secret:
+          seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
+          keys:
+            - privateKeyJwk:
+                kty: OKP
+                d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+                crv: Ed25519
+                x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+              publicKeyDIDURL: did:sov:WRfXPg8dantKVubE3HX8pw#key-1
+    UpdateState_didState:
+      type: object
+      properties:
+        state:
+          type: string
+        secret:
+          type: object
+      example:
+        state: state
+        secret: {}
+    DeactivateState_didState:
+      type: object
+      properties:
+        state:
+          type: string
+      example:
+        state: state

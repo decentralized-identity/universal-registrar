@@ -1,8 +1,5 @@
 openapi: 3.0.0
 servers:
-# Added by API Auto Mocking Plugin
-  - description: SwaggerHub API Auto Mocking
-    url: https://virtserver.swaggerhub.com/universal-registrar/universal-registrar/1.0.0
   - url: /1.0/
 info:
   description: Universal Registrar
@@ -11,10 +8,10 @@ info:
   contact:
     email: markus@danubetech.com
 paths:
-  /register:
+  /create:
     post:
-      summary: Registers a DID.
-      operationId: register
+      summary: Creates a DID.
+      operationId: create
       parameters:
         - in: query
           required: true
@@ -27,14 +24,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequest'
+              $ref: '#/components/schemas/CreateRequest'
       responses:
         '200':
-          description: successfully registered!
+          description: successfully createed!
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RegisterState'
+                $ref: '#/components/schemas/CreateState'
         '400':
           description: invalid input!
         '500':
@@ -97,8 +94,8 @@ paths:
           description: error!
 components:
   schemas:
-    RegisterRequest:
-      description: Request parameters for the register operation.
+    CreateRequest:
+      description: Request parameters for the create operation.
       type: object
       additionalProperties: false
       properties:
@@ -149,8 +146,8 @@ components:
           type: object
         secret:
           type: object
-    RegisterState:
-      description: The state after a register operation.
+    CreateState:
+      description: The state after a create operation.
       type: object
       additionalProperties: false
       required:
