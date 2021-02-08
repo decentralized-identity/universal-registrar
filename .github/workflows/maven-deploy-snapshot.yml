@@ -10,6 +10,9 @@ on:
     branches-ignore:
       - 'release-**'
 
+env:
+  PATH_TO_POM: $GITHUB_WORKSPACE
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,13 +25,12 @@ jobs:
           token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
           tlsSkipVerify: true
           secrets: |
-            ci/data/gh-workflows/maven username | MAVEN_USERNAME ;
-            ci/data/gh-workflows/maven password | MAVEN_PASSWORD
+            ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
+            ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD
       - name: Run maven deploy action
         uses: danubetech/github-action-maven-deploy@master
         with:
           server_id: danubetech-maven-snapshots
-          path_to_pom: /github/workspace/
         env:
           MAVEN_USERNAME: ${{ env.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ env.MAVEN_PASSWORD }}
