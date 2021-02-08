@@ -29,8 +29,8 @@ jobs:
           secrets: |
             ci/data/gh-workflows/dockerhub username | DOCKER_USERNAME ;
             ci/data/gh-workflows/dockerhub password | DOCKER_PASSWORD ;
-            ci/data/gh-workflows/maven username | MAVEN_USERNAME ;
-            ci/data/gh-workflows/maven password | MAVEN_PASSWORD
+            ci/data/gh-workflows/maven maven-danubetech-nexus | MAVEN_USERNAME ;
+            ci/data/gh-workflows/maven maven-danubetech-nexus | MAVEN_PASSWORD
       - name: Build image
         run: |
           docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
