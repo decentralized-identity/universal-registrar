@@ -67,6 +67,19 @@ services:
     image: universalregistrar/driver-did-key:latest
     ports:
       - "9084:9080"
+  driver-did-ion:
+    image: universalregistrar/driver-did-ion:latest
+    environment:
+      uniregistrar_driver_did_ion_api: ${uniregistrar_driver_did_ion_api}
+    ports:
+      - "9085:9080"
+  driver-did-web:
+    image: universalregistrar/driver-did-web:latest
+    environment:
+      uniregistrar_driver_did_web_basePath: ${uniregistrar_driver_did_web_basePath}
+      uniregistrar_driver_did_web_baseUrl: ${uniregistrar_driver_did_web_baseUrl}
+    ports:
+      - "9086:9080"
   uni-registrar-web:
     image: universalregistrar/uni-registrar-web:latest
     ports:

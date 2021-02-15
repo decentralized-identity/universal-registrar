@@ -15,6 +15,14 @@
 		}, {
 			"image": "universalregistrar/driver-did-key",
 			"tag": "latest"
+		}, {
+			"image": "universalregistrar/driver-did-ion",
+			"imageProperties": "true",
+			"tag": "latest"
+		}, {
+			"image": "universalregistrar/driver-did-web",
+			"imageProperties": "true",
+			"tag": "latest"
 		}
 	]
 }
