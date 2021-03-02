@@ -49,3 +49,30 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
         if: failure()
+  trigger-related-workflows:
+    needs: [publish-image]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.1.1
+        with:
+          url: https://vault.danubetech.com
+          token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+          tlsSkipVerify: true
+          secrets: |
+            ci/data/gh-workflows/workflow-dispatch token | WORKFLOW_DISPATCH_TOKEN ;
+            ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: danubetech/danubetech-uni-registrar-web
+          workflow: Docker build/deploy image to Danubetech Nexus
+      - name: Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,commit,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
+        if: failure()
