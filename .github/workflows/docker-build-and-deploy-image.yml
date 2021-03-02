@@ -63,11 +63,11 @@ jobs:
             ci/data/gh-workflows/workflow-dispatch token | WORKFLOW_DISPATCH_TOKEN ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1.1.3
+        uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repository: danubetech/danubetech-uni-registrar-web
-          event-type: publish-image
+          workflow: Docker build/deploy image to Danubetech Nexus
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
