@@ -3,26 +3,26 @@
 		{
 			"method": "btcr",
 			"url": "http://driver-did-btcr:9080/",
-			"imageProperties": "true"
+			"propertiesEndpoint": "true"
 		}, {
 			"method": "sov",
 			"url": "http://driver-did-sov:9080/",
-			"imageProperties": "true"
+			"propertiesEndpoint": "true"
 		}, {
 			"method": "v1",
 			"url": "http://driver-did-v1:9080/",
-			"imageProperties": "true"
+			"propertiesEndpoint": "true"
 		}, {
 			"method": "key",
 			"url": "http://driver-did-key:9080/"
 		}, {
 			"method": "ion",
 			"url": "http://driver-did-ion:9080/",
-			"imageProperties": "true"
+			"propertiesEndpoint": "true"
 		}, {
 			"method": "web",
 			"url": "http://driver-did-web:9080/",
-			"imageProperties": "true"
+			"propertiesEndpoint": "true"
 		}
 	]
 }
