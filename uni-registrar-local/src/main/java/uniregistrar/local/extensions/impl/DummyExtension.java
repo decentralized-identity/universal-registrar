@@ -15,7 +15,7 @@ public class DummyExtension extends AbstractExtension implements Extension {
 
 	private static Logger log = LoggerFactory.getLogger(DummyExtension.class);
 
-	public ExtensionStatus afterCreate(String driverId, CreateRequest createRequest, CreateState createState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+	public ExtensionStatus afterCreate(String method, CreateRequest createRequest, CreateState createState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
 
 		if (log.isDebugEnabled()) log.debug("Dummy extension called!");
 

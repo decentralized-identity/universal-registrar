@@ -41,9 +41,9 @@ public class DeactivateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String driverId = request.getParameter("driverId");
+		String method = request.getParameter("method");
 
-		if (log.isInfoEnabled()) log.info("Incoming deactivate request for driver " + driverId + ": " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Incoming deactivate request for method " + method + ": " + deactivateRequest);
 
 		if (deactivateRequest == null) {
 
@@ -58,7 +58,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		try {
 
-			deactiateState = this.deactivate(driverId, deactivateRequest);
+			deactiateState = this.deactivate(method, deactivateRequest);
 			deactivateStateString = deactiateState == null ? null : deactiateState.toJson();
 		} catch (Exception ex) {
 

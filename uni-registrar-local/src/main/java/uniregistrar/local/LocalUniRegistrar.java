@@ -143,7 +143,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 				createState.setMethodMetadata(driverCreateState.getMethodMetadata());
 			}
 
-			createState.getRegistrarMetadata().put("driverId", method);
+			createState.getRegistrarMetadata().put("method", method);
 		}
 
 		// execute extensions (after)
@@ -209,7 +209,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			updateState.setDidState(driverUpdateState.getDidState());
 			updateState.setMethodMetadata(driverUpdateState.getMethodMetadata());
 
-			updateState.getRegistrarMetadata().put("driverId", method);
+			updateState.getRegistrarMetadata().put("method", method);
 		}
 
 		// execute extensions (after)
@@ -275,7 +275,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			deactivateState.setDidState(driverDeactivateState.getDidState());
 			deactivateState.setMethodMetadata(driverDeactivateState.getMethodMetadata());
 
-			deactivateState.getRegistrarMetadata().put("driverId", method);
+			deactivateState.getRegistrarMetadata().put("method", method);
 		}
 
 		// execute extensions (after)

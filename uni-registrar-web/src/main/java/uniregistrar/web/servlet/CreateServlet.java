@@ -39,9 +39,9 @@ public class CreateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String driverId = request.getParameter("driverId");
+		String method = request.getParameter("method");
 
-		if (log.isInfoEnabled()) log.info("Incoming create request for driver " + driverId + ": " + createRequest);
+		if (log.isInfoEnabled()) log.info("Incoming create request for method " + method + ": " + createRequest);
 
 		if (createRequest == null) {
 
@@ -56,7 +56,7 @@ public class CreateServlet extends WebUniRegistrar {
 
 		try {
 
-			createState = this.create(driverId, createRequest);
+			createState = this.create(method, createRequest);
 			createStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
