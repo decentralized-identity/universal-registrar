@@ -17,8 +17,6 @@ import uniregistrar.web.WebUniRegistrar;
 
 public class PropertiesServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = -8654511038420444615L;
-
 	protected static Logger log = LoggerFactory.getLogger(PropertiesServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
@@ -44,8 +42,8 @@ public class PropertiesServlet extends WebUniRegistrar {
 			propertiesString = properties == null ? null : objectMapper.writeValueAsString(properties);
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Driver reported: " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Registrar reported: " + ex.getMessage(), ex);
+			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Registrar reported: " + ex.getMessage());
 			return;
 		}
 

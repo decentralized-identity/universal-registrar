@@ -15,8 +15,6 @@ import uniregistrar.web.WebUniRegistrar;
 
 public class UpdateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(UpdateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -72,6 +73,12 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	public Map<String, Map<String, Object>> properties() throws RegistrationException {
 
 		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().properties();
+	}
+
+	@Override
+	public Set<String> methods() throws RegistrationException {
+
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().methods();
 	}
 
 	/*

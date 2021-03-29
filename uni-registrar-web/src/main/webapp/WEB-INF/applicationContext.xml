@@ -30,4 +30,8 @@
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 
+	<bean name="MethodsServlet" class="uniregistrar.web.servlet.MethodsServlet">
+		<property name="uniRegistrar" ref="UniRegistrar" />
+	</bean>
+
 </beans>

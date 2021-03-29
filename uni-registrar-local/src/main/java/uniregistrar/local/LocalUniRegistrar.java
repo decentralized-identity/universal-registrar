@@ -5,12 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 
 import org.slf4j.Logger;
@@ -71,6 +66,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 				if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
 				if (url == null) throw new IllegalArgumentException("Missing 'url' entry in driver configuration.");
 
+				// construct HTTP driver
+
 				HttpDriver driver = new HttpDriver();
 
 				if (! url.endsWith("/")) url = url + "/";
@@ -80,10 +77,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 				driver.setDeactivateUri(url + "1.0/deactivate");
 				if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(url + "1.0/properties");
 
-				String driverId = constructDriverId("method");
-				drivers.put(driverId, driver);
+				// done
 
-				if (log.isInfoEnabled()) log.info("Added driver '" + driverId + "' for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+				drivers.put(method, driver);
+				if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
 			}
 		}
 
@@ -91,11 +88,6 @@ public class LocalUniRegistrar implements UniRegistrar {
 		localUniRegistrar.setDrivers(drivers);
 
 		return localUniRegistrar;
-	}
-
-	private static String constructDriverId(String method) {
-
-		return "driver-" + method;
 	}
 
 	@Override
@@ -132,7 +124,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
-			if (log.isDebugEnabled()) log.debug("Attemping to create " + createRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to create " + createRequest + " with driver " + driver.getClass());
 
 			CreateState driverCreateState = driver.create(createRequest);
 
@@ -202,7 +194,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
-			if (log.isDebugEnabled()) log.debug("Attemping to update " + updateRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to update " + updateRequest + " with driver " + driver.getClass());
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			updateState.setJobId(driverUpdateState.getJobId());
@@ -268,7 +260,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
-			if (log.isDebugEnabled()) log.debug("Attemping to deactivate " + deactivateRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass());
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			deactivateState.setJobId(driverDeactivateState.getJobId());
@@ -317,9 +309,23 @@ public class LocalUniRegistrar implements UniRegistrar {
 			properties.put(driver.getKey(), driverProperties);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Loading properties: " + properties);
+		// done
 
+		if (log.isDebugEnabled()) log.debug("Loaded properties: " + properties);
 		return properties;
+	}
+
+	@Override
+	public Set<String> methods() throws RegistrationException {
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		Set<String> methods = this.getDrivers().keySet();
+
+		// done
+
+		if (log.isDebugEnabled()) log.debug("Loaded methods: " + methods);
+		return methods;
 	}
 
 	/*

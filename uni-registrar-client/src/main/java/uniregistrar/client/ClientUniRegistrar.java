@@ -6,6 +6,7 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -293,6 +294,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 		// done
 
 		return properties;
+	}
+
+	@Override
+	public Set<String> methods() throws RegistrationException {
+
+		throw new RuntimeException("Not implemented.");
 	}
 
 	/*

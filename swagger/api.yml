@@ -92,6 +92,28 @@ paths:
           description: invalid input!
         '500':
           description: error!
+  /properties:
+    get:
+      summary: Returns a map of properties of the resolver.
+      operationId: properties
+      responses:
+        '200':
+          description: Success.
+  /methods:
+    get:
+      summary: Returns a list of supported DID methods.
+      operationId: methods
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: The list of supported DID methods.
+                example: ["btcr","sov","v1","key"]
 components:
   schemas:
     CreateRequest:

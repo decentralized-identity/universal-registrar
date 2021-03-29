@@ -15,8 +15,6 @@ import uniregistrar.web.WebUniRegistrar;
 
 public class DeactivateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";

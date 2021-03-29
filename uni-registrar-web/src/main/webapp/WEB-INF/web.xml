@@ -57,6 +57,18 @@
 		<url-pattern>/1.0/properties/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<description></description>
+		<display-name>MethodsServlet</display-name>
+		<servlet-name>MethodsServlet</servlet-name>
+		<servlet-class>org.springframework.web.context.support.HttpRequestHandlerServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MethodsServlet</servlet-name>
+		<url-pattern>/1.0/methods</url-pattern>
+		<url-pattern>/1.0/methods/*</url-pattern>
+	</servlet-mapping>
+
 	<!-- LISTENERS -->
 
 	<listener>

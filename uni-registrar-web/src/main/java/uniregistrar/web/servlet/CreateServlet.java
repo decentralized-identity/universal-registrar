@@ -13,8 +13,6 @@ import java.io.IOException;
 
 public class CreateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";
