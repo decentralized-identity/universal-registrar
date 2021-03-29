@@ -54,14 +54,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public CreateState create(String driverId, CreateRequest createRequest) throws RegistrationException {
+	public CreateState create(String method, CreateRequest createRequest) throws RegistrationException {
 
-		if (driverId == null) throw new NullPointerException();
+		if (method == null) throw new NullPointerException();
 		if (createRequest == null) throw new NullPointerException();
 
 		// prepare HTTP request
 
-		String uriString = this.getCreateUri().toString() + "?driverId=" + urlEncode(driverId);
+		String uriString = this.getCreateUri().toString() + "?method=" + urlEncode(method);
 
 		String body;
 
@@ -118,14 +118,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public UpdateState update(String driverId, UpdateRequest updateRequest) throws RegistrationException {
+	public UpdateState update(String method, UpdateRequest updateRequest) throws RegistrationException {
 
-		if (driverId == null) throw new NullPointerException();
+		if (method == null) throw new NullPointerException();
 		if (updateRequest == null) throw new NullPointerException();
 
 		// prepare HTTP request
 
-		String uriString = this.getUpdateUri().toString() + "?driverId=" + urlEncode(driverId);
+		String uriString = this.getUpdateUri().toString() + "?method=" + urlEncode(method);
 
 		String body;
 
@@ -182,14 +182,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
-	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException {
+	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest) throws RegistrationException {
 
-		if (driverId == null) throw new NullPointerException();
+		if (method == null) throw new NullPointerException();
 		if (deactivateRequest == null) throw new NullPointerException();
 
 		// prepare HTTP request
 
-		String uriString = this.getDeactivateUri().toString() + "?driverId=" + urlEncode(driverId);
+		String uriString = this.getDeactivateUri().toString() + "?method=" + urlEncode(method);
 
 		String body;
 

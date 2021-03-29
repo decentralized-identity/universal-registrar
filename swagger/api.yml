@@ -15,11 +15,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
@@ -43,11 +43,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
@@ -71,11 +71,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
