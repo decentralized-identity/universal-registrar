@@ -181,6 +181,8 @@ components:
     }
   ]
 }
+            didDocument:
+              type: object
         registrarMetadata:
           type: object
         methodMetadata:
@@ -202,6 +204,8 @@ components:
             state:
               type: string
             secret:
+              type: object
+            didDocument:
               type: object
         registrarMetadata:
           type: object
