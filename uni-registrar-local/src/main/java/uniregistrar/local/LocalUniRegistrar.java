@@ -123,7 +123,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
+			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
 			if (log.isDebugEnabled()) log.debug("Attempting to create " + createRequest + " with driver " + driver.getClass());
 
 			CreateState driverCreateState = driver.create(createRequest);
@@ -193,7 +193,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
+			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
 			if (log.isDebugEnabled()) log.debug("Attempting to update " + updateRequest + " with driver " + driver.getClass());
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
@@ -259,7 +259,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException("Unknown driver: " + method);
+			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
 			if (log.isDebugEnabled()) log.debug("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass());
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);

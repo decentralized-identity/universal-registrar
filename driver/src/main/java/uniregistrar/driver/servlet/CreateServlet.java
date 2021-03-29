@@ -54,7 +54,7 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported for " + createRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + createRequest + ": " + ex.getMessage());
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
 			return;
 		}
 
@@ -64,7 +64,7 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 
 		if (createState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest);
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state.");
 			return;
 		}
 
