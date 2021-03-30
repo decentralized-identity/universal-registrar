@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -299,7 +301,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			properties = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, Map.class);
+			properties = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, LinkedHashMap.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve PROPERTIES from " + uriString + ": " + ex.getMessage(), ex);
@@ -349,7 +351,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			methods = (Set<String>) objectMapper.readValue(httpBody, Set.class);
+			methods = (Set<String>) objectMapper.readValue(httpBody, LinkedHashSet.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve METHODS from " + uriString + ": " + ex.getMessage(), ex);
