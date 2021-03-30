@@ -33,7 +33,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 	private static Logger log = LoggerFactory.getLogger(LocalUniRegistrar.class);
 
-	private Map<String, Driver> drivers;
+	private Map<String, Driver> drivers = new LinkedHashMap<String, Driver> ();
 	private List<Extension> extensions = new ArrayList<Extension> ();
 
 	public LocalUniRegistrar() {
@@ -44,7 +44,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		final Gson gson = new Gson();
 
-		Map<String, Driver> drivers = new HashMap<String, Driver> ();
+		Map<String, Driver> drivers = new LinkedHashMap<String, Driver> ();
 
 		try (Reader reader = new FileReader(new File(filePath))) {
 
@@ -297,7 +297,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
 
-		Map<String, Map<String, Object>> properties = new HashMap<String, Map<String, Object>> ();
+		Map<String, Map<String, Object>> properties = new LinkedHashMap<String, Map<String, Object>> ();
 
 		for (Entry<String, Driver> driver : this.getDrivers().entrySet()) {
 
