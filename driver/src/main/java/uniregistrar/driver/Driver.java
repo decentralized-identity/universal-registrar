@@ -1,5 +1,6 @@
 package uniregistrar.driver;
 
+import java.util.Collections;
 import java.util.Map;
 
 import uniregistrar.RegistrationException;
@@ -17,5 +18,9 @@ public interface Driver {
 	public CreateState create(CreateRequest createRequest) throws RegistrationException;
 	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException;
 	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException;
-	public Map<String, Object> properties() throws RegistrationException;
+
+	default public Map<String, Object> properties() throws RegistrationException {
+
+		return Collections.emptyMap();
+	}
 }
