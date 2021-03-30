@@ -56,7 +56,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	}
 
-	public static ClientUniRegistrar fromBaseUri(URI baseUri) {
+	public static ClientUniRegistrar create(URI baseUri) {
 
 		ClientUniRegistrar clientUniRegistrar = new ClientUniRegistrar();
 		clientUniRegistrar.setCreateUri(baseUri.resolve("/create"));
