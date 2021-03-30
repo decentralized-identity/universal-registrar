@@ -124,7 +124,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to create " + createRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to create " + createRequest + " with driver " + driver.getClass().getSimpleName());
 
 			CreateState driverCreateState = driver.create(createRequest);
 
@@ -194,7 +194,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to update " + updateRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to update " + updateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			updateState.setJobId(driverUpdateState.getJobId());
@@ -260,7 +260,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException("Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass());
+			if (log.isDebugEnabled()) log.debug("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			deactivateState.setJobId(driverDeactivateState.getJobId());
