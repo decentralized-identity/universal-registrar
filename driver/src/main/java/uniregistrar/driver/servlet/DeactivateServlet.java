@@ -54,7 +54,7 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver reported for " + deactivateRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported for " + deactivateRequest + ": " + ex.getMessage());
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
 			return;
 		}
 
@@ -64,7 +64,7 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 
 		if (deactivateState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state for " + deactivateRequest);
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state.");
 			return;
 		}
 

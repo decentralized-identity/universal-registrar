@@ -17,12 +17,12 @@ You can deploy the Universal Registrar on your local machine by cloning this Git
 
 You should then be able to create/update/deactivate identifiers locally using simple `curl` requests as follows:
 
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}' 
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-sov' -d '{"options":{"network":"danube"}}' 
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-btcr' -d '{"options":{"chain":"TESTNET"}}' 
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-ion' -d '{}' 
-	curl -X POST 'http://localhost:9080/1.0/register?driverId=driver-universalregistrar%2Fdriver-did-web' -d '{}' 
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-sov' -d '{"options":{"network":"danube"}}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-btcr' -d '{"options":{"chain":"TESTNET"}}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-ion' -d '{}'
+	curl -X POST 'http://localhost:9080/1.0/register?method=driver-universalregistrar%2Fdriver-did-web' -d '{}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 

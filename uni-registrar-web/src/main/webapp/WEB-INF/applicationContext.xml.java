@@ -31,6 +31,10 @@
 		<property name="uniRegistrar" ref="UniRegistrar" />
 	</bean>
 
+	<bean name="MethodsServlet" class="uniregistrar.web.servlet.MethodsServlet">
+		<property name="uniRegistrar" ref="UniRegistrar" />
+	</bean>
+
 	<!-- DRIVERS (VIA JAVA API) -->
 
 	<bean id="DidBtcrDriver" class="uniregistrar.driver.did.btcr.DidBtcrDriver">

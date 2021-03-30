@@ -13,8 +13,6 @@ import java.io.IOException;
 
 public class CreateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";
@@ -39,9 +37,9 @@ public class CreateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String driverId = request.getParameter("driverId");
+		String method = request.getParameter("method");
 
-		if (log.isInfoEnabled()) log.info("Incoming create request for driver " + driverId + ": " + createRequest);
+		if (log.isInfoEnabled()) log.info("Incoming create request for method " + method + ": " + createRequest);
 
 		if (createRequest == null) {
 
@@ -56,7 +54,7 @@ public class CreateServlet extends WebUniRegistrar {
 
 		try {
 
-			createState = this.create(driverId, createRequest);
+			createState = this.create(method, createRequest);
 			createStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 

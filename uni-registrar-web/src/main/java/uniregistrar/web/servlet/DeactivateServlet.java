@@ -15,8 +15,6 @@ import uniregistrar.web.WebUniRegistrar;
 
 public class DeactivateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";
@@ -41,9 +39,9 @@ public class DeactivateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String driverId = request.getParameter("driverId");
+		String method = request.getParameter("method");
 
-		if (log.isInfoEnabled()) log.info("Incoming deactivate request for driver " + driverId + ": " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Incoming deactivate request for method " + method + ": " + deactivateRequest);
 
 		if (deactivateRequest == null) {
 
@@ -58,7 +56,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		try {
 
-			deactiateState = this.deactivate(driverId, deactivateRequest);
+			deactiateState = this.deactivate(method, deactivateRequest);
 			deactivateStateString = deactiateState == null ? null : deactiateState.toJson();
 		} catch (Exception ex) {
 

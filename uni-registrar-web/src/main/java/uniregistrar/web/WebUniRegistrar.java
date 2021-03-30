@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -51,27 +52,33 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
-	public CreateState create(String driverId, CreateRequest createRequest) throws RegistrationException {
+	public CreateState create(String method, CreateRequest createRequest) throws RegistrationException {
 
-		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().create(driverId, createRequest);
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().create(method, createRequest);
 	}
 
 	@Override
-	public UpdateState update(String driverId, UpdateRequest updateRequest) throws RegistrationException {
+	public UpdateState update(String method, UpdateRequest updateRequest) throws RegistrationException {
 
-		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().update(driverId, updateRequest);
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().update(method, updateRequest);
 	}
 
 	@Override
-	public DeactivateState deactivate(String driverId, DeactivateRequest deactivateRequest) throws RegistrationException {
+	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest) throws RegistrationException {
 
-		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().deactivate(driverId, deactivateRequest);
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().deactivate(method, deactivateRequest);
 	}
 
 	@Override
 	public Map<String, Map<String, Object>> properties() throws RegistrationException {
 
 		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().properties();
+	}
+
+	@Override
+	public Set<String> methods() throws RegistrationException {
+
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().methods();
 	}
 
 	/*

@@ -1,28 +1,28 @@
 {
 	"drivers": [
 		{
-			"image": "universalregistrar/driver-did-btcr",
-			"imageProperties": "true",
-			"tag": "latest"
+			"method": "btcr",
+			"url": "http://driver-did-btcr:9080/",
+			"propertiesEndpoint": "true"
 		}, {
-			"image": "universalregistrar/driver-did-sov",
-			"imageProperties": "true",
-			"tag": "latest"
+			"method": "sov",
+			"url": "http://driver-did-sov:9080/",
+			"propertiesEndpoint": "true"
 		}, {
-			"image": "universalregistrar/driver-did-v1",
-			"imageProperties": "true",
-			"tag": "latest"
+			"method": "v1",
+			"url": "http://driver-did-v1:9080/",
+			"propertiesEndpoint": "true"
 		}, {
-			"image": "universalregistrar/driver-did-key",
-			"tag": "latest"
+			"method": "key",
+			"url": "http://driver-did-key:9080/"
 		}, {
-			"image": "universalregistrar/driver-did-ion",
-			"imageProperties": "true",
-			"tag": "latest"
+			"method": "ion",
+			"url": "http://driver-did-ion:9080/",
+			"propertiesEndpoint": "true"
 		}, {
-			"image": "universalregistrar/driver-did-web",
-			"imageProperties": "true",
-			"tag": "latest"
+			"method": "web",
+			"url": "http://driver-did-web:9080/",
+			"propertiesEndpoint": "true"
 		}
 	]
 }

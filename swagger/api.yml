@@ -15,11 +15,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
@@ -43,11 +43,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
@@ -71,11 +71,11 @@ paths:
       parameters:
         - in: query
           required: true
-          name: driverId
+          name: method
           schema:
             type: string
-          description: An identifier for a driver that implements the requested DID method.
-          example: driver-universalregistrar/driver-did-sov
+          description: The requested DID method for the operation.
+          example: btcr
       requestBody:
         content:
           application/json:
@@ -92,6 +92,33 @@ paths:
           description: invalid input!
         '500':
           description: error!
+  /properties:
+    get:
+      summary: Returns a map of properties of the resolver.
+      operationId: properties
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: object
+                description: A map of properties.
+  /methods:
+    get:
+      summary: Returns a list of supported DID methods.
+      operationId: methods
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: The list of supported DID methods.
+                example: ["btcr","sov","v1","key"]
 components:
   schemas:
     CreateRequest:

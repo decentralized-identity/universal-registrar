@@ -15,8 +15,6 @@ import uniregistrar.web.WebUniRegistrar;
 
 public class UpdateServlet extends WebUniRegistrar {
 
-	private static final long serialVersionUID = 5659041840241560964L;
-
 	protected static Logger log = LoggerFactory.getLogger(UpdateServlet.class);
 
 	public static final String MIME_TYPE = "application/json";
@@ -41,9 +39,9 @@ public class UpdateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String driverId = request.getParameter("driverId");
+		String method = request.getParameter("method");
 
-		if (log.isInfoEnabled()) log.info("Incoming update request for driver " + driverId + ": " + updateRequest);
+		if (log.isInfoEnabled()) log.info("Incoming update request for method " + method + ": " + updateRequest);
 
 		if (updateRequest == null) {
 
@@ -58,7 +56,7 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		try {
 
-			updateState = this.update(driverId, updateRequest);
+			updateState = this.update(method, updateRequest);
 			updateStateString = updateState == null ? null : updateState.toJson();
 		} catch (Exception ex) {
 
