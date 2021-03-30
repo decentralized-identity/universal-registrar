@@ -315,7 +315,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		// prepare HTTP request
 
-		String uriString = this.getPropertiesUri().toString();
+		String uriString = this.getMethodsUri().toString();
 
 		HttpGet httpGet = new HttpGet(URI.create(uriString));
 		httpGet.addHeader("Accept", UniRegistrar.METHODS_MIME_TYPE);
