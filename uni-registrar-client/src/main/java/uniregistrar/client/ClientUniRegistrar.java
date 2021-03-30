@@ -43,15 +43,29 @@ public class ClientUniRegistrar implements UniRegistrar {
 	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:8080/1.0/update");
 	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:8080/1.0/deactivate");
 	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:8080/1.0/properties");
+	public static final URI DEFAULT_METHODS_URI = URI.create("http://localhost:8080/1.0/methods");
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
+	private URI methodsUri = DEFAULT_METHODS_URI;
 
 	public ClientUniRegistrar() {
 
+	}
+
+	public static ClientUniRegistrar fromBaseUri(URI baseUri) {
+
+		ClientUniRegistrar clientUniRegistrar = new ClientUniRegistrar();
+		clientUniRegistrar.setCreateUri(baseUri.resolve("/create"));
+		clientUniRegistrar.setUpdateUri(baseUri.resolve("/update"));
+		clientUniRegistrar.setDeactivateUri(baseUri.resolve("/deactivate"));
+		clientUniRegistrar.setPropertiesUri(baseUri.resolve("/properties"));
+		clientUniRegistrar.setMethodsUri(baseUri.resolve("/methods"));
+
+		return clientUniRegistrar;
 	}
 
 	@Override
@@ -279,17 +293,17 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() > 200) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve DRIVER PROPERTIES from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve PROPERTIES from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			properties = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, Map.class);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve DRIVER PROPERTIES from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve PROPERTIES from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved DRIVER PROPERTIES (" + uriString + "): " + properties);
+		if (log.isDebugEnabled()) log.debug("Retrieved PROPERTIES (" + uriString + "): " + properties);
 
 		// done
 
@@ -299,7 +313,51 @@ public class ClientUniRegistrar implements UniRegistrar {
 	@Override
 	public Set<String> methods() throws RegistrationException {
 
-		throw new RuntimeException("Not implemented.");
+		// prepare HTTP request
+
+		String uriString = this.getPropertiesUri().toString();
+
+		HttpGet httpGet = new HttpGet(URI.create(uriString));
+		httpGet.addHeader("Accept", UniRegistrar.METHODS_MIME_TYPE);
+
+		// execute HTTP request
+
+		Set<String> methods;
+
+		if (log.isDebugEnabled()) log.debug("Request to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (httpResponse.getStatusLine().getStatusCode() == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve METHODS from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			methods = (Set<String>) objectMapper.readValue(httpBody, Set.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve METHODS from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved METHODS (" + uriString + "): " + methods);
+
+		// done
+
+		return methods;
 	}
 
 	/*
@@ -389,5 +447,15 @@ public class ClientUniRegistrar implements UniRegistrar {
 	public void setPropertiesUri(String propertiesUri) {
 
 		this.propertiesUri = URI.create(propertiesUri);
+	}
+
+	public URI getMethodsUri() {
+
+		return this.methodsUri;
+	}
+
+	public void setMethodsUri(URI methodsUri) {
+
+		this.methodsUri = methodsUri;
 	}
 }
