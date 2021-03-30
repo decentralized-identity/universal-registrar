@@ -3,6 +3,10 @@ networks:
   default:
     name: universal-registrar
 services:
+  uni-registrar-web:
+    image: universalregistrar/uni-registrar-web:latest
+    ports:
+      - "9080:9080"
   driver-did-btcr:
     image: universalregistrar/driver-did-btcr:latest
     environment:
@@ -78,13 +82,6 @@ services:
     environment:
       uniregistrar_driver_did_web_basePath: ${uniregistrar_driver_did_web_basePath}
       uniregistrar_driver_did_web_baseUrl: ${uniregistrar_driver_did_web_baseUrl}
-    ports:
-      - "9086:9080"
-  uni-registrar-web:
-    image: universalregistrar/uni-registrar-web:latest
-    environment:
-      uniregistrar_driver_did_web_basePath: ${uniregistrar_driver_did_web_basePath}
-      uniregistrar_driver_did_web_baseUrl: ${uniregistrar_driver_did_web_baseUrl}
       uniregistrar_driver_did_web_generatedFolder: ${uniregistrar_driver_did_web_generatedFolder}
     ports:
-      - "9080:9080"
+      - "9086:9080"
