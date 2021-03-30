@@ -58,12 +58,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public static ClientUniRegistrar create(URI baseUri) {
 
+		if (! baseUri.toString().endsWith("/")) baseUri = URI.create(baseUri.toString() + "/");
+
 		ClientUniRegistrar clientUniRegistrar = new ClientUniRegistrar();
-		clientUniRegistrar.setCreateUri(baseUri.resolve("/create"));
-		clientUniRegistrar.setUpdateUri(baseUri.resolve("/update"));
-		clientUniRegistrar.setDeactivateUri(baseUri.resolve("/deactivate"));
-		clientUniRegistrar.setPropertiesUri(baseUri.resolve("/properties"));
-		clientUniRegistrar.setMethodsUri(baseUri.resolve("/methods"));
+		clientUniRegistrar.setCreateUri(URI.create(baseUri.toString() + "create"));
+		clientUniRegistrar.setUpdateUri(URI.create(baseUri.toString() + "update"));
+		clientUniRegistrar.setDeactivateUri(URI.create(baseUri.toString() + "deactivate"));
+		clientUniRegistrar.setPropertiesUri(URI.create(baseUri.toString() + "properties"));
+		clientUniRegistrar.setMethodsUri(URI.create(baseUri.toString() + "methods"));
 
 		return clientUniRegistrar;
 	}
