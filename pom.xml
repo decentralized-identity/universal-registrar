@@ -86,7 +86,7 @@
 		<commons.lang3.version>3.11</commons.lang3.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons-codec.version>1.14</commons-codec.version>
-		<google.guava.version>28.2-jre</google.guava.version>
+		<google.guava.version>29.0-jre</google.guava.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
 		<springframework.version>5.2.9.RELEASE</springframework.version>
