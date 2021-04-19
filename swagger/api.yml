@@ -142,12 +142,12 @@ components:
       type: object
       additionalProperties: false
       required:
-        - identifier
+        - did
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        identifier:
+        did:
           type: string
           example: "did:sov:WRfXPg8dantKVubE3HX8pw"
         options:
@@ -161,12 +161,12 @@ components:
       type: object
       additionalProperties: false
       required:
-        - identifier
+        - did
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        identifier:
+        did:
           type: string
           example: "did:sov:WRfXPg8dantKVubE3HX8pw"
         options:
@@ -190,7 +190,7 @@ components:
             state:
               type: string
               example: "finished"
-            identifier:
+            did:
               type: string
               example: "did:sov:WRfXPg8dantKVubE3HX8pw"
             secret:
