@@ -17,12 +17,12 @@ You can deploy the Universal Registrar on your local machine by cloning this Git
 
 You should then be able to create/update/deactivate identifiers locally using simple `curl` requests as follows:
 
-	curl -X POST 'http://localhost:9080/1.0/register?method=v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}'
-	curl -X POST 'http://localhost:9080/1.0/register?method=sov' -d '{"options":{"network":"danube"}}'
-	curl -X POST 'http://localhost:9080/1.0/register?method=btcr' -d '{"options":{"chain":"TESTNET"}}'
-	curl -X POST 'http://localhost:9080/1.0/register?method=key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
-	curl -X POST 'http://localhost:9080/1.0/register?method=ion' -d '{}'
-	curl -X POST 'http://localhost:9080/1.0/register?method=web' -d '{}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=v1' -d '{"options":{"ledger":"test","keytype": "ed25519"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=sov' -d '{"options":{"network":"danube"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=btcr' -d '{"options":{"chain":"TESTNET"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=ion' -d '{}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=web' -d '{}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
