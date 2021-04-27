@@ -1,5 +1,5 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>decentralized-identity</groupId>
@@ -86,7 +86,7 @@
 		<commons.lang3.version>3.11</commons.lang3.version>
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons-codec.version>1.14</commons-codec.version>
-		<google.guava.version>29.0-jre</google.guava.version>
+		<google.guava.version>30.1-jre</google.guava.version>
 		<httpclient.version>4.5.12</httpclient.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
 		<springframework.version>5.2.9.RELEASE</springframework.version>
@@ -105,6 +105,8 @@
 		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
 		<maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+		<maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
+		<maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
 	</properties>
 
 	<build>
@@ -134,8 +136,7 @@
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
-						<source>${java.version}</source>
-						<target>${java.version}</target>
+						<release>${java.version}</release>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -181,13 +182,11 @@
 						<scmReleaseCommitComment>Latest Release @{releaseLabel}</scmReleaseCommitComment>
 						<pomFileName>pom.xml</pomFileName>
 					</configuration>
-					<dependencies>
-						<dependency>
-							<groupId>org.apache.maven.plugins</groupId>
-							<artifactId>maven-scm-plugin</artifactId>
-							<version>${maven-scm-plugin.version}</version>
-						</dependency>
-					</dependencies>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-scm-plugin</artifactId>
+					<version>${maven-scm-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
