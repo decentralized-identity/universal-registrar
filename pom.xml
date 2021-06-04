@@ -87,7 +87,7 @@
 		<commons.collections4.version>4.4</commons.collections4.version>
 		<commons-codec.version>1.14</commons-codec.version>
 		<google.guava.version>30.1-jre</google.guava.version>
-		<httpclient.version>4.5.12</httpclient.version>
+		<httpclient.version>4.5.13</httpclient.version>
 		<javax.servlet.version>2.5</javax.servlet.version>
 		<springframework.version>5.2.9.RELEASE</springframework.version>
 		<io.leonard-base58.version>0.0.2</io.leonard-base58.version>
