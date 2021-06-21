@@ -42,8 +42,6 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 ## More Information
 
  * [Driver Development](/docs/driver-development.md)
- * [API Documentation](/docs/api-documentation.md)
- * [Universal DID Operations](/docs/Universal-DID-Operations.md)
  * [Troubleshooting](/docs/troubleshooting.md)
 * [Java Components](/docs/java-components.md)
 
