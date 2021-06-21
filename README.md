@@ -2,7 +2,7 @@
 
 # Universal Registrar
 
-A Universal Registrar is an identifier registrar that works with any decentralized identifier system, including Decentralized Identifiers (DIDs).
+The Universal Registrar creates/updates/deactivates Decentralized Identifiers (DIDs) across many different DID methods, based on the [W3C DID Core 1.0](https://www.w3.org/TR/did-core/) and [DID Registration](https://identity.foundation/did-registration/) specifications.
 
 See https://uniregistrar.io/ for a publicly hosted instance of a Universal Registrar.
 
@@ -45,7 +45,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
  * [API Documentation](/docs/api-documentation.md)
  * [Universal DID Operations](/docs/Universal-DID-Operations.md)
  * [Troubleshooting](/docs/troubleshooting.md)
- * [Java Components](/registrar/java)
+* [Java Components](/docs/java-components.md)
 
 ## About
 
