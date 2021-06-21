@@ -23,6 +23,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=key' -d '{"options":{"keyType": "Ed25519VerificationKey2018"}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=ion' -d '{}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=web' -d '{}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=ebsi' -d '{"secret":{"token":"ey......"}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -38,6 +39,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/) | 1.0.0 | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
 | [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/) | 1.0.0 | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
 | [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
+| [did-ebsi](https://github.com/danubetech/uni-registrar-driver-did-ebsi/) | 1.0.0 | (missing) | [universalregistrar/driver-did-ebsi](https://hub.docker.com/r/universalregistrar/driver-did-ebsi/)
 
 ## More Information
 
