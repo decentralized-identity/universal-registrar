@@ -33,7 +33,7 @@ public class CreateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Create problem: " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem: " + ex.getMessage());
 			return;
 		}
 
@@ -43,7 +43,7 @@ public class CreateServlet extends WebUniRegistrar {
 
 		if (createRequest == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No create request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No create request found.");
 			return;
 		}
 
@@ -59,7 +59,7 @@ public class CreateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Create problem for " + createRequest + ": " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem for " + createRequest + ": " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem for " + createRequest + ": " + ex.getMessage());
 			return;
 		}
 
@@ -69,12 +69,12 @@ public class CreateServlet extends WebUniRegistrar {
 
 		if (createStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest + ": " + createStateString);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest + ": " + createStateString);
 			return;
 		}
 
 		// write create state
 
-		WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, createStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, createStateString);
 	}
 }

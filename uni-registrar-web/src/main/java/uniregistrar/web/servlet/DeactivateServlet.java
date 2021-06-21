@@ -35,7 +35,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Request problem: " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
 			return;
 		}
 
@@ -45,7 +45,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		if (deactivateRequest == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No deactivate request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No deactivate request found.");
 			return;
 		}
 
@@ -61,7 +61,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
 			return;
 		}
 
@@ -71,12 +71,12 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		if (deactivateStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state for " + deactivateRequest + ".");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state for " + deactivateRequest + ".");
 			return;
 		}
 
 		// write deactivate state
 
-		WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, deactivateStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, deactivateStateString);
 	}
 }

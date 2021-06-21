@@ -35,7 +35,7 @@ public class UpdateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Request problem: " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
 			return;
 		}
 
@@ -45,7 +45,7 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		if (updateRequest == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No update request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No update request found.");
 			return;
 		}
 
@@ -61,7 +61,7 @@ public class UpdateServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Update problem for " + updateRequest + ": " + ex.getMessage(), ex);
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Update problem for " + updateRequest + ": " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Update problem for " + updateRequest + ": " + ex.getMessage());
 			return;
 		}
 
@@ -71,12 +71,12 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		if (updateStateString == null) {
 
-			WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No update state for " + updateRequest + ".");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No update state for " + updateRequest + ".");
 			return;
 		}
 
 		// write update state
 
-		WebUniRegistrar.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, updateStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, updateStateString);
 	}
 }
