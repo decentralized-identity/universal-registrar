@@ -30,14 +30,14 @@ If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
 Are you developing a DID method and Universal Registrar driver? Click [Driver Development](/docs/driver-development.md) for instructions.
 
-| Driver Name | Driver Version | DID Spec Version | DID Method Spec Version | Docker Image |
-| ----------- | -------------- | ---------------- | ----------------------- | ------------ |
-| [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
-| [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
-| [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [1.0 WD](https://w3c.github.io/did-core/) | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
-| [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/) | 1.0.0 | [1.0 WD](https://w3c.github.io/did-core/) | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
-| [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/) | 1.0.0 | [1.0 WD](https://w3c.github.io/did-core/) | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
-| [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [1.0 WD](https://w3c.github.io/did-core/) | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
+| Driver Name | Driver Version | DID Method Spec Version | Docker Image or URL |
+| ----------- | -------------- | ----------------------- | ------------------- |
+| [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
+| [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
+| [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
+| [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/) | 1.0.0 | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
+| [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/) | 1.0.0 | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
+| [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
 
 ## More Information
 
