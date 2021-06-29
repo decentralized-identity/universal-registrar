@@ -32,6 +32,10 @@
 							<value>9080</value>
 						</systemProperty>
 						<systemProperty>
+							<name>slf4j</name>
+							<value>true</value>
+						</systemProperty>
+						<systemProperty>
 							<name>log4j2.configurationFile</name>
 							<value>file:${basedir}/src/test/resources/log4j2-test.properties</value>
 						</systemProperty>
@@ -51,14 +55,13 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>jcl-over-slf4j</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
