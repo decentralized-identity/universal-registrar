@@ -4,7 +4,7 @@
 
 The Universal Registrar creates/updates/deactivates Decentralized Identifiers (DIDs) across many different DID methods, based on the [W3C DID Core 1.0](https://www.w3.org/TR/did-core/) and [DID Registration](https://identity.foundation/did-registration/) specifications.
 
-See https://uniregistrar.io/ for a publicly hosted instance of a Universal Registrar.
+See https://uniregistrar.io/ for a publicly hosted instance of a Universal Registrar. See [Docker Hub](https://hub.docker.com/u/universalregistrar) for images.
 
 ## Quick Start
 
