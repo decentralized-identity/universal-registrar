@@ -1,0 +1,50 @@
+name: Docker release image with version-tag and short-sha
+
+on:
+  workflow_dispatch:
+
+env:
+  IMAGE_NAME: universalregistrar/uni-registrar-web
+  IMAGE_TAG: 0.1.0
+  REPO_NAME: repo.danubetech.com:5000
+  PATH_TO_DOCKERFILE: /docker/Dockerfile
+  BUILD_CONTEXT: $GITHUB_WORKSPACE/wallet-service
+
+jobs:
+  publish-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Import Secrets
+        uses: hashicorp/vault-action@v2.1.1
+        with:
+          url: https://vault.danubetech.com
+          token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+          tlsSkipVerify: true
+          secrets: |
+            ci/data/gh-workflows/docker-danubetech-nexus username | DOCKER_USERNAME ;
+            ci/data/gh-workflows/docker-danubetech-nexus password | DOCKER_PASSWORD ;
+            ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
+
+      - name: Set SHORT_SHA env variable
+        id: short_sha
+        run: echo "::set-output name=SHORT_SHA::$(git rev-parse --short HEAD)"
+
+      - name: Build image
+        run: docker build . -f "${{ env.BUILD_CONTEXT }}${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-${{ steps.short_sha.outputs.SHORT_SHA }}"
+
+      - name: Login user to repo
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login "${{ env.REPO_NAME }}" -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Push image
+        run: docker push "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-${{ steps.short_sha.outputs.SHORT_SHA }}"
+
+      - name: Slack notification
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,commit,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
+        if: failure()
