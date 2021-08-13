@@ -96,7 +96,7 @@ jobs:
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
-          repo: decentralized-identity/uni-registrar-driver-did-ebsi
+          repo: danubetech/uni-registrar-driver-did-ebsi
           workflow: 10383067 # Docker build
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
