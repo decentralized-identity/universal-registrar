@@ -67,7 +67,49 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: danubetech/danubetech-uni-registrar-web
-          workflow: Docker build/deploy image to Danubetech Nexus
+          workflow: 4760492 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-key
+          workflow: 6108956 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-sov
+          workflow: 6108957 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-btcr
+          workflow: 6108951 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-v1
+          workflow: 6108962 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-ebsi
+          workflow: 10383067 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-ion
+          workflow: 6108961 # Docker build
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-web
+          workflow: 6108959 # Docker build
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
