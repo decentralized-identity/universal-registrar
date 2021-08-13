@@ -32,15 +32,15 @@ jobs:
             ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
             ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
-      - name: Build image
-        run: |
-          docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
-          --build-arg DANUBETECH_MAVEN_INTERNAL_USERNAME=${{ env.MAVEN_USERNAME }} \
-          --build-arg DANUBETECH_MAVEN_INTERNAL_PASSWORD=${{ env.MAVEN_PASSWORD }}
-      - name: Login user to Dockerhub
-        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
-      - name: Push image to Dockerhub
-        run: docker push "${{ env.IMAGE_NAME }}"
+#       - name: Build image
+#         run: |
+#           docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
+#           --build-arg DANUBETECH_MAVEN_INTERNAL_USERNAME=${{ env.MAVEN_USERNAME }} \
+#           --build-arg DANUBETECH_MAVEN_INTERNAL_PASSWORD=${{ env.MAVEN_PASSWORD }}
+#       - name: Login user to Dockerhub
+#         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+#       - name: Push image to Dockerhub
+#         run: docker push "${{ env.IMAGE_NAME }}"
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
@@ -73,7 +73,7 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-key
-          workflow: 6108956
+          workflow: Docker build/deploy image to Danubetech Nexus
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
