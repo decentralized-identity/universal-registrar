@@ -68,6 +68,12 @@ jobs:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: danubetech/danubetech-uni-registrar-web
           workflow: Docker build/deploy image to Danubetech Nexus
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-key
+          workflow: 6108956
       - name: Slack notification
         uses: 8398a7/action-slack@v3
         with:
