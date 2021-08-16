@@ -17,7 +17,7 @@ jobs:
           secrets: |
             ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
             ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD ;
-            ci/data/gh-workflows/maven-release-workflow ssh-private-key | SSH_PRIVATE_KEY ;
+            ci/data/gh-workflows/maven-release-workflow token | TOKEN ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
       - name: Release to Danubetech Nexus
         uses: qcastel/github-actions-maven-release@v1.12.25
@@ -26,7 +26,7 @@ jobs:
           maven-repo-server-id: danubetech-maven-internal-releases
           maven-repo-server-username: ${{ env.MAVEN_USERNAME }}
           maven-repo-server-password: ${{ env.MAVEN_PASSWORD }}
-          ssh-private-key: ${{ env.SSH_PRIVATE_KEY }}
+          access-token: ${{ env.TOKEN }}
           version-minor: true
           maven-development-version-number: ${parsedVersion.majorVersion}.${parsedVersion.nextMinorVersion}-SNAPSHOT
           maven-release-version-number: ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0
