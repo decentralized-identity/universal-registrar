@@ -15,6 +15,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
+        with:
+          ref: "v${{ env.IMAGE_TAG }}"
 
       - name: Import Secrets
         uses: hashicorp/vault-action@v2.3.0
