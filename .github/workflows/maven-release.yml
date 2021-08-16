@@ -19,11 +19,11 @@ jobs:
             ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD ;
             ci/data/gh-workflows/maven-release-workflow token | TOKEN ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
-      - name: Release to Danubetech Nexus
+      - name: Release to public Danubetech Nexus repo
         uses: qcastel/github-actions-maven-release@v1.12.25
         with:
           release-branch-name: main
-          maven-repo-server-id: danubetech-maven-internal-releases
+          maven-repo-server-id: danubetech-maven-releases
           maven-repo-server-username: ${{ env.MAVEN_USERNAME }}
           maven-repo-server-password: ${{ env.MAVEN_PASSWORD }}
           access-token: ${{ env.TOKEN }}
