@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>decentralized-identity</groupId>
 		<artifactId>uni-registrar</artifactId>
-		<version>0.1.0</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 
 	<build>
