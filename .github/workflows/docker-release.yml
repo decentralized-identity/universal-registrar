@@ -34,7 +34,7 @@ jobs:
         run: echo "::set-output name=SHORT_SHA::$(git rev-parse --short HEAD)"
 
       - name: Build image
-        run: docker build . -f "${{ env.BUILD_CONTEXT }}${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-${{ steps.short_sha.outputs.SHORT_SHA }}"
+        run: docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}-${{ steps.short_sha.outputs.SHORT_SHA }}"
 
       - name: Login user to repo
         run: echo "${{ env.DOCKER_PASSWORD }}" | docker login "${{ env.REPO_NAME }}" -u "${{ env.DOCKER_USERNAME }}" --password-stdin
