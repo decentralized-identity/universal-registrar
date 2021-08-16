@@ -36,8 +36,8 @@
 
 	<scm>
 		<url>https://github.com/decentralized-identity/universal-registrar</url>
-		<connection>scm:git:git://github.com/decentralized-identity/universal-registrar.git</connection>
-		<developerConnection>scm:git:git@github.com:decentralized-identity/universal-registrar.git</developerConnection>
+		<connection>scm:git:https://github.com/decentralized-identity/universal-registrar.git</connection>
+		<developerConnection>scm:git:https://github.com:decentralized-identity/universal-registrar.git</developerConnection>
 	</scm>
 
 	<issueManagement>
