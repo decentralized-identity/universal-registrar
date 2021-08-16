@@ -6,9 +6,9 @@ on:
 env:
   IMAGE_NAME: universalregistrar/uni-registrar-web
   IMAGE_TAG: 0.1.0
-  REPO_NAME: repo.danubetech.com:5000
+  REPO_NAME: docker.io
   PATH_TO_DOCKERFILE: /docker/Dockerfile
-  BUILD_CONTEXT: $GITHUB_WORKSPACE/wallet-service
+  BUILD_CONTEXT: $GITHUB_WORKSPACE/universal-registrar
 
 jobs:
   publish-image:
@@ -23,8 +23,8 @@ jobs:
           token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
           caCertificate: ${{ secrets.VAULTCA }}
           secrets: |
-            ci/data/gh-workflows/docker-danubetech-nexus username | DOCKER_USERNAME ;
-            ci/data/gh-workflows/docker-danubetech-nexus password | DOCKER_PASSWORD ;
+            ci/data/gh-workflows/dockerhub username | DOCKER_USERNAME ;
+            ci/data/gh-workflows/dockerhub password | DOCKER_PASSWORD ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
 
       - name: Set SHORT_SHA env variable
