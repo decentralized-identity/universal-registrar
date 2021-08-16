@@ -7,8 +7,8 @@ env:
   IMAGE_NAME: universalregistrar/uni-registrar-web
   IMAGE_TAG: 0.1.0
   REPO_NAME: docker.io
-  PATH_TO_DOCKERFILE: /docker/Dockerfile
-  BUILD_CONTEXT: $GITHUB_WORKSPACE/universal-registrar
+  PATH_TO_DOCKERFILE: $GITHUB_WORKSPACE/uni-registrar-web/docker/Dockerfile
+  BUILD_CONTEXT: $GITHUB_WORKSPACE
 
 jobs:
   publish-image:
