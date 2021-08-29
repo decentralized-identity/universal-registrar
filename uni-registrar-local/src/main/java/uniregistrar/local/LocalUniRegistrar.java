@@ -107,18 +107,16 @@ public class LocalUniRegistrar implements UniRegistrar {
 		CreateState createState = CreateState.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		// execute extensions (before)
+		// [before create]
 
 		if (! extensionStatus.skipExtensionsBefore()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.beforeCreate(method, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
 
-		// select and execute driver
+		// [create]
 
 		if (! extensionStatus.skipDriver()) {
 
@@ -138,21 +136,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 			createState.getRegistrarMetadata().put("method", method);
 		}
 
-		// execute extensions (after)
+		// [after create]
 
 		if (! extensionStatus.skipExtensionsAfter()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.afterCreate(method, createRequest, createState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
 
-		// stop time
+		// additional metadata
 
 		long stop = System.currentTimeMillis();
-
 		createState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
@@ -177,18 +172,16 @@ public class LocalUniRegistrar implements UniRegistrar {
 		UpdateState updateState = UpdateState.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		// execute extensions (before)
+		// [before update]
 
 		if (! extensionStatus.skipExtensionsBefore()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.beforeUpdate(method, updateRequest, updateState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
 
-		// select and execute driver
+		// [update]
 
 		if (! extensionStatus.skipDriver()) {
 
@@ -204,21 +197,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 			updateState.getRegistrarMetadata().put("method", method);
 		}
 
-		// execute extensions (after)
+		// [after update]
 
 		if (! extensionStatus.skipExtensionsAfter()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.afterUpdate(method, updateRequest, updateState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
 
-		// stop time
+		// additional metadata
 
 		long stop = System.currentTimeMillis();
-
 		updateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
@@ -243,18 +233,16 @@ public class LocalUniRegistrar implements UniRegistrar {
 		DeactivateState deactivateState = DeactivateState.build();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
-		// execute extensions (before)
+		// [before deactivate]
 
 		if (! extensionStatus.skipExtensionsBefore()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.beforeDeactivate(method, deactivateRequest, deactivateState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
 
-		// select and execute driver
+		// [deactivate]
 
 		if (! extensionStatus.skipDriver()) {
 
@@ -270,21 +258,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 			deactivateState.getRegistrarMetadata().put("method", method);
 		}
 
-		// execute extensions (after)
+		// [after deactivate]
 
 		if (! extensionStatus.skipExtensionsAfter()) {
-
 			for (Extension extension : this.getExtensions()) {
-
 				extensionStatus.or(extension.afterDeactivate(method, deactivateRequest, deactivateState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
 
-		// stop time
+		// additional metadata
 
 		long stop = System.currentTimeMillis();
-
 		deactivateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
