@@ -101,7 +101,7 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-v1
-          workflow: 6108962 # Docker build
+          workflow: 12885144 # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
