@@ -1,4 +1,4 @@
-name: Docker build/deploy image to Dockerhub
+name: Docker latest image
 
 on:
   push:
@@ -11,11 +11,16 @@ on:
   workflow_dispatch:
 
 env:
-  IMAGE_NAME: universalregistrar/uni-registrar-web
-  PATH_TO_DOCKERFILE: $GITHUB_WORKSPACE/uni-registrar-web/docker/Dockerfile
-  BUILD_CONTEXT: $GITHUB_WORKSPACE
+  GLOBAL_IMAGE_NAME: universalregistrar/uni-registrar-web
+  GLOBAL_REPO_NAME: docker.io
 
 jobs:
+
+  build-context:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: danubetech/github-action-log-build-context@v0.1.0
+
   publish-image:
     runs-on: ubuntu-latest
     steps:
@@ -27,28 +32,28 @@ jobs:
           token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
           caCertificate: ${{ secrets.VAULTCA }}
           secrets: |
-            ci/data/gh-workflows/dockerhub username | DOCKER_USERNAME ;
-            ci/data/gh-workflows/dockerhub password | DOCKER_PASSWORD ;
-            ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
-            ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD ;
+            ci/data/gh-workflows/${{ env.GLOBAL_REPO_NAME }} username | DOCKER_USERNAME ;
+            ci/data/gh-workflows/${{ env.GLOBAL_REPO_NAME }} password | DOCKER_PASSWORD ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
+
       - name: Build image
-        run: |
-          docker build "${{ env.BUILD_CONTEXT }}" -f "${{ env.PATH_TO_DOCKERFILE }}" -t "${{ env.IMAGE_NAME }}" \
-          --build-arg DANUBETECH_MAVEN_INTERNAL_USERNAME=${{ env.MAVEN_USERNAME }} \
-          --build-arg DANUBETECH_MAVEN_INTERNAL_PASSWORD=${{ env.MAVEN_PASSWORD }}
-      - name: Login user to Dockerhub
-        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+        run: docker build . -f uni-registrar-web/docker/Dockerfile -t "${{ env.GLOBAL_REPO_NAME }}/${{ env.GLOBAL_IMAGE_NAME }}"
+
+      - name: Login user to repo
+        run: echo "${{ env.DOCKER_PASSWORD }}" | docker login "${{ env.GLOBAL_REPO_NAME }}" -u "${{ env.DOCKER_USERNAME }}" --password-stdin
+
       - name: Push image to Dockerhub
-        run: docker push "${{ env.IMAGE_NAME }}"
+        run: docker push "${{ env.GLOBAL_REPO_NAME }}/${{ env.GLOBAL_IMAGE_NAME }}"
+
       - name: Slack notification
+        if: failure()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,commit,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        if: failure()
+
   trigger-related-workflows:
     needs: [publish-image]
     runs-on: ubuntu-latest
@@ -62,59 +67,68 @@ jobs:
           secrets: |
             ci/data/gh-workflows/workflow-dispatch token | WORKFLOW_DISPATCH_TOKEN ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: danubetech/danubetech-uni-registrar-web
           workflow: 4760492 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-key
-          workflow: 6108956 # Docker build
+          workflow: 12949691 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-sov
           workflow: 6108957 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-btcr
           workflow: 6108951 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-v1
           workflow: 6108962 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: danubetech/uni-registrar-driver-did-ebsi
           workflow: 10383067 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-ion
           workflow: 6108961 # Docker build
+
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-web
           workflow: 6108959 # Docker build
+
       - name: Slack notification
+        if: failure()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,commit,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        if: failure()
