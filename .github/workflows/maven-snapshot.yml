@@ -1,4 +1,4 @@
-name: Maven deploy snapshot to Danubetech Nexus
+name: Maven snapshot
 
 on:
   push:
@@ -9,9 +9,6 @@ on:
       - 'docs'
     branches: [main]
   workflow_dispatch:
-
-env:
-  PATH_TO_POM: $GITHUB_WORKSPACE
 
 jobs:
   build:
@@ -28,6 +25,7 @@ jobs:
             ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
             ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD ;
             ci/data/gh-workflows/deployment-status slack-webhook-url | SLACK_WEBHOOK_URL
+
       - name: Run maven deploy action
         uses: danubetech/github-action-maven-deploy@master
         with:
@@ -35,11 +33,12 @@ jobs:
         env:
           MAVEN_USERNAME: ${{ env.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ env.MAVEN_PASSWORD }}
+
       - name: Slack notification
+        if: failure()
         uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
           fields: repo,commit,action,eventName,ref,workflow
         env:
           SLACK_WEBHOOK_URL: ${{ env.SLACK_WEBHOOK_URL }}
-        if: failure()
