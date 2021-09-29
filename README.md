@@ -27,6 +27,8 @@ You should then be able to create/update/deactivate identifiers locally using si
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
+Note that there is also a [Universal Registrar frontend](https://github.com/decentralized-identity/universal-registrar-frontend/) that can optionally be installed separately.
+
 ## Drivers
 
 Are you developing a DID method and Universal Registrar driver? Click [Driver Development](/docs/driver-development.md) for instructions.
