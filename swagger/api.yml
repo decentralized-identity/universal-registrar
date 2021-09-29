@@ -95,7 +95,7 @@ paths:
   /properties:
     get:
       summary: Returns a map of properties of the resolver.
-      operationId: properties
+      operationId: universalRegistrarGetProperties
       responses:
         '200':
           description: Success.
@@ -107,7 +107,7 @@ paths:
   /methods:
     get:
       summary: Returns a list of supported DID methods.
-      operationId: methods
+      operationId: universalRegistrarGetMethods
       responses:
         '200':
           description: Success.
