@@ -5,12 +5,7 @@ on:
 
 env:
   GLOBAL_IMAGE_NAME: universalregistrar/uni-registrar-web
-  GLOBAL_REPO_NAME: repo.danubetech.com:5000
-  IMAGE_NAME:
-  IMAGE_TAG: 0.1.0
-  REPO_NAME: docker.io
-  PATH_TO_DOCKERFILE: $GITHUB_WORKSPACE/uni-registrar-web/docker/Dockerfile
-  BUILD_CONTEXT: $GITHUB_WORKSPACE
+  GLOBAL_REPO_NAME: docker.io
 
 jobs:
 
