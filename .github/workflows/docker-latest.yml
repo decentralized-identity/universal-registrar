@@ -73,7 +73,7 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: danubetech/danubetech-uni-registrar-web
-          workflow: 4760492 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
