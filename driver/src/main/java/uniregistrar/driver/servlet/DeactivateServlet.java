@@ -34,11 +34,11 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 
 		DeactivateRequest deactivateRequest = DeactivateRequest.fromJson(request.getReader());
 
-		if (log.isInfoEnabled()) log.info("Incoming deactivate request: " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Driver: Incoming deactivate request: " + deactivateRequest);
 
 		if (deactivateRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No deactivate request found.");
+			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Driver: No deactivate request found.");
 			return;
 		}
 
@@ -53,18 +53,18 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 			deactivateStateString = deactivateState == null ? null : deactivateState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Driver reported for " + deactivateRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Driver: Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver: Deactivate problem: " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Deactivate state for " + deactivateRequest + ": " + deactivateStateString);
+		if (log.isInfoEnabled()) log.info("Driver: Deactivate state for " + deactivateRequest + ": " + deactivateStateString);
 
 		// no deactivate state?
 
 		if (deactivateState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state.");
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "Driver: No deactivate state.");
 			return;
 		}
 

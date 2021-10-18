@@ -34,11 +34,11 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 
 		CreateRequest createRequest = CreateRequest.fromJson(request.getReader());
 
-		if (log.isInfoEnabled()) log.info("Incoming create request: " + createRequest);
+		if (log.isInfoEnabled()) log.info("Driver: Incoming create request: " + createRequest);
 
 		if (createRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No create request found.");
+			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Driver: No create request found.");
 			return;
 		}
 
@@ -53,18 +53,18 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 			createStateString = createState == null ? null : createState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Driver reported for " + createRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Driver: Create problem for " + createRequest + ": " + ex.getMessage(), ex);
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver: Create problem: " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Create state for " + createRequest + ": " + createStateString);
+		if (log.isInfoEnabled()) log.info("Driver: Create state for " + createRequest + ": " + createStateString);
 
 		// no create state?
 
 		if (createState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state.");
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "Driver: No create state.");
 			return;
 		}
 

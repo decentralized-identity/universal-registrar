@@ -34,11 +34,11 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 
 		UpdateRequest updateRequest = UpdateRequest.fromJson(request.getReader());
 
-		if (log.isInfoEnabled()) log.info("Incoming update request: " + updateRequest);
+		if (log.isInfoEnabled()) log.info("Driver: Incoming update request: " + updateRequest);
 
 		if (updateRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No update request found.");
+			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Driver: No update request found.");
 			return;
 		}
 
@@ -53,18 +53,18 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 			updateStateString = updateState == null ? null : updateState.toJson();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Driver reported for " + updateRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver reported: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Driver: Update problem for " + updateRequest + ": " + ex.getMessage(), ex);
+			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver: Update problem: " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Update state for " + updateRequest + ": " + updateStateString);
+		if (log.isInfoEnabled()) log.info("Driver: Update state for " + updateRequest + ": " + updateStateString);
 
 		// no update state?
 
 		if (updateState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No update state.");
+			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "Driver: No update state.");
 			return;
 		}
 
