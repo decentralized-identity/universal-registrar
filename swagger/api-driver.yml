@@ -159,9 +159,9 @@ components:
               }
             didDocument:
               type: object
-        registrarMetadata:
+        didRegistrationMetadata:
           type: object
-        methodMetadata:
+        didDocumentMetadata:
           type: object
     UpdateState:
       description: The state after an update operation.
@@ -183,9 +183,9 @@ components:
               type: object
             didDocument:
               type: object
-        registrarMetadata:
+        didRegistrationMetadata:
           type: object
-        methodMetadata:
+        didDocumentMetadata:
           type: object
     DeactivateState:
       description: The state after a deactivate operation.
@@ -203,7 +203,7 @@ components:
           properties:
             state:
               type: string
-        registrarMetadata:
+        didRegistrationMetadata:
           type: object
-        methodMetadata:
+        didDocumentMetadata:
           type: object

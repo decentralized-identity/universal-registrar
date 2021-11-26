@@ -130,10 +130,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 				createState.setJobId(driverCreateState.getJobId());
 				createState.setDidState(driverCreateState.getDidState());
-				createState.setMethodMetadata(driverCreateState.getMethodMetadata());
+				createState.setDidDocumentMetadata(driverCreateState.getDidDocumentMetadata());
 			}
 
-			createState.getRegistrarMetadata().put("method", method);
+			createState.getDidRegistrationMetadata().put("method", method);
 		}
 
 		// [after create]
@@ -148,7 +148,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// additional metadata
 
 		long stop = System.currentTimeMillis();
-		createState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
+		createState.getDidRegistrationMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -192,9 +192,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			updateState.setJobId(driverUpdateState.getJobId());
 			updateState.setDidState(driverUpdateState.getDidState());
-			updateState.setMethodMetadata(driverUpdateState.getMethodMetadata());
+			updateState.setDidDocumentMetadata(driverUpdateState.getDidDocumentMetadata());
 
-			updateState.getRegistrarMetadata().put("method", method);
+			updateState.getDidRegistrationMetadata().put("method", method);
 		}
 
 		// [after update]
@@ -209,7 +209,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// additional metadata
 
 		long stop = System.currentTimeMillis();
-		updateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
+		updateState.getDidRegistrationMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -253,9 +253,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			deactivateState.setJobId(driverDeactivateState.getJobId());
 			deactivateState.setDidState(driverDeactivateState.getDidState());
-			deactivateState.setMethodMetadata(driverDeactivateState.getMethodMetadata());
+			deactivateState.setDidDocumentMetadata(driverDeactivateState.getDidDocumentMetadata());
 
-			deactivateState.getRegistrarMetadata().put("method", method);
+			deactivateState.getDidRegistrationMetadata().put("method", method);
 		}
 
 		// [after deactivate]
@@ -270,7 +270,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// additional metadata
 
 		long stop = System.currentTimeMillis();
-		deactivateState.getRegistrarMetadata().put("duration", Long.valueOf(stop - start));
+		deactivateState.getDidRegistrationMetadata().put("duration", Long.valueOf(stop - start));
 
 		// done
 
@@ -318,33 +318,26 @@ public class LocalUniRegistrar implements UniRegistrar {
 	 */
 
 	public Map<String, Driver> getDrivers() {
-
 		return this.drivers;
 	}
 
 	@SuppressWarnings("unchecked")
 	public <T extends Driver> T getDriver(Class<T> driverClass) {
-
 		for (Driver driver : this.getDrivers().values()) {
-
 			if (driverClass.isAssignableFrom(driver.getClass())) return (T) driver;
 		}
-
 		return null;
 	}
 
 	public void setDrivers(Map<String, Driver> drivers) {
-
 		this.drivers = drivers;
 	}
 
 	public List<Extension> getExtensions() {
-
 		return this.extensions;
 	}
 
 	public void setExtensions(List<Extension> extensions) {
-
 		this.extensions = extensions;
 	}
 }
