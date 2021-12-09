@@ -80,28 +80,28 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-key
-          workflow: 12949691 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-sov
-          workflow: 6108957 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-btcr
-          workflow: 6108951 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-v1
-          workflow: 12885144 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
@@ -115,14 +115,14 @@ jobs:
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-ion
-          workflow: 6108961 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Repository Dispatch
         uses: benc-uk/workflow-dispatch@v1
         with:
           token: ${{ env.WORKFLOW_DISPATCH_TOKEN }}
           repo: decentralized-identity/uni-registrar-driver-did-web
-          workflow: 6108959 # Docker build
+          workflow: "Docker latest image" # Docker build
 
       - name: Slack notification
         if: failure()
