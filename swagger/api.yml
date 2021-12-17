@@ -1,13 +1,65 @@
-openapi: 3.0.0
+openapi: 3.0.3
 servers:
-  - url: /1.0/
+  - url: http://localhost:3000
+    description: Local environment
+  - url: http://api.universal-registrar.com
+    description: Universal Registar
 info:
-  description: Universal Registrar
+  description: Universal Registrar endpoints
   version: "1.0.0"
   title: Universal Registrar
   contact:
     email: markus@danubetech.com
 paths:
+  /universal-registrar/v1/methods/{did-method}:
+    post:
+      summary: Create a new DID entry
+      operationId: post-universal-registrar-v1-methods-create
+      parameters:
+        - in: path
+          required: true
+          name: did-method
+          schema:
+            type: string
+            format: did:{method-name}
+          description: The requested DID method for the operation.
+          example: btcr
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRequest'
+      responses:
+        '200':
+          description: successfully createed!
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateState'
+        '302':
+          description: Redirect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                redirect:
+                  description: Redirect URI
+                  value:
+                    errorMessage: "redirect_uri: www.abc.com"
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                signatureMissing:
+                  description: Action Required
+                  
+        '500':
+          description: error!
   /create:
     post:
       summary: Creates a DID.
@@ -59,7 +111,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UpdateState'
+                type: string
+                # $ref: '#/components/schemas/UpdateState'
         '400':
           description: invalid input!
         '500':
@@ -87,7 +140,8 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DeactivateState'
+                type: string
+                # $ref: '#/components/schemas/DeactivateState'
         '400':
           description: invalid input!
         '500':
@@ -95,7 +149,7 @@ paths:
   /properties:
     get:
       summary: Returns a map of properties of the resolver.
-      operationId: universalRegistrarGetProperties
+      operationId: properties
       responses:
         '200':
           description: Success.
@@ -107,7 +161,7 @@ paths:
   /methods:
     get:
       summary: Returns a list of supported DID methods.
-      operationId: universalRegistrarGetMethods
+      operationId: methods
       responses:
         '200':
           description: Success.
@@ -121,22 +175,56 @@ paths:
                 example: ["btcr","sov","v1","key"]
 components:
   schemas:
+    Error:
+      description: Request parameters for the create operation.
+      type: object
+      properties:
+        errorCode:
+          type: string
+        errorMessage:
+          type: string
+
     CreateRequest:
       description: Request parameters for the create operation.
       type: object
       additionalProperties: false
+      required:
+        - did
+        - state
+        - didDocument
       properties:
-        jobId:
+        did:
+          description: DID we want to create/register
           type: string
+          format: W3C-compliant decentralized identifier
+          example: did:ion:EiClkZMDxPKqC9c-umQfTkR8vvZ9JPhl_xLDI9Nfk38w5w
+        state:
+          description: Opaque value used to maintain state between the request and the callback.
+          type: string
+          format: uuidv4
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
+          description: <description goes here>
           type: object
           example: {"chain": "testnet"}
         secret:
+          description: NOT RECOMMENDED. <description goes here>
           type: object
           example: {"seed": "72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ"}
         didDocument:
+          description: W3C-compliant DID Document.
           type: object
+        proof:
+          description: Proof required to submit the transaction
+          type: object
+          example:
+            {
+              "id": "https://identity.foundation/EcdsaSecp256k1RecoverySignature2020#EcdsaSecp256k1RecoverySignature2020",
+              "type": "SignatureSuite",
+              "canonicalizationAlgorithm": "https://w3id.org/security#URDNA2015",
+              "digestAlgorithm": "https://www.ietf.org/assignments/jwa-parameters#SHA256",
+              "signatureAlgorithm": "https://tools.ietf.org/html/rfc4880#section-11.4"
+            }
     UpdateRequest:
       description: Request parameters for the update operation.
       type: object
@@ -195,66 +283,3 @@ components:
               example: "did:sov:WRfXPg8dantKVubE3HX8pw"
             secret:
               type: object
-              example: {
-  "keys": [
-    {
-      "privateKeyJwk": {
-        "kty": "OKP",
-        "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
-        "crv": "Ed25519",
-        "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
-      },
-      "publicKeyDIDURL": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1"
-    }
-  ]
-}
-            didDocument:
-              type: object
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
-    UpdateState:
-      description: The state after an update operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-            secret:
-              type: object
-            didDocument:
-              type: object
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
-    DeactivateState:
-      description: The state after a deactivate operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
