@@ -122,56 +122,93 @@ paths:
 components:
   schemas:
     CreateRequest:
-      description: Request parameters for the create operation.
+      description: Input fields for the create operation.
       type: object
       additionalProperties: false
       properties:
         jobId:
+          description:
+            This input field is used to keep track of an ongoing DID creation process.
+            See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
+          description:
+            This input field contains an object with various options for the DID create operation, such as the network where the DID should be created.
+            See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
           example: {"chain": "testnet"}
         secret:
+          description:
+            This input field contains an object with DID controller keys and other secrets needed for performing the DID create operation.
+            See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
           type: object
           example: {"seed": "72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ"}
         didDocument:
+          description:
+            This input field contains either a complete DID document, or an incremental change (diff) to a DID document.
+            See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
           type: object
     UpdateRequest:
-      description: Request parameters for the update operation.
+      description: Input fields for the update operation.
       type: object
       additionalProperties: false
       required:
         - did
       properties:
         jobId:
+          description:
+            This input field is used to keep track of an ongoing DID update process.
+            See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         did:
+          description:
+            This input field indicates the DID that is the target of the DID update operation.
           type: string
           example: "did:sov:WRfXPg8dantKVubE3HX8pw"
         options:
+          description:
+            This input field contains an object with various options for the DID update operation.
+            See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
         secret:
+          description:
+            This input field contains an object with DID controller keys and other secrets needed for performing the DID update operation.
+            See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
           type: object
         didDocument:
+          description:
+            This input field contains either a complete DID document, or an incremental change (diff) to a DID document.
+            See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
           type: object
     DeactivateRequest:
-      description: Request parameters for the deactivate operation.
+      description: Input fields for the deactivate operation.
       type: object
       additionalProperties: false
       required:
         - did
       properties:
         jobId:
+          description:
+            This input field is used to keep track of an ongoing DID deactivation process.
+            See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         did:
+          description:
+            This input field indicates the DID that is the target of the DID deactivation operation.
           type: string
           example: "did:sov:WRfXPg8dantKVubE3HX8pw"
         options:
+          description:
+            This input field contains an object with various options for the DID deactivate operation.
+            See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
         secret:
+          description:
+            This input field contains an object with DID controller keys and other secrets needed for performing the DID deactivate operation.
+            See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
           type: object
     CreateState:
       description: The state after a create operation.
