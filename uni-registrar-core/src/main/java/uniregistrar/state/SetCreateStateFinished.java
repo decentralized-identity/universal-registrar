@@ -13,10 +13,10 @@ public class SetCreateStateFinished {
 		return "finished".equals(SetCreateState.getState(createState));
 	}
 
-	public static String getStateFinishedIdentifier(CreateState createState) {
+	public static String getStateFinishedDid(CreateState createState) {
 
 		if (! isStateFinished(createState)) return null;
-		return (String) createState.getDidState().get("identifier");
+		return (String) createState.getDidState().get("did");
 	}
 
 	@SuppressWarnings("unchecked")
