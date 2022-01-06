@@ -26,10 +26,10 @@ public class SetCreateStateFinished {
 		return (Map<String, Object>) createState.getDidState().get("secret");
 	}
 
-	public static void setStateFinished(CreateState createState, String identifier, Map<String, Object> secret) {
+	public static void setStateFinished(CreateState createState, String did, Map<String, Object> secret) {
 
 		SetCreateState.setState(createState, "finished");
-		createState.getDidState().put("identifier", identifier);
+		createState.getDidState().put("did", did);
 		createState.getDidState().put("secret", secret);
 	}
 }
