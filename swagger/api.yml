@@ -221,32 +221,7 @@ components:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-              example: "finished"
-            did:
-              type: string
-              example: "did:sov:WRfXPg8dantKVubE3HX8pw"
-            secret:
-              type: object
-              example: {
-  "keys": [
-    {
-      "privateKeyJwk": {
-        "kty": "OKP",
-        "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
-        "crv": "Ed25519",
-        "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
-      },
-      "publicKeyDIDURL": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1"
-    }
-  ]
-}
-            didDocument:
-              type: object
+          $ref: '#/components/schemas/DidState'
         didRegistrationMetadata:
           type: object
         didDocumentMetadata:
@@ -262,15 +237,7 @@ components:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
-            secret:
-              type: object
-            didDocument:
-              type: object
+          $ref: '#/components/schemas/DidState'
         didRegistrationMetadata:
           type: object
         didDocumentMetadata:
@@ -286,12 +253,36 @@ components:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
-          type: object
-          additionalProperties: true
-          properties:
-            state:
-              type: string
+          $ref: '#/components/schemas/DidState'
         didRegistrationMetadata:
           type: object
         didDocumentMetadata:
+          type: object
+    DidState:
+      description: The current state of a DID.
+      type: object
+      additionalProperties: true
+      properties:
+        state:
+          type: string
+          example: "finished"
+        did:
+          type: string
+          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+        secret:
+          type: object
+          example: {
+            "keys": [
+              {
+                "privateKeyJwk": {
+                  "kty": "OKP",
+                  "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
+                  "crv": "Ed25519",
+                  "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
+                },
+                "publicKeyDIDURL": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1"
+              }
+            ]
+          }
+        didDocument:
           type: object
