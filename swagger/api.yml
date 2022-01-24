@@ -27,15 +27,33 @@ paths:
               $ref: '#/components/schemas/CreateRequest'
       responses:
         '200':
-          description: successfully createed!
+          description: The request was successful, but the DID may not be fully created yet, as indicated by the
+          "didState.state" and "jobId" output fields. Additional state information plus metadata are available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateState'
+        '201':
+          description: The DID has been successfully created, as indicated by the "didState.state" output field.
+          Additional state information (including the created DID) plus metadata are available in the response body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/CreateState'
         '400':
-          description: invalid input!
+          description: A problem with the input fields has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateState'
         '500':
-          description: error!
+          description: An internal error has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateState'
   /update:
     post:
       summary: Updates a DID.
@@ -55,15 +73,26 @@ paths:
               $ref: '#/components/schemas/UpdateRequest'
       responses:
         '200':
-          description: successfully updated!
+          description: The request was successful, and the DID may or may not be fully updated yet, as indicated by the
+          "didState.state" and "jobId" output fields. Additional state information plus metadata are available in the response body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/UpdateState'
         '400':
-          description: invalid input!
+          description: A problem with the input fields has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateState'
         '500':
-          description: error!
+          description: An internal error has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateState'
   /deactivate:
     post:
       summary: Deactivates a DID.
@@ -83,15 +112,26 @@ paths:
               $ref: '#/components/schemas/DeactivateRequest'
       responses:
         '200':
-          description: successfully deactivated!
+          description: The request was successful, and the DID may or may not be fully deactivated yet, as indicated by the
+          "didState.state" and "jobId" output fields. Additional state information plus metadata are available in the response body.
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DeactivateState'
         '400':
-          description: invalid input!
+          description: A problem with the input fields has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivateState'
         '500':
-          description: error!
+          description: An internal error has occurred. Additional state information plus metadata may be
+          available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeactivateState'
   /properties:
     get:
       summary: Returns a map of properties of the resolver.
