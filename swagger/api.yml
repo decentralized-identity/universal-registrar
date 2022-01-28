@@ -10,7 +10,13 @@ info:
 paths:
   /create:
     post:
-      summary: Creates a DID.
+      summary: Create a DID.
+      description:
+        <p>This endpoint creates a DID. As input it takes the DID plus options, a DID document, and optionally secrets
+        needed to create a DID. The output is a state object that represents the current state of the DID creation
+        process.</p>
+        <p>See the <a href="https://identity.foundation/did-registration/#create">DID Registration</a>
+        specification for additional details.</p>
       operationId: create
       parameters:
         - in: query
@@ -56,7 +62,13 @@ paths:
                 $ref: '#/components/schemas/CreateState'
   /update:
     post:
-      summary: Updates a DID.
+      summary: Update a DID.
+      description:
+        <p>This endpoint updates a DID. As input it takes the existing DID plus options, a DID document, and optionally secrets
+        needed to update a DID. The output is a state object that represents the current state of the DID update
+        process.</p>
+        <p>See the <a href="https://identity.foundation/did-registration/#update">DID Registration</a>
+        specification for additional details.</p>
       operationId: update
       parameters:
         - in: query
@@ -95,7 +107,13 @@ paths:
                 $ref: '#/components/schemas/UpdateState'
   /deactivate:
     post:
-      summary: Deactivates a DID.
+      summary: Deactivate a DID.
+      description:
+        <p>This endpoint deactivates a DID. As input it takes the existing DID plus options, and optionally secrets
+        needed to deactivate a DID. The output is a state object that represents the current state of the DID deactivation
+        process.</p>
+        <p>See the <a href="https://identity.foundation/did-registration/#deactivate">DID Registration</a>
+        specification for additional details.</p>
       operationId: deactivate
       parameters:
         - in: query
