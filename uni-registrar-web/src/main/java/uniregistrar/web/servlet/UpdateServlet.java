@@ -1,17 +1,17 @@
 package uniregistrar.web.servlet;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uniregistrar.RegistrationException;
+import uniregistrar.driver.util.HttpBindingServerUtil;
+import uniregistrar.request.UpdateRequest;
+import uniregistrar.state.State;
+import uniregistrar.web.WebUniRegistrar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.UpdateState;
-import uniregistrar.web.WebUniRegistrar;
+import java.io.IOException;
 
 public class UpdateServlet extends WebUniRegistrar {
 
@@ -51,32 +51,28 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		UpdateState updateState;
-		String updateStateString;
+		State state;
 
 		try {
 
-			updateState = this.update(method, updateRequest);
-			updateStateString = updateState == null ? null : updateState.toJson();
+			state = this.update(method, updateRequest);
+			if (state == null) throw new RegistrationException("No state.");
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Update problem for " + updateRequest + ": " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Update problem for " + updateRequest + ": " + ex.getMessage());
-			return;
+
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("Update problem for " + updateRequest + ": " + ex.getMessage());
+			state = ((RegistrationException) ex).toFailedState();
 		}
 
-		if (log.isInfoEnabled()) log.info("Update state for " + updateRequest + ": " + updateStateString);
+		if (log.isInfoEnabled()) log.info("State for " + updateRequest + ": " + state);
 
-		// no update state?
+		// write state
 
-		if (updateStateString == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No update state for " + updateRequest + ".");
-			return;
-		}
-
-		// write update state
-
-		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, updateStateString);
+		ServletUtil.sendResponse(
+				response,
+				HttpBindingServerUtil.httpStatusCodeForState(state),
+				State.MEDIA_TYPE,
+				HttpBindingServerUtil.toHttpBodyStreamState(state));
 	}
 }

@@ -70,6 +70,6 @@ public class DeactivateServlet extends AbstractServlet implements Servlet {
 
 		// write deactivate state
 
-		sendResponse(response, HttpServletResponse.SC_OK, DeactivateState.MIME_TYPE, deactivateStateString);
+		sendResponse(response, HttpServletResponse.SC_OK, DeactivateState.MEDIA_TYPE, deactivateStateString);
 	}
 }

@@ -1,17 +1,17 @@
 package uniregistrar.web.servlet;
 
-import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import uniregistrar.RegistrationException;
+import uniregistrar.driver.util.HttpBindingServerUtil;
+import uniregistrar.request.DeactivateRequest;
+import uniregistrar.state.State;
+import uniregistrar.web.WebUniRegistrar;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.web.WebUniRegistrar;
+import java.io.IOException;
 
 public class DeactivateServlet extends WebUniRegistrar {
 
@@ -51,32 +51,28 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		DeactivateState deactiateState;
-		String deactivateStateString;
+		State state;
 
 		try {
 
-			deactiateState = this.deactivate(method, deactivateRequest);
-			deactivateStateString = deactiateState == null ? null : deactiateState.toJson();
+			state = this.deactivate(method, deactivateRequest);
+			if (state == null) throw new RegistrationException("No state.");
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
-			return;
+
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
+			state = ((RegistrationException) ex).toFailedState();
 		}
 
-		if (log.isInfoEnabled()) log.info("Deactivate state for " + deactivateRequest + ": " + deactivateStateString);
+		if (log.isInfoEnabled()) log.info("State for " + deactivateRequest + ": " + state);
 
-		// no deactivate state?
+		// write state
 
-		if (deactivateStateString == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No deactivate state for " + deactivateRequest + ".");
-			return;
-		}
-
-		// write deactivate state
-
-		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, deactivateStateString);
+		ServletUtil.sendResponse(
+				response,
+				HttpBindingServerUtil.httpStatusCodeForState(state),
+				State.MEDIA_TYPE,
+				HttpBindingServerUtil.toHttpBodyStreamState(state));
 	}
 }

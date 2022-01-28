@@ -1,15 +1,7 @@
 package uniregistrar.client;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URI;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -21,10 +13,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.request.CreateRequest;
@@ -33,6 +21,14 @@ import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.CreateState;
 import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ClientUniRegistrar implements UniRegistrar {
 
@@ -80,7 +76,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		// prepare HTTP request
 
-		String uriString = this.getCreateUri().toString() + "?method=" + urlEncode(method);
+		String uriString = this.getCreateUri().toString() + "?method=" + method;
 
 		String body;
 
@@ -94,7 +90,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(CreateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", CreateState.MIME_TYPE);
+		httpPost.addHeader("Accept", CreateState.MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -117,7 +113,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
@@ -144,7 +140,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		// prepare HTTP request
 
-		String uriString = this.getUpdateUri().toString() + "?method=" + urlEncode(method);
+		String uriString = this.getUpdateUri().toString() + "?method=" + method;
 
 		String body;
 
@@ -158,7 +154,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(UpdateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", UpdateState.MIME_TYPE);
+		httpPost.addHeader("Accept", UpdateState.MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -181,7 +177,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
@@ -208,7 +204,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		// prepare HTTP request
 
-		String uriString = this.getDeactivateUri().toString() + "?method=" + urlEncode(method);
+		String uriString = this.getDeactivateUri().toString() + "?method=" + method;
 
 		String body;
 
@@ -222,7 +218,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(DeactivateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", DeactivateState.MIME_TYPE);
+		httpPost.addHeader("Accept", DeactivateState.MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -245,7 +241,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
@@ -295,7 +291,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve PROPERTIES from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
@@ -345,7 +341,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve METHODS from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
@@ -365,101 +361,70 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	/*
-	 * Helper methods
-	 */
-
-	private static String urlEncode(String string) {
-
-		try {
-
-			return URLEncoder.encode(string, "UTF-8");
-		} catch (UnsupportedEncodingException ex) {
-
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
-	}
-
-	/*
 	 * Getters and setters
 	 */
 
 	public HttpClient getHttpClient() {
-
 		return this.httpClient;
 	}
 
 	public void setHttpClient(HttpClient httpClient) {
-
 		this.httpClient = httpClient;
 	}
 
 	public URI getCreateUri() {
-
 		return this.createUri;
 	}
 
 	public void setCreateUri(URI createUri) {
-
 		this.createUri = createUri;
 	}
 
 	public void setCreateUri(String createUri) {
-
 		this.createUri = URI.create(createUri);
 	}
 
 	public URI getUpdateUri() {
-
 		return this.updateUri;
 	}
 
 	public void setUpdateUri(URI updateUri) {
-
 		this.updateUri = updateUri;
 	}
 
 	public void setUpdateUri(String updateUri) {
-
 		this.updateUri = URI.create(updateUri);
 	}
 
 	public URI getDeactivateUri() {
-
 		return this.deactivateUri;
 	}
 
 	public void setDeactivateUri(URI deactivateUri) {
-
 		this.deactivateUri = deactivateUri;
 	}
 
 	public void setDeactivateUri(String deactivateUri) {
-
 		this.deactivateUri = URI.create(deactivateUri);
 	}
 
 	public URI getPropertiesUri() {
-
 		return this.propertiesUri;
 	}
 
 	public void setPropertiesUri(URI propertiesUri) {
-
 		this.propertiesUri = propertiesUri;
 	}
 
 	public void setPropertiesUri(String propertiesUri) {
-
 		this.propertiesUri = URI.create(propertiesUri);
 	}
 
 	public URI getMethodsUri() {
-
 		return this.methodsUri;
 	}
 
 	public void setMethodsUri(URI methodsUri) {
-
 		this.methodsUri = methodsUri;
 	}
 }

@@ -70,6 +70,6 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 
 		// write update state
 
-		sendResponse(response, HttpServletResponse.SC_OK, UpdateState.MIME_TYPE, updateStateString);
+		sendResponse(response, HttpServletResponse.SC_OK, UpdateState.MEDIA_TYPE, updateStateString);
 	}
 }
