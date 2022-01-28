@@ -2,8 +2,10 @@ package uniregistrar.web.servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uniregistrar.RegistrationException;
+import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.request.CreateRequest;
-import uniregistrar.state.CreateState;
+import uniregistrar.state.State;
 import uniregistrar.web.WebUniRegistrar;
 
 import javax.servlet.ServletException;
@@ -14,8 +16,6 @@ import java.io.IOException;
 public class CreateServlet extends WebUniRegistrar {
 
 	protected static Logger log = LoggerFactory.getLogger(CreateServlet.class);
-
-	public static final String MIME_TYPE = "application/json";
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,32 +49,28 @@ public class CreateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		CreateState createState;
-		String createStateString;
+		State state;
 
 		try {
 
-			createState = this.create(method, createRequest);
-			createStateString = createState == null ? null : createState.toJson();
+			state = this.create(method, createRequest);
+			if (state == null) throw new RegistrationException("No state.");
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Create problem for " + createRequest + ": " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Create problem for " + createRequest + ": " + ex.getMessage());
-			return;
+
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("Create problem for " + createRequest + ": " + ex.getMessage());
+			state = ((RegistrationException) ex).toFailedState();
 		}
 
-		if (log.isInfoEnabled()) log.info("Create state for " + createRequest + ": " + createStateString);
+		if (log.isInfoEnabled()) log.info("State for " + createRequest + ": " + state);
 
-		// no create state?
+		// write state
 
-		if (createStateString == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No create state for " + createRequest + ": " + createStateString);
-			return;
-		}
-
-		// write create state
-
-		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, MIME_TYPE, createStateString);
+		ServletUtil.sendResponse(
+				response,
+				HttpBindingServerUtil.httpStatusCodeForState(state),
+				State.MEDIA_TYPE,
+				HttpBindingServerUtil.toHttpBodyStreamState(state));
 	}
 }

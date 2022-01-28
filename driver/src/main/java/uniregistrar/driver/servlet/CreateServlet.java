@@ -70,6 +70,6 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 
 		// write create state
 
-		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MIME_TYPE, createStateString);
+		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MEDIA_TYPE, createStateString);
 	}
 }
