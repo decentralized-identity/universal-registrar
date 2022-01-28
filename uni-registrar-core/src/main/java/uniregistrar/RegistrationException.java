@@ -50,6 +50,10 @@ public class RegistrationException extends Exception {
 		this(ERROR_INTERNALERROR, message);
 	}
 
+	public RegistrationException(Throwable ex) {
+		this(ex.getMessage(), ex);
+	}
+
 	public RegistrationException(State state) {
 		super(SetStateFailed.getStateFailedReason(state));
 		if (! SetStateFailed.isStateFailed(state)) throw new IllegalArgumentException("No failed state: " + state);
