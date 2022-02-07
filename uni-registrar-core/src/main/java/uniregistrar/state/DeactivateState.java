@@ -17,8 +17,6 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DeactivateState extends State {
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
-
 	private DeactivateState(String jobId, Map<String, Object> didState, Map<String, Object> didRegistrationMetadata, Map<String, Object> didDocumentMetadata) {
 		super(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
 	}

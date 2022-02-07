@@ -1,21 +1,12 @@
 package uniregistrar.state;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.HashMap;
 import java.util.Map;
 
-public class State {
-
-    public static final String MEDIA_TYPE = "application/json";
-
-    protected static final ObjectMapper objectMapper = new ObjectMapper();
+@JsonPropertyOrder({ "jobId", "didState", "didRegistrationMetadata", "didDocumentMetadata" })
+@JsonIgnoreProperties(ignoreUnknown=true)
+public class State extends JsonObject {
 
     @JsonProperty
     private String jobId;
@@ -30,65 +21,11 @@ public class State {
     private Map<String, Object> didDocumentMetadata;
 
     protected State(String jobId, Map<String, Object> didState, Map<String, Object> didRegistrationMetadata, Map<String, Object> didDocumentMetadata) {
+        super();
         this.jobId = jobId;
         this.didState = didState;
         this.didRegistrationMetadata = didRegistrationMetadata;
         this.didDocumentMetadata = didDocumentMetadata;
-    }
-
-    /*
-     * Factory methods
-     */
-
-    @JsonCreator
-    public static State build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata", required=false) Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata", required=false) Map<String, Object> didDocumentMetadata) {
-        return new State(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
-    }
-
-    public static State build() {
-        return new State(null, new HashMap<>(), new HashMap<>(), new HashMap<>());
-    }
-
-    /*
-     * Serialization
-     */
-
-    public static State fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
-        return objectMapper.readValue(json, State.class);
-    }
-
-    public static State fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
-        return objectMapper.readValue(reader, State.class);
-    }
-
-    public String toJson() throws JsonProcessingException {
-        return objectMapper.writeValueAsString(this);
-    }
-
-    /*
-     * Helper methods
-     */
-
-    @JsonIgnore
-    public static String getState(CreateState createState) {
-        return (String) createState.getDidState().get("state");
-    }
-
-    @JsonIgnore
-    public static void setState(CreateState createState, String state) {
-        createState.getDidState().put("state", state);
-    }
-
-    /*
-     * Object methods
-     */
-
-    public String toString() {
-        try {
-            return this.toJson();
-        } catch (JsonProcessingException ex) {
-            return ex.getMessage();
-        }
     }
 
     /*
