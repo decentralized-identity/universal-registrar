@@ -46,10 +46,10 @@ public final class SetStateActionSignPayload {
 	public static void setStateActionSignPayload(State state, String kid, String alg, Map<String, Object> payload, String serializedPayload, String proofPurpose) {
 
 		SetStateAction.setStateAction(state, "signPayload");
-		if (kid != null) state.getDidState().put("kid", kid);
-		if (alg != null) state.getDidState().put("alg", alg);
-		if (payload != null) state.getDidState().put("payload", payload);
-		if (serializedPayload != null) state.getDidState().put("serializedPayload", serializedPayload);
-		if (proofPurpose != null) state.getDidState().put("proofPurpose", proofPurpose);
+		state.getDidState().put("kid", kid);
+		state.getDidState().put("alg", alg);
+		state.getDidState().put("payload", payload);
+		state.getDidState().put("serializedPayload", serializedPayload);
+		state.getDidState().put("proofPurpose", proofPurpose);
 	}
 }
