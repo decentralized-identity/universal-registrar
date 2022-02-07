@@ -1,7 +1,12 @@
 package uniregistrar.state;
 
 import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 
 @JsonPropertyOrder({ "jobId", "didState", "didRegistrationMetadata", "didDocumentMetadata" })
@@ -26,6 +31,31 @@ public class State extends JsonObject {
         this.didState = didState;
         this.didRegistrationMetadata = didRegistrationMetadata;
         this.didDocumentMetadata = didDocumentMetadata;
+    }
+
+    /*
+     * Factory methods
+     */
+
+    @JsonCreator
+    public static State build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata", required=false) Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata", required=false) Map<String, Object> didDocumentMetadata) {
+        return new State(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
+    }
+
+    public static State build() {
+        return new State(null, new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
+    /*
+     * Serialization
+     */
+
+    public static State fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+        return objectMapper.readValue(json, State.class);
+    }
+
+    public static State fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+        return objectMapper.readValue(reader, State.class);
     }
 
     /*
