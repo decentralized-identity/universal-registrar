@@ -3,12 +3,10 @@ package uniregistrar.state;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import foundation.identity.did.DIDDocument;
+import uniregistrar.JsonObject;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.Map;
 
 @JsonPropertyOrder({ "kid", "alg", "payload", "serializedPayload" })

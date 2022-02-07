@@ -1,4 +1,4 @@
-package uniregistrar.state;
+package uniregistrar;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

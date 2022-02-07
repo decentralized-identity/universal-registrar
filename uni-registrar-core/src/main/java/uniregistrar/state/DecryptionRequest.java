@@ -3,6 +3,7 @@ package uniregistrar.state;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import uniregistrar.JsonObject;
 
 import java.io.IOException;
 import java.io.Reader;
