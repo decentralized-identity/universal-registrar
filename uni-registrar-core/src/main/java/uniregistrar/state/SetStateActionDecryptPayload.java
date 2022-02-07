@@ -2,54 +2,47 @@ package uniregistrar.state;
 
 import java.util.Map;
 
-public final class SetStateActionSignPayload {
+public final class SetStateActionDecryptPayload {
 
-	private SetStateActionSignPayload() {
+	private SetStateActionDecryptPayload() {
 
 	}
 
-	public static boolean isStateActionSignPayload(State state) {
+	public static boolean isStateActionDecryptPayload(State state) {
 
-		return "signPayload".equals(SetStateAction.getStateAction(state));
+		return "decryptPayload".equals(SetStateAction.getStateAction(state));
 	}
 
-	public static String getStateActionSignPayloadKid(State state) {
+	public static String getStateActionDecryptPayloadKid(State state) {
 
-		if (!isStateActionSignPayload(state)) return null;
+		if (!isStateActionDecryptPayload(state)) return null;
 		return (String) state.getDidState().get("kid");
 	}
 
-	public static String getStateActionSignPayloadAlg(State state) {
+	public static String getStateActionDecryptPayloadAlg(State state) {
 
-		if (!isStateActionSignPayload(state)) return null;
+		if (!isStateActionDecryptPayload(state)) return null;
 		return (String) state.getDidState().get("alg");
 	}
 
-	public static Map<String, Object> getStateActionSignPayloadPayload(State state) {
+	public static Map<String, Object> getStateActionDecryptPayloadPayload(State state) {
 
-		if (!isStateActionSignPayload(state)) return null;
+		if (!isStateActionDecryptPayload(state)) return null;
 		return (Map<String, Object>) state.getDidState().get("payload");
 	}
 
-	public static String getStateActionSignPayloadSerializedPayload(State state) {
+	public static String getStateActionDecryptPayloadEncryptedPayload(State state) {
 
-		if (!isStateActionSignPayload(state)) return null;
-		return (String) state.getDidState().get("serializedPayload");
+		if (!isStateActionDecryptPayload(state)) return null;
+		return (String) state.getDidState().get("encryptedPayload");
 	}
 
-	public static String getStateActionSignPayloadProofPurpose(State state) {
+	public static void setStateActionDecryptPayload(State state, String kid, String alg, Map<String, Object> payload, String encryptedPayload) {
 
-		if (!isStateActionSignPayload(state)) return null;
-		return (String) state.getDidState().get("proofPurpose");
-	}
-
-	public static void setStateActionSignPayload(State state, String kid, String alg, Map<String, Object> payload, String serializedPayload, String proofPurpose) {
-
-		SetStateAction.setStateAction(state, "signPayload");
-		state.getDidState().put("kid", kid);
-		state.getDidState().put("alg", alg);
-		state.getDidState().put("payload", payload);
-		state.getDidState().put("serializedPayload", serializedPayload);
-		state.getDidState().put("proofPurpose", proofPurpose);
+		SetStateAction.setStateAction(state, "decryptPayload");
+		if (kid != null) state.getDidState().put("kid", kid);
+		if (alg != null) state.getDidState().put("alg", alg);
+		if (payload != null) state.getDidState().put("payload", payload);
+		if (encryptedPayload != null) state.getDidState().put("encryptedPayload", encryptedPayload);
 	}
 }
