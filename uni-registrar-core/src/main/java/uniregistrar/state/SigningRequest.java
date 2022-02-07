@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import foundation.identity.did.DIDDocument;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -57,6 +58,10 @@ public class SigningRequest extends JsonObject {
 
     public static SigningRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
         return objectMapper.readValue(reader, SigningRequest.class);
+    }
+
+    public static SigningRequest fromMap(Map<String, Object> map) {
+        return objectMapper.convertValue(map, SigningRequest.class);
     }
 
     /*

@@ -44,4 +44,8 @@ public class UpdateState extends State {
 	public static UpdateState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 		return objectMapper.readValue(reader, UpdateState.class);
 	}
+
+	public static UpdateState fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, UpdateState.class);
+	}
 }

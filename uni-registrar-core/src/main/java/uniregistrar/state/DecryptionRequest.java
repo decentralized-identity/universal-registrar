@@ -57,6 +57,10 @@ public class DecryptionRequest extends JsonObject {
         return objectMapper.readValue(reader, DecryptionRequest.class);
     }
 
+    public static DecryptionRequest fromMap(Map<String, Object> map) {
+        return objectMapper.convertValue(map, DecryptionRequest.class);
+    }
+
     /*
      * Getters and setters
      */

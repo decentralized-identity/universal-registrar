@@ -45,4 +45,8 @@ public class DeactivateState extends State {
 	public static DeactivateState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 		return objectMapper.readValue(reader, DeactivateState.class);
 	}
+
+	public static DeactivateState fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, DeactivateState.class);
+	}
 }

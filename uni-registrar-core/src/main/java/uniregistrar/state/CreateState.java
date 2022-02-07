@@ -44,4 +44,8 @@ public class CreateState extends State {
 	public static CreateState fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
 		return objectMapper.readValue(reader, CreateState.class);
 	}
+
+	public static CreateState fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, CreateState.class);
+	}
 }

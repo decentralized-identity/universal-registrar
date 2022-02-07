@@ -58,6 +58,10 @@ public class State extends JsonObject {
         return objectMapper.readValue(reader, State.class);
     }
 
+    public static State fromMap(Map<String, Object> map) {
+        return objectMapper.convertValue(map, State.class);
+    }
+
     /*
      * Getters and setters
      */

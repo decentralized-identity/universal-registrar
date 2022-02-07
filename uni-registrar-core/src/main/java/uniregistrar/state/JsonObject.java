@@ -2,6 +2,10 @@ package uniregistrar.state;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import foundation.identity.did.DIDDocument;
+import jakarta.json.Json;
+
+import java.util.Map;
 
 public class JsonObject {
 
@@ -15,6 +19,10 @@ public class JsonObject {
     /*
      * Serialization
      */
+
+    public Map<String, Object> toMap() {
+        return objectMapper.convertValue(this, Map.class);
+    }
 
     public String toJson() throws JsonProcessingException {
         return objectMapper.writeValueAsString(this);

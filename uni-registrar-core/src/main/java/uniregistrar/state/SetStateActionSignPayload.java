@@ -1,6 +1,8 @@
 package uniregistrar.state;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public final class SetStateActionSignPayload {
 
@@ -43,13 +45,45 @@ public final class SetStateActionSignPayload {
 		return (String) state.getDidState().get("proofPurpose");
 	}
 
-	public static void setStateActionSignPayload(State state, String kid, String alg, Map<String, Object> payload, String serializedPayload, String proofPurpose) {
+	public static Map<String, SigningRequest> getStateActionSignPayloadSigningRequests(State state) {
+
+		if (!isStateActionSignPayload(state)) return null;
+		Map<String, Map<String, Object>> signingRequests = (Map<String, Map<String, Object>>) state.getDidState().get("signingRequest");
+		if (signingRequests == null) return null;
+		return signingRequests.entrySet()
+				.stream()
+				.collect(Collectors.toMap(map -> map.getKey(), map -> SigningRequest.fromMap(map.getValue())));
+	}
+
+	public static Map<String, DecryptionRequest> getStateActionSignPayloadDecryptionRequests(State state) {
+
+		if (!isStateActionSignPayload(state)) return null;
+		Map<String, Map<String, Object>> decryptionRequests = (Map<String, Map<String, Object>>) state.getDidState().get("decryptionRequest");
+		if (decryptionRequests == null) return null;
+		return decryptionRequests.entrySet()
+				.stream()
+				.collect(Collectors.toMap(map -> map.getKey(), map -> DecryptionRequest.fromMap(map.getValue())));
+	}
+
+	public static void addStateActionSignPayload(State state, String signingRequestId, SigningRequest signingRequest) {
 
 		SetStateAction.setStateAction(state, "signPayload");
-		if (kid != null) state.getDidState().put("kid", kid);
-		if (alg != null) state.getDidState().put("alg", alg);
-		if (payload != null) state.getDidState().put("payload", payload);
-		if (serializedPayload != null) state.getDidState().put("serializedPayload", serializedPayload);
-		if (proofPurpose != null) state.getDidState().put("proofPurpose", proofPurpose);
+		Map<String, Map<String, Object>> signingRequests = (Map<String, Map<String, Object>>) state.getDidState().get("signingRequest");
+		if (signingRequests == null) {
+			signingRequests = new LinkedHashMap<>();
+			state.getDidState().put("signingRequest", signingRequests);
+		}
+		signingRequests.put(signingRequestId, signingRequest.toMap());
+	}
+
+	public static void addStateActionDecryptPayload(State state, String decryptionRequestId, DecryptionRequest decryptionRequest) {
+
+		SetStateAction.setStateAction(state, "decryptPayload");
+		Map<String, Map<String, Object>> decryptionRequests = (Map<String, Map<String, Object>>) state.getDidState().get("decryptionRequest");
+		if (decryptionRequests == null) {
+			decryptionRequests = new LinkedHashMap<>();
+			state.getDidState().put("decryptionRequest", decryptionRequests);
+		}
+		decryptionRequests.put(decryptionRequestId, decryptionRequest.toMap());
 	}
 }
