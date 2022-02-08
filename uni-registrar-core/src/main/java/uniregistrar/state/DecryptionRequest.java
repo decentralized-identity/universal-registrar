@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-@JsonPropertyOrder({ "kid", "alg", "payload", "encryptedPayload" })
+@JsonPropertyOrder({ "kid", "enc", "payload", "encryptedPayload" })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class DecryptionRequest extends JsonObject {
 
@@ -17,7 +17,7 @@ public class DecryptionRequest extends JsonObject {
     private String kid;
 
     @JsonProperty
-    private String alg;
+    private String enc;
 
     @JsonProperty
     private Map<String, Object> payload;
@@ -25,10 +25,10 @@ public class DecryptionRequest extends JsonObject {
     @JsonProperty
     private String encryptedPayload;
 
-    private DecryptionRequest(String kid, String alg, Map<String, Object> payload, String encryptedPayload) {
+    private DecryptionRequest(String kid, String enc, Map<String, Object> payload, String encryptedPayload) {
         super();
         this.kid = kid;
-        this.alg = alg;
+        this.enc = enc;
         this.payload = payload;
         this.encryptedPayload = encryptedPayload;
     }
@@ -38,8 +38,8 @@ public class DecryptionRequest extends JsonObject {
      */
 
     @JsonCreator
-    public static DecryptionRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="alg", required=true) String alg, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="encryptedPayload", required=false) String encryptedPayload) {
-        return new DecryptionRequest(kid, alg, payload, encryptedPayload);
+    public static DecryptionRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="enc", required=true) String enc, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="encryptedPayload", required=false) String encryptedPayload) {
+        return new DecryptionRequest(kid, enc, payload, encryptedPayload);
     }
 
     public static DecryptionRequest build() {
@@ -77,13 +77,13 @@ public class DecryptionRequest extends JsonObject {
     }
 
     @JsonGetter
-    public String getAlg() {
-        return alg;
+    public String getEnc() {
+        return enc;
     }
 
     @JsonSetter
-    public void setAlg(String alg) {
-        this.alg = alg;
+    public void setEnc(String enc) {
+        this.enc = enc;
     }
 
     @JsonGetter
