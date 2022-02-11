@@ -27,6 +27,9 @@ public class SetStateFinished {
 	}
 
 	public static void setStateFinished(State state, String did, Map<String, Object> secret) {
+		// Remove interim states if they exist
+		state.getDidState().remove("wait");
+		state.getDidState().remove("action");
 
 		SetState.setState(state, "finished");
 		state.getDidState().put("did", did);
