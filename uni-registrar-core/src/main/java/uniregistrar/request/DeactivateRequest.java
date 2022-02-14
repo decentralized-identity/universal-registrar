@@ -22,7 +22,7 @@ public class DeactivateRequest {
 	private String jobId;
 
 	@JsonProperty
-	private String identifier;
+	private String did;
 
 	@JsonProperty
 	private Map<String, Object> options;
@@ -34,9 +34,10 @@ public class DeactivateRequest {
 
 	}
 
-	public DeactivateRequest(String jobId, Map<String, Object> options, Map<String, Object> secret) {
+	public DeactivateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret) {
 
 		this.jobId = jobId;
+		this.did = did;
 		this.options = options;
 		this.secret = secret;
 	}
@@ -77,15 +78,15 @@ public class DeactivateRequest {
 	}
 
 	@JsonGetter
-	public final String getIdentifier() {
+	public final String getDid() {
 
-		return this.identifier;
+		return this.did;
 	}
 
 	@JsonSetter
-	public final void setIdentifier(String identifier) {
+	public final void setDid(String did) {
 
-		this.identifier = identifier;
+		this.did = did;
 	}
 
 	@JsonGetter

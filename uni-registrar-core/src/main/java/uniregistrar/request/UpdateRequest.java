@@ -23,7 +23,7 @@ public class UpdateRequest {
 	private String jobId;
 
 	@JsonProperty
-	private String identifier;
+	private String did;
 
 	@JsonProperty
 	private Map<String, Object> options;
@@ -38,9 +38,10 @@ public class UpdateRequest {
 
 	}
 
-	public UpdateRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
+	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
 
 		this.jobId = jobId;
+		this.did = did;
 		this.options = options;
 		this.secret = secret;
 		this.didDocument = didDocument;
@@ -82,15 +83,15 @@ public class UpdateRequest {
 	}
 
 	@JsonGetter
-	public final String getIdentifier() {
+	public final String getDid() {
 
-		return this.identifier;
+		return this.did;
 	}
 
 	@JsonSetter
-	public final void setIdentifier(String identifier) {
+	public final void setDid(String did) {
 
-		this.identifier = identifier;
+		this.did = did;
 	}
 
 	@JsonGetter
