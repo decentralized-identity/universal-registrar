@@ -39,7 +39,6 @@ public class UpdateRequest {
 	}
 
 	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
-
 		this.jobId = jobId;
 		this.did = did;
 		this.options = options;
@@ -52,17 +51,14 @@ public class UpdateRequest {
 	 */
 
 	public static UpdateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(json, UpdateRequest.class);
 	}
 
 	public static UpdateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(reader, UpdateRequest.class);
 	}
 
 	public String toJson() throws JsonProcessingException {
-
 		return objectMapper.writeValueAsString(this);
 	}
 

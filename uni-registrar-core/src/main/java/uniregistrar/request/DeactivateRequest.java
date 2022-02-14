@@ -35,7 +35,6 @@ public class DeactivateRequest {
 	}
 
 	public DeactivateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret) {
-
 		this.jobId = jobId;
 		this.did = did;
 		this.options = options;
@@ -47,17 +46,14 @@ public class DeactivateRequest {
 	 */
 
 	public static DeactivateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(json, DeactivateRequest.class);
 	}
 
 	public static DeactivateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(reader, DeactivateRequest.class);
 	}
 
 	public String toJson() throws JsonProcessingException {
-
 		return objectMapper.writeValueAsString(this);
 	}
 

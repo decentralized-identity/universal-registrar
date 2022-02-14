@@ -36,7 +36,6 @@ public class CreateRequest {
 	}
 
 	public CreateRequest(String jobId, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
-
 		this.jobId = jobId;
 		this.options = options;
 		this.secret = secret;
@@ -48,17 +47,14 @@ public class CreateRequest {
 	 */
 
 	public static CreateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(json, CreateRequest.class);
 	}
 
 	public static CreateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
-
 		return objectMapper.readValue(reader, CreateRequest.class);
 	}
 
 	public String toJson() throws JsonProcessingException {
-
 		return objectMapper.writeValueAsString(this);
 	}
 
