@@ -4,6 +4,12 @@
 
 The Universal Registrar's function is wrapping an API around a number of co-located Docker containers running DID-method-specific drivers. The Universal Registrar is designed to support additional DID methods as they are developed by the community. The contribution for a new DID method driver consists of a Docker image which exposes an HTTP interface for creating/updating/deactivating DIDs. New contributions are submitted as Pull Requests to the Universal Registrar (this) repository.
 
+An example driver is available [here](https://github.com/peacekeeper/uni-registrar-driver-did-example).
+
+An example PR for contributing a driver is available [here](https://github.com/decentralized-identity/universal-registrar/pull/7).
+
+## Driver Interface
+
 Your driver will be invoked via an HTTP POST call to:
 
 `http://<your-image>:8080/1.0/register`
@@ -28,7 +34,7 @@ It should return a DID state object like the following in the HTTP body:
 {
 	"jobId": null,
 	"didState": {
-		"identifier": "did:example:0000000000123456",
+		"did": "did:example:0000000000123456",
 		"state": "finished",
 		"secret": {
 			"keys": [{
@@ -41,25 +47,11 @@ It should return a DID state object like the following in the HTTP body:
 }
 ```
 
-### API Definition
+A Swagger API definition is available [here](https://github.com/decentralized-identity/universal-registrar/blob/master/swagger/api-driver.yml).
 
-A Swagger API definition is available here:
+For more information about this interface, see the [DID Registration](https://identity.foundation/did-registration/) specification.
 
-https://github.com/decentralized-identity/universal-registrar/blob/master/swagger/api-driver.yml
-
-### Example Driver
-
-See this example driver:
-
-https://github.com/peacekeeper/uni-registrar-driver-did-example
-
-### Example PR
-
-See this example PR for contributing a driver:
-
-https://github.com/decentralized-identity/universal-registrar/pull/7
-
-## Driver Requirements
+## Driver Rules
 
 - Driver must be fully open-source under a permissive license (Apache 2.0 preferred).
 - Driver source code may be published at DIF or anywhere else.
@@ -67,7 +59,9 @@ https://github.com/decentralized-identity/universal-registrar/pull/7
 - Driver image should be tested as standalone Docker container.
 - Driver image should be tested as part of the Universal Registrar with `docker-compose`.
 
-## How to contribute a driver
+## How to
+
+### How to contribute a driver
 
 Contributing a driver to the Universal Registrar expands the functionality of the service as new DID methods are added and used by the community.
 
@@ -91,13 +85,13 @@ In your PR, edit the following files in the Universal Registrar root directory:
 
 Your driver is expected to be well-documented, tested, and working before you submit a PR. The documentation for your driver should be clear enough to explain how to run your driver, how to troubleshoot it, and a process for updating the driver over time.
 
-## How to update a driver
+### How to update a driver
 
 As DID methods are developed and matured, the Universal Registrar should maintain its DID drivers with new changes. Contributors should keep their drivers up-to-date as changes happen to the DID Core spec and the DID method spec. Contributors may only wish to direct users to the latest driver, or they may have a `stable` version, a `developer` version, etc. The driver version specified in the `README.md` file should be reflected in a DockerHub image with a tag that matches the driver version.
 
 In order to update a driver, simply submit a new PR that increments the Docker image version and updates the relevant files (see above in the "How to Contribute a Driver" section).
 
-## How to test a driver locally
+### How to test a driver locally
 
 Once your driver is implemented and published as a docker container on DockerHub, you may want to test that it is running properly within the Universal Registrar.
 
