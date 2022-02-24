@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The Universal Registrar's function is wrapping an API around a number of co-located Docker containers running DID-method-specific drivers. The Universal Registrar is designed to support additional DID methods as they are developed by the community. The contribution for a new DID method driver consists of a Docker image which exposes an HTTP interface for creating/updating/deactivating DIDs. New contributions are submitted as Pull Requests to the Universal Registrar (this) repository.
+The Universal Registrar wraps an API around a number of co-located Docker containers running DID-method-specific drivers. Additional DID methods can be supported as they are developed by the community. The contribution for a new DID method driver consists of a Docker image which exposes an HTTP interface for creating/updating/deactivating DIDs. New contributions are submitted as Pull Requests to the Universal Registrar (this) repository.
 
 An example driver is available [here](https://github.com/peacekeeper/uni-registrar-driver-did-example).
 
