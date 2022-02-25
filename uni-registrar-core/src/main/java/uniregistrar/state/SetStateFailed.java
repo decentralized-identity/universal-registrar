@@ -26,6 +26,7 @@ public class SetStateFailed {
 	public static void setStateFailed(State state, String error, String reason) {
 		// Remove interim states if they exist
 		state.getDidState().remove("wait");
+		state.getDidState().remove("waittime");
 		state.getDidState().remove("action");
 
 		SetState.setState(state, "failed");
