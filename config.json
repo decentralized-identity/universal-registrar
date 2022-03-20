@@ -27,6 +27,10 @@
 			"method": "ebsi",
 			"url": "http://driver-did-ebsi:9080/",
 			"propertiesEndpoint": "true"
+		}, {
+			"method": "oyd",
+			"url": "https://oydid-registrar.data-container.net/",
+			"propertiesEndpoint": "true"
 		}
 	]
 }
