@@ -29,7 +29,7 @@
 			"propertiesEndpoint": "true"
 		}, {
 			"method": "oyd",
-			"url": "https://oydid-registrar.data-container.net/",
+			"url": "http://driver-did-oyd:3000/",
 			"propertiesEndpoint": "true"
 		}
 	]
