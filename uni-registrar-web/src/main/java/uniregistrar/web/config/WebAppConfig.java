@@ -4,6 +4,8 @@ import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import uniregistrar.local.LocalUniRegistrar;
+import uniregistrar.local.extensions.Extension;
+import uniregistrar.local.extensions.impl.DummyExtension;
 import uniregistrar.web.servlet.CreateServlet;
 import uniregistrar.web.servlet.DeactivateServlet;
 import uniregistrar.web.servlet.PropertiesServlet;
@@ -11,6 +13,8 @@ import uniregistrar.web.servlet.UpdateServlet;
 import uniregistrar.web.servlet.MethodsServlet;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Configuration
 public class WebAppConfig {
@@ -20,6 +24,12 @@ public class WebAppConfig {
         return LocalUniRegistrar.fromConfigFile("./config.json");
     }
 
+    @Bean
+    public List<Extension> extensions(){
+        List<Extension> list = new ArrayList<>();
+        list.add(new DummyExtension());
+        return list;
+    }
 
     @Bean(name = "CreateServlet")
     public CreateServlet createServlet(){
