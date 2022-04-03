@@ -7,11 +7,6 @@
 
 	<bean name="UniRegistrar" class="uniregistrar.local.LocalUniRegistrar" factory-method="fromConfigFile">
 		<constructor-arg value="./config.json" />
-		<property name="extensions">
-			<util:list>
-				<bean class="uniregistrar.local.extensions.impl.DummyExtension" />
-			</util:list>
-		</property>
 	</bean>
 
 	<bean name="CreateServlet" class="uniregistrar.web.servlet.CreateServlet">

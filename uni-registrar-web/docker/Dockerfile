@@ -16,13 +16,17 @@ RUN cd /opt/universal-registrar/uni-registrar-web && mvn clean install package -
 
 # build image
 
-FROM jetty:9.4-jre11
+FROM openjdk:11-jre-slim
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
-COPY --from=build /opt/universal-registrar/uni-registrar-web/target/*.war /var/lib/jetty/webapps/ROOT.war
-COPY --from=build /opt/universal-registrar/uni-registrar-web/config.json /var/lib/jetty/
+WORKDIR /opt/universal-registrar/uni-registrar-web/
+
+COPY --from=build /opt/universal-registrar/uni-registrar-web/target/*-exec.jar ./
+COPY --from=build /opt/universal-registrar/uni-registrar-web/config.json ./
+
+ENV uniregistrar_web_spring_profiles_active=default
 
 # done
 
 EXPOSE 9080
-CMD java -Djetty.http.port=9080 -jar /usr/local/jetty/start.jar
+CMD java -jar *.jar
