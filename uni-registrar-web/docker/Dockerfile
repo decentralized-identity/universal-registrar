@@ -24,7 +24,7 @@ WORKDIR /opt/universal-registrar/uni-registrar-web/
 COPY --from=build /opt/universal-registrar/uni-registrar-web/target/*-exec.jar ./
 COPY --from=build /opt/universal-registrar/uni-registrar-web/config.json ./
 
-ENV unirgistrar_web_spring_profiles_active=default
+ENV uniregistrar_web_spring_profiles_active=default
 
 
 
