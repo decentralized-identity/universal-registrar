@@ -4,15 +4,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class SetStateActionSigningRequests {
+public final class SetStateActionSignPayload {
 
-	private SetStateActionSigningRequests() {
+	private SetStateActionSignPayload() {
 
 	}
 
 	public static boolean isStateActionSignPayload(State state) {
 
 		return "signPayload".equals(SetStateAction.getStateAction(state));
+	}
+
+	public static void setStateActionSignPayload(State state) {
+
+		SetStateAction.setStateAction(state, "signPayload");
 	}
 
 	public static Map<String, SigningRequest> getStateActionSigningRequests(State state) {
@@ -27,7 +32,7 @@ public final class SetStateActionSigningRequests {
 
 	public static void addStateActionSigningRequest(State state, String signingRequestId, SigningRequest signingRequest) {
 
-		SetStateAction.setStateAction(state, "signPayload");
+		setStateActionSignPayload(state);
 		Map<String, Map<String, Object>> signingRequests = (Map<String, Map<String, Object>>) state.getDidState().get("signingRequest");
 		if (signingRequests == null) {
 			signingRequests = new LinkedHashMap<>();

@@ -4,15 +4,20 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class SetStateActionDecryptionRequests {
+public final class SetStateActionDecryptPayload {
 
-	private SetStateActionDecryptionRequests() {
+	private SetStateActionDecryptPayload() {
 
 	}
 
 	public static boolean isStateActionDecryptPayload(State state) {
 
 		return "decryptPayload".equals(SetStateAction.getStateAction(state));
+	}
+
+	public static void setStateActionDecryptPayload(State state) {
+
+		SetStateAction.setStateAction(state, "decryptPayload");
 	}
 
 	public static Map<String, DecryptionRequest> getStateActionDecryptionRequests(State state) {
@@ -27,7 +32,7 @@ public final class SetStateActionDecryptionRequests {
 
 	public static void addStateActionDecryptionRequest(State state, String decryptionRequestId, DecryptionRequest decryptionRequest) {
 
-		SetStateAction.setStateAction(state, "decryptPayload");
+		setStateActionDecryptPayload(state);
 		Map<String, Map<String, Object>> decryptionRequests = (Map<String, Map<String, Object>>) state.getDidState().get("decryptionRequest");
 		if (decryptionRequests == null) {
 			decryptionRequests = new LinkedHashMap<>();
