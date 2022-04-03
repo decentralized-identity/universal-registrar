@@ -26,8 +26,6 @@ COPY --from=build /opt/universal-registrar/uni-registrar-web/config.json ./
 
 ENV uniregistrar_web_spring_profiles_active=default
 
-
-
 # done
 
 EXPOSE 9080
