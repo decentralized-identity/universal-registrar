@@ -245,11 +245,20 @@ components:
             This input field contains an object with DID controller keys and other secrets needed for performing the DID update operation.
             See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
           type: object
+        didDocumentOperation:
+          description:
+            This input field indicates which update operation should be applied to a DID’s associated DID document.
+            See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#diddocumentoperation</a>.
+          type: array
+          items:
+            type: string
         didDocument:
           description:
             This input field contains either a complete DID document, or an incremental change (diff) to a DID document.
             See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
-          type: object
+          type: array
+          items:
+            type: object
     DeactivateRequest:
       description: Input fields for the deactivate operation.
       type: object
@@ -340,17 +349,16 @@ components:
         secret:
           type: object
           example: {
-            "keys": [
-              {
-                "privateKeyJwk": {
-                  "kty": "OKP",
-                  "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
-                  "crv": "Ed25519",
-                  "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
-                },
-                "publicKeyDIDURL": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1"
+            "verificationMethod": [{
+              "id": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1",
+              "type": "JsonWebKey2020",
+              "privateKeyJwk": {
+                "kty": "OKP",
+                "d": "NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE",
+                "crv": "Ed25519",
+                "x": "jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0"
               }
-            ]
+            }]
           }
         didDocument:
           type: object
