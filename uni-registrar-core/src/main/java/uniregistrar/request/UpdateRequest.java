@@ -78,49 +78,41 @@ public class UpdateRequest extends JsonObject {
 
 	@JsonGetter
 	public final String getJobId() {
-
 		return this.jobId;
 	}
 
 	@JsonSetter
 	public final void setJobId(String jobId) {
-
 		this.jobId = jobId;
 	}
 
 	@JsonGetter
 	public final String getDid() {
-
 		return this.did;
 	}
 
 	@JsonSetter
 	public final void setDid(String did) {
-
 		this.did = did;
 	}
 
 	@JsonGetter
 	public final Map<String, Object> getOptions() {
-
 		return this.options;
 	}
 
 	@JsonSetter
 	public final void setOptions(Map<String, Object> options) {
-
 		this.options = options;
 	}
 
 	@JsonGetter
 	public final Map<String, Object> getSecret() {
-
 		return this.secret;
 	}
 
 	@JsonSetter
 	public final void setSecret(Map<String, Object> secret) {
-
 		this.secret = secret;
 	}
 
