@@ -1,18 +1,18 @@
 package uniregistrar.request;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import uniregistrar.JsonObject;
 
-public class DeactivateRequest {
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Map;
+
+public class DeactivateRequest extends JsonObject {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -53,8 +53,8 @@ public class DeactivateRequest {
 		return objectMapper.readValue(reader, DeactivateRequest.class);
 	}
 
-	public String toJson() throws JsonProcessingException {
-		return objectMapper.writeValueAsString(this);
+	public static DeactivateRequest fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, DeactivateRequest.class);
 	}
 
 	/*
@@ -107,20 +107,5 @@ public class DeactivateRequest {
 	public final void setSecret(Map<String, Object> secret) {
 
 		this.secret = secret;
-	}
-
-	/*
-	 * Object methods
-	 */
-
-	public String toString() {
-
-		try {
-
-			return this.toJson();
-		} catch (JsonProcessingException ex) {
-
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
 	}
 }

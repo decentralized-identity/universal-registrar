@@ -13,8 +13,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
+import uniregistrar.JsonObject;
 
-public class UpdateRequest {
+public class UpdateRequest extends JsonObject {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -67,8 +68,8 @@ public class UpdateRequest {
 		return objectMapper.readValue(reader, UpdateRequest.class);
 	}
 
-	public String toJson() throws JsonProcessingException {
-		return objectMapper.writeValueAsString(this);
+	public static UpdateRequest fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, UpdateRequest.class);
 	}
 
 	/*
@@ -141,25 +142,5 @@ public class UpdateRequest {
 	@JsonGetter
 	public final List<DIDDocument> getDidDocument() {
 		return this.didDocument;
-	}
-
-
-	/*
-	 * Object methods
-	 */
-
-	public Map<String, Object> toMap(){
-		return objectMapper.convertValue(this, new TypeReference<Map<String, Object>>(){});
-	}
-
-	public String toString() {
-
-		try {
-
-			return this.toJson();
-		} catch (JsonProcessingException ex) {
-
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
 	}
 }

@@ -1,19 +1,19 @@
 package uniregistrar.request;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
+import uniregistrar.JsonObject;
 
-public class CreateRequest {
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Map;
+
+public class CreateRequest extends JsonObject {
 
 	public static final String MIME_TYPE = "application/json";
 
@@ -54,8 +54,8 @@ public class CreateRequest {
 		return objectMapper.readValue(reader, CreateRequest.class);
 	}
 
-	public String toJson() throws JsonProcessingException {
-		return objectMapper.writeValueAsString(this);
+	public static CreateRequest fromMap(Map<String, Object> map) {
+		return objectMapper.convertValue(map, CreateRequest.class);
 	}
 
 	/*
@@ -108,20 +108,5 @@ public class CreateRequest {
 	public final DIDDocument getDidDocument() {
 
 		return this.didDocument;
-	}
-
-	/*
-	 * Object methods
-	 */
-
-	public String toString() {
-
-		try {
-
-			return this.toJson();
-		} catch (JsonProcessingException ex) {
-
-			throw new RuntimeException(ex.getMessage(), ex);
-		}
 	}
 }
