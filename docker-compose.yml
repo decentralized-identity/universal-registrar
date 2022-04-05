@@ -89,3 +89,7 @@ services:
     image: universalregistrar/driver-did-ebsi:latest
     ports:
       - "9087:9080"
+  driver-did-oyd:
+    image: oydeu/oydid-registrar:latest
+    ports:
+      - "9088:3000"
