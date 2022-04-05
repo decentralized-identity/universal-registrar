@@ -2,14 +2,15 @@ package uniregistrar.request;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
 
@@ -17,7 +18,11 @@ public class UpdateRequest {
 
 	public static final String MIME_TYPE = "application/json";
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper;
+
+	static {
+		objectMapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+	}
 
 	@JsonProperty
 	private String jobId;
@@ -32,17 +37,21 @@ public class UpdateRequest {
 	private Map<String, Object> secret;
 
 	@JsonProperty
-	private DIDDocument didDocument;
+	private List<DIDDocument> didDocument;
+
+	@JsonProperty
+	private List<String> didDocumentOperation;
 
 	public UpdateRequest() {
 
 	}
 
-	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
+	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, List<String> didDocumentOperation, List<DIDDocument> didDocument) {
 		this.jobId = jobId;
 		this.did = did;
 		this.options = options;
 		this.secret = secret;
+		this.didDocumentOperation = didDocumentOperation;
 		this.didDocument = didDocument;
 	}
 
@@ -50,11 +59,11 @@ public class UpdateRequest {
 	 * Serialization
 	 */
 
-	public static UpdateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static UpdateRequest fromJson(String json) throws IOException {
 		return objectMapper.readValue(json, UpdateRequest.class);
 	}
 
-	public static UpdateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static UpdateRequest fromJson(Reader reader) throws IOException {
 		return objectMapper.readValue(reader, UpdateRequest.class);
 	}
 
@@ -115,20 +124,33 @@ public class UpdateRequest {
 	}
 
 	@JsonSetter
-	public final void setDidDocument(DIDDocument didDocument) {
+	public void setDidDocumentOperation(List<String> didDocumentOperation) {
+		this.didDocumentOperation = didDocumentOperation;
+	}
 
+	@JsonGetter
+	public List<String> getDidDocumentOperation() {
+		return didDocumentOperation;
+	}
+
+	@JsonSetter
+	public void setDidDocument(List<DIDDocument> didDocument) {
 		this.didDocument = didDocument;
 	}
 
 	@JsonGetter
-	public final DIDDocument getDidDocument() {
-
+	public final List<DIDDocument> getDidDocument() {
 		return this.didDocument;
 	}
+
 
 	/*
 	 * Object methods
 	 */
+
+	public Map<String, Object> toMap(){
+		return objectMapper.convertValue(this, new TypeReference<Map<String, Object>>(){});
+	}
 
 	public String toString() {
 
