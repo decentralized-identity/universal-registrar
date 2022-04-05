@@ -24,6 +24,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=ion' -d '{}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=web' -d '{}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=ebsi' -d '{"secret":{"token":"ey......"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=oyd' -d '{"didDocument":{"@context":"https://www.w3.org/ns/did/v1","authentication":[]}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
