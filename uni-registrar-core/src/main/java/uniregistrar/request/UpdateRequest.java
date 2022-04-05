@@ -46,13 +46,13 @@ public class UpdateRequest {
 
 	}
 
-	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, List<String> didDocumentOperation, List<DIDDocument> didDocuments) {
+	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, List<String> didDocumentOperation, List<DIDDocument> didDocument) {
 		this.jobId = jobId;
 		this.did = did;
 		this.options = options;
 		this.secret = secret;
 		this.didDocumentOperation = didDocumentOperation;
-		this.didDocument = didDocuments;
+		this.didDocument = didDocument;
 	}
 
 	/*
