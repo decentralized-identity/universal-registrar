@@ -2,19 +2,15 @@ package uniregistrar.request;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
 
@@ -50,14 +46,6 @@ public class UpdateRequest {
 
 	}
 
-	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, DIDDocument didDocument) {
-		this.jobId = jobId;
-		this.did = did;
-		this.options = options;
-		this.secret = secret;
-		this.didDocument = new ArrayList<>(Arrays.asList(didDocument));
-	}
-
 	public UpdateRequest(String jobId, String did, Map<String, Object> options, Map<String, Object> secret, List<String> didDocumentOperation, List<DIDDocument> didDocuments) {
 		this.jobId = jobId;
 		this.did = did;
@@ -71,11 +59,11 @@ public class UpdateRequest {
 	 * Serialization
 	 */
 
-	public static UpdateRequest fromJson(String json) throws JsonParseException, JsonMappingException, IOException {
+	public static UpdateRequest fromJson(String json) throws IOException {
 		return objectMapper.readValue(json, UpdateRequest.class);
 	}
 
-	public static UpdateRequest fromJson(Reader reader) throws JsonParseException, JsonMappingException, IOException {
+	public static UpdateRequest fromJson(Reader reader) throws IOException {
 		return objectMapper.readValue(reader, UpdateRequest.class);
 	}
 
@@ -135,28 +123,23 @@ public class UpdateRequest {
 		this.secret = secret;
 	}
 
+	@JsonSetter
+	public void setDidDocumentOperation(List<String> didDocumentOperation) {
+		this.didDocumentOperation = didDocumentOperation;
+	}
+
+	@JsonGetter
 	public List<String> getDidDocumentOperation() {
 		return didDocumentOperation;
 	}
 
-	@JsonSetter(value = "didDocument")
+	@JsonSetter
 	public void setDidDocument(List<DIDDocument> didDocument) {
 		this.didDocument = didDocument;
 	}
 
-	@Deprecated(since = "0.3", forRemoval = true)
-	public final void setDidDocument(DIDDocument didDocument) {
-		this.didDocument = List.of(didDocument);
-	}
-
-	@Deprecated(since = "0.3", forRemoval = true)
-	public final DIDDocument getDidDocument() {
-		if(this.didDocument == null || this.didDocument.isEmpty()) return null;
-		if(this.didDocument.size() > 1) throw new IllegalStateException("Error: There are " + this.didDocument.size() + " DIDDocuments in the List. Use getDidDocuments instead.");
-		return this.didDocument.get(0);
-	}
-	@JsonGetter(value = "didDocument")
-	public final List<DIDDocument> getDidDocuments() {
+	@JsonGetter
+	public final List<DIDDocument> getDidDocument() {
 		return this.didDocument;
 	}
 
