@@ -5,26 +5,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class SetStateActionGenerateVerificationMethod {
+public final class SetStateActionGetVerificationMethod {
 
-	private SetStateActionGenerateVerificationMethod() {
+	private SetStateActionGetVerificationMethod() {
 
 	}
 
-	public static boolean isStateActionGenerateVerificationMethod(State state) {
+	public static boolean isStateActionGetVerificationMethod(State state) {
 
-		return "generateVerificationMethod".equals(SetStateAction.getStateAction(state));
+		return "getVerificationMethod".equals(SetStateAction.getStateAction(state));
 	}
 
-	public static void setStateActionGenerateVerificationMethod(State state) {
+	public static void setStateActionGetVerificationMethod(State state) {
 
-		SetStateAction.setStateAction(state, "generateVerificationMethod");
+		SetStateAction.setStateAction(state, "getVerificationMethod");
 	}
 
 
 	public static List<VerificationMethodTemplate> getStateActionVerificationMethodTemplates(State state) {
 
-		if (!isStateActionGenerateVerificationMethod(state)) return null;
+		if (!isStateActionGetVerificationMethod(state)) return null;
 		List<Map<String, Object>> verificationMethodTemplates = (List<Map<String, Object>>) state.getDidState().get("verificationMethodTemplate");
 		if (verificationMethodTemplates == null) return null;
 		return verificationMethodTemplates
@@ -35,7 +35,7 @@ public final class SetStateActionGenerateVerificationMethod {
 
 	public static void addStateActionVerificationMethodTemplate(State state, String signingRequestId, VerificationMethodTemplate verificationMethodTemplate) {
 
-		setStateActionGenerateVerificationMethod(state);
+		setStateActionGetVerificationMethod(state);
 		List<Map<String, Object>> verificationMethodTemplates = (List<Map<String, Object>>) state.getDidState().get("verificationMethodTemplate");
 		if (verificationMethodTemplates == null) {
 			verificationMethodTemplates = new LinkedList<>();
