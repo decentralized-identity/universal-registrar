@@ -33,7 +33,7 @@ public final class SetStateActionGetVerificationMethod {
 				.collect(Collectors.toList());
 	}
 
-	public static void addStateActionVerificationMethodTemplate(State state, String signingRequestId, VerificationMethodTemplate verificationMethodTemplate) {
+	public static void addStateActionVerificationMethodTemplate(State state, VerificationMethodTemplate verificationMethodTemplate) {
 
 		setStateActionGetVerificationMethod(state);
 		List<Map<String, Object>> verificationMethodTemplates = (List<Map<String, Object>>) state.getDidState().get("verificationMethodTemplate");
