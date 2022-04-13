@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-@JsonPropertyOrder({ "id", "type", "purpose" })
+@JsonPropertyOrder({ "id", "type", "controller", "purpose" })
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class VerificationMethodTemplate extends JsonObject {
 
@@ -21,12 +21,16 @@ public class VerificationMethodTemplate extends JsonObject {
     private String type;
 
     @JsonProperty
+    private String controller;
+
+    @JsonProperty
     private List<String> purpose;
 
-    private VerificationMethodTemplate(String id, String type, List<String> purpose) {
+    private VerificationMethodTemplate(String id, String type, String controller, List<String> purpose) {
         super();
         this.id = id;
         this.type = type;
+        this.controller = controller;
         this.purpose = purpose;
     }
 
@@ -35,12 +39,12 @@ public class VerificationMethodTemplate extends JsonObject {
      */
 
     @JsonCreator
-    public static VerificationMethodTemplate build(@JsonProperty(value="id", required=false) String id, @JsonProperty(value="type", required=false) String type, @JsonProperty(value="purpose", required=false) List<String> purpose) {
-        return new VerificationMethodTemplate(id, type, purpose);
+    public static VerificationMethodTemplate build(@JsonProperty(value="id", required=false) String id, @JsonProperty(value="type", required=false) String type, @JsonProperty(value="controller", required=false) String controller, @JsonProperty(value="purpose", required=false) List<String> purpose) {
+        return new VerificationMethodTemplate(id, type, controller, purpose);
     }
 
     public static VerificationMethodTemplate build() {
-        return new VerificationMethodTemplate(null, null, null);
+        return new VerificationMethodTemplate(null, null, null, null);
     }
 
     /*
@@ -77,6 +81,14 @@ public class VerificationMethodTemplate extends JsonObject {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public String getController() {
+        return controller;
+    }
+
+    public void setController(String controller) {
+        this.controller = controller;
     }
 
     public List<String> getPurpose() {
