@@ -68,34 +68,42 @@ public class VerificationMethodTemplate extends JsonObject {
      * Getters and setters
      */
 
+    @JsonGetter
     public String getId() {
         return id;
     }
 
+    @JsonSetter
     public void setId(String id) {
         this.id = id;
     }
 
+    @JsonGetter
     public String getType() {
         return type;
     }
 
+    @JsonSetter
     public void setType(String type) {
         this.type = type;
     }
 
+    @JsonGetter
     public String getController() {
         return controller;
     }
 
+    @JsonSetter
     public void setController(String controller) {
         this.controller = controller;
     }
 
+    @JsonGetter
     public List<String> getPurpose() {
         return purpose;
     }
 
+    @JsonSetter
     public void setPurpose(List<String> purpose) {
         this.purpose = purpose;
     }
