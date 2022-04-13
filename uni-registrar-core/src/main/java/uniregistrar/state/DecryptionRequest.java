@@ -21,15 +21,19 @@ public class DecryptionRequest extends JsonObject {
     private String enc;
 
     @JsonProperty
+    private String purpose;
+
+    @JsonProperty
     private Map<String, Object> payload;
 
     @JsonProperty
     private String encryptedPayload;
 
-    private DecryptionRequest(String kid, String enc, Map<String, Object> payload, String encryptedPayload) {
+    private DecryptionRequest(String kid, String enc, String purpose, Map<String, Object> payload, String encryptedPayload) {
         super();
         this.kid = kid;
         this.enc = enc;
+        this.purpose = purpose;
         this.payload = payload;
         this.encryptedPayload = encryptedPayload;
     }
@@ -39,12 +43,12 @@ public class DecryptionRequest extends JsonObject {
      */
 
     @JsonCreator
-    public static DecryptionRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="enc", required=true) String enc, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="encryptedPayload", required=false) String encryptedPayload) {
-        return new DecryptionRequest(kid, enc, payload, encryptedPayload);
+    public static DecryptionRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="enc", required=true) String enc, @JsonProperty(value="purpose", required=false) String purpose, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="encryptedPayload", required=false) String encryptedPayload) {
+        return new DecryptionRequest(kid, enc, purpose, payload, encryptedPayload);
     }
 
     public static DecryptionRequest build() {
-        return new DecryptionRequest(null, null, null, null);
+        return new DecryptionRequest(null, null, null, null, null);
     }
 
     /*
@@ -85,6 +89,16 @@ public class DecryptionRequest extends JsonObject {
     @JsonSetter
     public void setEnc(String enc) {
         this.enc = enc;
+    }
+
+    @JsonGetter
+    public String getPurpose() {
+        return purpose;
+    }
+
+    @JsonSetter
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
     }
 
     @JsonGetter
