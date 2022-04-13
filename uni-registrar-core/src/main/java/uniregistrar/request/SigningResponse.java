@@ -11,6 +11,7 @@ import java.util.Map;
 
 @JsonPropertyOrder({ "signature" })
 @JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SigningResponse extends JsonObject {
 
     @JsonProperty

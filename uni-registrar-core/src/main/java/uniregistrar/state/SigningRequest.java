@@ -11,6 +11,7 @@ import java.util.Map;
 
 @JsonPropertyOrder({ "kid", "alg", "payload", "serializedPayload" })
 @JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class SigningRequest extends JsonObject {
 
     @JsonProperty

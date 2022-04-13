@@ -11,6 +11,7 @@ import java.util.Map;
 
 @JsonPropertyOrder({ "kid", "enc", "payload", "encryptedPayload" })
 @JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class DecryptionRequest extends JsonObject {
 
     @JsonProperty

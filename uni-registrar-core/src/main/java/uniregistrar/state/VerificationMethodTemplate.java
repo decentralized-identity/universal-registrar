@@ -12,6 +12,7 @@ import java.util.Map;
 
 @JsonPropertyOrder({ "id", "type", "controller", "purpose" })
 @JsonIgnoreProperties(ignoreUnknown=true)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class VerificationMethodTemplate extends JsonObject {
 
     @JsonProperty
