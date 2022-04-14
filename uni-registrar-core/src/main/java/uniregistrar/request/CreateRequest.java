@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class CreateRequest extends JsonObject {
+public class CreateRequest extends JsonObject implements Request {
 
 	public static final String MIME_TYPE = "application/json";
 

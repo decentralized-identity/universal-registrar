@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-public class DeactivateRequest extends JsonObject {
+public class DeactivateRequest extends JsonObject implements Request {
 
 	public static final String MIME_TYPE = "application/json";
 

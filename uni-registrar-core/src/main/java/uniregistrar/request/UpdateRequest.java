@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import foundation.identity.did.DIDDocument;
 import uniregistrar.JsonObject;
 
-public class UpdateRequest extends JsonObject {
+public class UpdateRequest extends JsonObject implements Request {
 
 	public static final String MIME_TYPE = "application/json";
 
