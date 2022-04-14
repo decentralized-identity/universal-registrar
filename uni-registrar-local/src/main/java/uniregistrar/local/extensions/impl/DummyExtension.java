@@ -10,12 +10,14 @@ import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.request.CreateRequest;
 import uniregistrar.state.CreateState;
 
+import java.util.Map;
+
 public class DummyExtension extends AbstractExtension implements Extension {
 
 	private static Logger log = LoggerFactory.getLogger(DummyExtension.class);
 
 	@Override
-	public ExtensionStatus afterCreate(String method, CreateRequest createRequest, CreateState createState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+	public ExtensionStatus afterCreate(String method, CreateRequest createRequest, CreateState createState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
 
 		if (log.isDebugEnabled()) log.debug("Dummy extension called!");
 		return ExtensionStatus.DEFAULT;

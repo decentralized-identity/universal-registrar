@@ -102,6 +102,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+
 		// prepare create state
 
 		CreateState createState = CreateState.build();
@@ -111,7 +115,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.beforeCreate(method, createRequest, createState, this));
+				extensionStatus.or(extension.beforeCreate(method, createRequest, createState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -140,7 +144,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.afterCreate(method, createRequest, createState, this));
+				extensionStatus.or(extension.afterCreate(method, createRequest, createState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
@@ -167,6 +171,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+
 		// prepare update state
 
 		UpdateState updateState = UpdateState.build();
@@ -176,7 +184,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.beforeUpdate(method, updateRequest, updateState, this));
+				extensionStatus.or(extension.beforeUpdate(method, updateRequest, updateState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -201,7 +209,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.afterUpdate(method, updateRequest, updateState, this));
+				extensionStatus.or(extension.afterUpdate(method, updateRequest, updateState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
@@ -228,6 +236,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long start = System.currentTimeMillis();
 
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+
 		// prepare deactivate state
 
 		DeactivateState deactivateState = DeactivateState.build();
@@ -237,7 +249,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.beforeDeactivate(method, deactivateRequest, deactivateState, this));
+				extensionStatus.or(extension.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -262,7 +274,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
-				extensionStatus.or(extension.afterDeactivate(method, deactivateRequest, deactivateState, this));
+				extensionStatus.or(extension.afterDeactivate(method, deactivateRequest, deactivateState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
