@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-@JsonPropertyOrder({ "kid", "enc", "payload", "encryptedPayload" })
+@JsonPropertyOrder({ "kid", "enc", "purpose", "payload", "encryptedPayload" })
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class DecryptionRequest extends JsonObject {

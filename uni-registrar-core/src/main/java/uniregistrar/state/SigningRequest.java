@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Map;
 
-@JsonPropertyOrder({ "kid", "alg", "payload", "serializedPayload" })
+@JsonPropertyOrder({ "kid", "alg", "purpose", "payload", "serializedPayload" })
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SigningRequest extends JsonObject {
