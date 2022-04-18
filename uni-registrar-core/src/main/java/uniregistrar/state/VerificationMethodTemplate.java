@@ -10,7 +10,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-@JsonPropertyOrder({ "id", "type", "controller", "purpose" })
+@JsonPropertyOrder({ "id", "type", "controller", "publicKeyJwk", "purpose" })
 @JsonIgnoreProperties(ignoreUnknown=true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class VerificationMethodTemplate extends JsonObject {
@@ -25,13 +25,17 @@ public class VerificationMethodTemplate extends JsonObject {
     private String controller;
 
     @JsonProperty
+    private Map<String, Object> publicKeyJwk;
+
+    @JsonProperty
     private List<String> purpose;
 
-    private VerificationMethodTemplate(String id, String type, String controller, List<String> purpose) {
+    private VerificationMethodTemplate(String id, String type, String controller, Map<String, Object> publicKeyJwk, List<String> purpose) {
         super();
         this.id = id;
         this.type = type;
         this.controller = controller;
+        this.publicKeyJwk = publicKeyJwk;
         this.purpose = purpose;
     }
 
@@ -40,12 +44,12 @@ public class VerificationMethodTemplate extends JsonObject {
      */
 
     @JsonCreator
-    public static VerificationMethodTemplate build(@JsonProperty(value="id", required=false) String id, @JsonProperty(value="type", required=false) String type, @JsonProperty(value="controller", required=false) String controller, @JsonProperty(value="purpose", required=false) List<String> purpose) {
-        return new VerificationMethodTemplate(id, type, controller, purpose);
+    public static VerificationMethodTemplate build(@JsonProperty(value="id", required=false) String id, @JsonProperty(value="type", required=false) String type, @JsonProperty(value="controller", required=false) String controller, @JsonProperty(value="publicKeyJwk", required=false) Map<String, Object> publicKeyJwk, @JsonProperty(value="purpose", required=false) List<String> purpose) {
+        return new VerificationMethodTemplate(id, type, controller, publicKeyJwk, purpose);
     }
 
     public static VerificationMethodTemplate build() {
-        return new VerificationMethodTemplate(null, null, null, null);
+        return new VerificationMethodTemplate(null, null, null, null, null);
     }
 
     /*
@@ -96,6 +100,16 @@ public class VerificationMethodTemplate extends JsonObject {
     @JsonSetter
     public void setController(String controller) {
         this.controller = controller;
+    }
+
+    @JsonGetter
+    public Map<String, Object> getPublicKeyJwk() {
+        return publicKeyJwk;
+    }
+
+    @JsonSetter
+    public void setPublicKeyJwk(Map<String, Object> publicKeyJwk) {
+        this.publicKeyJwk = publicKeyJwk;
     }
 
     @JsonGetter
