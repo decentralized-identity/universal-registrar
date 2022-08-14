@@ -75,7 +75,6 @@
 
 		<!-- Dependency Versions -->
 
-		<key-formats-java.version>1.5-SNAPSHOT</key-formats-java.version>
 		<did-common-java.version>1.1-SNAPSHOT</did-common-java.version>
 
 		<eclipse.jetty.version>9.4.44.v20210927</eclipse.jetty.version>
@@ -271,11 +270,6 @@
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-collections4</artifactId>
 				<version>${commons.collections4.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.danubetech</groupId>
-				<artifactId>key-formats-java</artifactId>
-				<version>${key-formats-java.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
