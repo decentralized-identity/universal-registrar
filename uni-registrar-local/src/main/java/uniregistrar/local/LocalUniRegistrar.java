@@ -1,33 +1,27 @@
 package uniregistrar.local;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.*;
-import java.util.Map.Entry;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.http.HttpDriver;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
-import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.CreateRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.DeactivateState;
 import uniregistrar.state.CreateState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
+
+import java.io.*;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class LocalUniRegistrar implements UniRegistrar {
 

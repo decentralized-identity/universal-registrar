@@ -1,0 +1,34 @@
+server:
+  servlet:
+    contextPath: /
+  port: '9080'
+spring:
+  main:
+    allow-bean-definition-overriding: 'true'
+  profiles:
+    active: ${uniregistrar_web_spring_profiles_active}
+uniregistrar:
+  walletServiceBase: ${uniregistrar_walletServiceBase:http://wallet-service:12080/wallet-service/1.0.0}
+  drivers:
+    - method: sov
+      url: http://danubetech-driver-did-sov:9080/
+      propertiesEndpoint: 'true'
+    - method: v1
+      url: http://driver-did-v1:9080/
+      propertiesEndpoint: 'true'
+    - method: key
+      url: http://danubetech-driver-did-key:9080/
+    - method: jwk
+      url: http://danubetech-driver-did-jwk:9080/
+    - method: ion
+      url: http://danubetech-driver-did-ion:9080/
+      propertiesEndpoint: 'true'
+    - method: web
+      url: http://driver-did-web:9080/
+      propertiesEndpoint: 'true'
+    - method: ebsi
+      url: http://danubetech-driver-did-ebsi:9080/
+      propertiesEndpoint: 'true'
+    - method: indy
+      url: http://danubetech-driver-did-indy:9080/
+      propertiesEndpoint: 'true'
