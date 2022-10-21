@@ -10,25 +10,26 @@ spring:
 uniregistrar:
   walletServiceBase: ${uniregistrar_walletServiceBase:http://wallet-service:12080/wallet-service/1.0.0}
   drivers:
+    - method: btcr
+      url: http://driver-did-btcr:9080/
+      propertiesEndpoint: 'true'
     - method: sov
-      url: http://danubetech-driver-did-sov:9080/
+      url: http://driver-did-sov:9080/
       propertiesEndpoint: 'true'
     - method: v1
       url: http://driver-did-v1:9080/
       propertiesEndpoint: 'true'
     - method: key
-      url: http://danubetech-driver-did-key:9080/
-    - method: jwk
-      url: http://danubetech-driver-did-jwk:9080/
+      url: http://driver-did-key:9080/
     - method: ion
-      url: http://danubetech-driver-did-ion:9080/
+      url: http://driver-did-ion:9080/
       propertiesEndpoint: 'true'
     - method: web
       url: http://driver-did-web:9080/
       propertiesEndpoint: 'true'
     - method: ebsi
-      url: http://danubetech-driver-did-ebsi:9080/
+      url: http://driver-did-ebsi:9080/
       propertiesEndpoint: 'true'
-    - method: indy
-      url: http://danubetech-driver-did-indy:9080/
+    - method: oyd
+      url: http://driver-did-oyd:3000/
       propertiesEndpoint: 'true'
