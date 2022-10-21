@@ -26,7 +26,7 @@ Dependency:
 
 You can deploy a [Web Registrar](https://github.com/decentralized-identity/universal-registrar/tree/master/uni-registrar-web) that can be called by clients and invokes drivers locally (either directly via their JAVA API or via a Docker REST API).
 
-See the [Example Configuration](https://github.com/decentralized-identity/universal-registrar/blob/master/uni-registrar-web/src/main/webapp/WEB-INF/applicationContext.xml).
+See the [Example Configuration](https://github.com/decentralized-identity/universal-registrar/blob/master/uni-registrar-web/src/main/resources/application.yml).
 
 How to run:
 
