@@ -67,11 +67,11 @@ Contributing a driver to the Universal Registrar expands the functionality of th
 
 In order to contribute a driver to the Universal Registrar, the driver's source code must be published. You may choose to publish it at the [Decentralized Identity Foundation](https://github.com/decentralized-identity/universal-registrar/tree/master/drivers) or on another publicly available site. In addition, your Docker image must be published on [DockerHub](https://hub.docker.com/) with version tags to allow configuration of your driver. Ideally, the same DockerHub image is kept up-to-date to preserve versioning history (see below in the "How to Update a Driver" section).
 
-In your PR, edit the following files in the Universal Registrar root directory:
+In your PR, edit the following files in the Universal Registrar root directory and uni-registrar-web's [`application.yml`](https://github.com/decentralized-identity/universal-registrar/blob/main/uni-registrar-web/src/main/resources/application.yml):
 
 - `.env`
   * list environment variables (if any) with default values
-- `config.json` (add your driver)
+- [`application.yml`](https://github.com/decentralized-identity/universal-registrar/blob/main/uni-registrar-web/src/main/resources/application.yml) (add your driver)
   * Docker image name
 - `docker-compose.yml` (add your driver)
   * docker image name and increment port number
