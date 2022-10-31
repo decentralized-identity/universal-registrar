@@ -8,7 +8,6 @@ spring:
   profiles:
     active: ${uniregistrar_web_spring_profiles_active}
 uniregistrar:
-  walletServiceBase: ${uniregistrar_walletServiceBase:http://wallet-service:12080/wallet-service/1.0.0}
   drivers:
     - method: btcr
       url: http://driver-did-btcr:9080/
