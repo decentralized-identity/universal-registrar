@@ -93,3 +93,7 @@ services:
     image: oydeu/oydid-registrar:latest
     ports:
       - "9088:3000"
+  driver-did-cheqd:
+    image: ghcr.io/cheqd/did-registrar:production-latest
+    ports:
+      - "9089:3000"

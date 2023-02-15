@@ -32,3 +32,6 @@ uniregistrar:
     - method: oyd
       url: http://driver-did-oyd:3000/
       propertiesEndpoint: 'true'
+    - method: cheqd
+      url: http://driver-did-cheqd:3000/
+      propertiesEndpoint: 'true'

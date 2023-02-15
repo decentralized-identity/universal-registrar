@@ -25,6 +25,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=web' -d '{}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=ebsi' -d '{"secret":{"token":"ey......"}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=oyd' -d '{"didDocument":{"@context":"https://www.w3.org/ns/did/v1","authentication":[]}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=cheqd' -d '{"didDocument":{...}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -44,6 +45,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
 | [did-ebsi](https://github.com/danubetech/uni-registrar-driver-did-ebsi/) | 1.0.0 | (missing) | [universalregistrar/driver-did-ebsi](https://hub.docker.com/r/universalregistrar/driver-did-ebsi/)
 | [did-oyd](https://github.com/OwnYourData/oydid/tree/main/uni-registrar-driver-did-oyd) | 0.4.7 | [0.4](https://ownyourdata.github.io/oydid/) | [oydeu/oydid-registrar](https://hub.docker.com/r/oydeu/oydid-registrar/)
+| [did-cheqd](https://github.com/cheqd/did-registrar) | 2.0.0 | [0.0](https://docs.cheqd.io/node/architecture/adr-list/adr-002-cheqd-did-method) | [cheqd/did-registrar](https://github.com/cheqd/did-registrar/pkgs/container/did-registrar)
 
 ## More Information
 
