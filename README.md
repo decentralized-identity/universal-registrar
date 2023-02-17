@@ -8,12 +8,12 @@ See https://uniregistrar.io/ for a publicly hosted instance of a Universal Regis
 
 ## Quick Start
 
-You can deploy the Universal Registrar on your local machine by cloning this Github repository, and using `docker-compose` to build and run the Universal Registrar as well as its drivers:
+You can deploy the Universal Registrar on your local machine by cloning this Github repository, and using `docker compose` to build and run the Universal Registrar as well as its drivers:
 
 	git clone https://github.com/decentralized-identity/universal-registrar
 	cd universal-registrar/
-	docker-compose -f docker-compose.yml pull
-	docker-compose -f docker-compose.yml up
+	docker compose -f docker-compose.yml pull
+	docker compose -f docker-compose.yml up
 
 You should then be able to create/update/deactivate identifiers locally using simple `curl` requests as follows:
 
