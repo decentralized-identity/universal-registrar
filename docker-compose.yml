@@ -57,8 +57,8 @@ services:
       uniregistrar_driver_did_sov_libIndyPath: ${uniregistrar_driver_did_sov_libIndyPath}
       uniregistrar_driver_did_sov_poolConfigs: ${uniregistrar_driver_did_sov_poolConfigs}
       uniregistrar_driver_did_sov_poolVersions: ${uniregistrar_driver_did_sov_poolVersions}
-      uniregistrar_driver_did_sov_walletName: ${uniregistrar_driver_did_sov_walletName}
-      uniregistrar_driver_did_sov_trustAnchorSeed: ${uniregistrar_driver_did_sov_trustAnchorSeed}
+      uniregistrar_driver_did_sov_walletNames: ${uniregistrar_driver_did_sov_walletNames}
+      uniregistrar_driver_did_sov_submitterDidSeeds: ${uniregistrar_driver_did_sov_submitterDidSeeds}
     ports:
       - "9082:9080"
   driver-did-v1:
