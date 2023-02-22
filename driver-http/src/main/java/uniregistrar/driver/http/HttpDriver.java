@@ -21,6 +21,7 @@ import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
 import uniregistrar.state.CreateState;
 import uniregistrar.state.DeactivateState;
+import uniregistrar.state.SetStateFailed;
 import uniregistrar.state.UpdateState;
 
 import java.io.IOException;
@@ -100,14 +101,17 @@ public class HttpDriver implements Driver {
 
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
-
 			if (isStateHttpContent(httpBodyString)) {
 				createState = CreateState.fromJson(httpBodyString);
 			}
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
-				throw new RegistrationException(httpBodyString);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+			}
+
+			if (createState != null && SetStateFailed.isStateFailed(createState)) {
+				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(createState) + " -> " + SetStateFailed.getStateFailedReason(createState));
+				throw new RegistrationException(createState);
 			}
 
 			if (createState == null) {
@@ -177,8 +181,13 @@ public class HttpDriver implements Driver {
 				updateState = UpdateState.fromJson(httpBodyString);
 			}
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
-				throw new RegistrationException(httpBodyString);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+			}
+
+			if (updateState != null && SetStateFailed.isStateFailed(updateState)) {
+				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(updateState) + " -> " + SetStateFailed.getStateFailedReason(updateState));
+				throw new RegistrationException(updateState);
 			}
 
 			if (updateState == null) {
@@ -248,8 +257,13 @@ public class HttpDriver implements Driver {
 				deactivateState = DeactivateState.fromJson(httpBodyString);
 			}
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
-				throw new RegistrationException(httpBodyString);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+			}
+
+			if (deactivateState != null && SetStateFailed.isStateFailed(deactivateState)) {
+				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(deactivateState) + " -> " + SetStateFailed.getStateFailedReason(deactivateState));
+				throw new RegistrationException(deactivateState);
 			}
 
 			if (deactivateState == null) {
