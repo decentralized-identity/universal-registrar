@@ -1,11 +1,7 @@
 package uniregistrar.driver.http;
 
-import java.io.IOException;
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,21 +10,25 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.CreateRequest;
+import uniregistrar.request.DeactivateRequest;
 import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.DeactivateState;
 import uniregistrar.state.CreateState;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.UpdateState;
+
+import java.io.IOException;
+import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class HttpDriver implements Driver {
 
@@ -62,10 +62,8 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-
 			body = createRequest.toJson();
 		} catch (JsonProcessingException ex) {
-
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
@@ -73,34 +71,48 @@ public class HttpDriver implements Driver {
 		httpPost.setEntity(new StringEntity(body, ContentType.create(CreateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", CreateState.MEDIA_TYPE);
 
-		// execute HTTP request
+		// execute HTTP request and read response
 
-		CreateState createState;
+		CreateState createState = null;
 
-		if (log.isDebugEnabled()) log.debug("Request for create request " + createRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for CREATE REQUEST " + createRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
-
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
-
-			if (statusCode == 404) return null;
+			// execute HTTP request
 
 			HttpEntity httpEntity = httpResponse.getEntity();
-			String httpBody = EntityUtils.toString(httpEntity);
+			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+
+			if (httpStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
+			String httpBodyString = new String(httpBodyBytes, httpCharset);
 			EntityUtils.consume(httpEntity);
 
-			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + httpBody);
-				throw new RegistrationException(httpBody);
+			if (isStateHttpContent(httpBodyString)) {
+				createState = CreateState.fromJson(httpBodyString);
 			}
 
-			createState = CreateState.fromJson(httpBody);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+				throw new RegistrationException(httpBodyString);
+			}
+
+			if (createState == null) {
+				createState = CreateState.fromJson(httpBodyString);
+			}
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -123,10 +135,8 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-
 			body = updateRequest.toJson();
 		} catch (JsonProcessingException ex) {
-
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
@@ -134,34 +144,46 @@ public class HttpDriver implements Driver {
 		httpPost.setEntity(new StringEntity(body, ContentType.create(UpdateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", UpdateState.MEDIA_TYPE);
 
-		// execute HTTP request
+		// execute HTTP request and read response
 
-		UpdateState updateState;
+		UpdateState updateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Request for update request " + updateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE REQUEST " + updateRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
-
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
-
-			if (statusCode == 404) return null;
+			// execute HTTP request
 
 			HttpEntity httpEntity = httpResponse.getEntity();
-			String httpBody = EntityUtils.toString(httpEntity);
+			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+
+			if (httpStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
+			String httpBodyString = new String(httpBodyBytes, httpCharset);
 			EntityUtils.consume(httpEntity);
 
-			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
-
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + httpBody);
-				throw new RegistrationException(httpBody);
+			if (isStateHttpContent(httpBodyString)) {
+				updateState = UpdateState.fromJson(httpBodyString);
 			}
 
-			updateState = UpdateState.fromJson(httpBody);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+				throw new RegistrationException(httpBodyString);
+			}
+
+			if (updateState == null) {
+				updateState = UpdateState.fromJson(httpBodyString);
+			}
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -184,10 +206,8 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-
 			body = deactivateRequest.toJson();
 		} catch (JsonProcessingException ex) {
-
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
@@ -195,34 +215,46 @@ public class HttpDriver implements Driver {
 		httpPost.setEntity(new StringEntity(body, ContentType.create(DeactivateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", DeactivateState.MEDIA_TYPE);
 
-		// execute HTTP request
+		// execute HTTP request and read response
 
-		DeactivateState deactivateState;
+		DeactivateState deactivateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Request for deactivate request " + deactivateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE REQUEST " + deactivateRequest + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
-
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
-
-			if (statusCode == 404) return null;
+			// execute HTTP request
 
 			HttpEntity httpEntity = httpResponse.getEntity();
-			String httpBody = EntityUtils.toString(httpEntity);
+			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+
+			if (httpStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
+			String httpBodyString = new String(httpBodyBytes, httpCharset);
 			EntityUtils.consume(httpEntity);
 
-			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
-
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + httpBody);
-				throw new RegistrationException(httpBody);
+			if (isStateHttpContent(httpBodyString)) {
+				deactivateState = DeactivateState.fromJson(httpBodyString);
 			}
 
-			deactivateState = DeactivateState.fromJson(httpBody);
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+				throw new RegistrationException(httpBodyString);
+			}
+
+			if (deactivateState == null) {
+				deactivateState = DeactivateState.fromJson(httpBodyString);
+			}
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -316,6 +348,19 @@ public class HttpDriver implements Driver {
 		// done
 
 		return properties;
+	}
+
+	/*
+	 * Helper methods
+	 */
+
+	public static boolean isStateHttpContent(String httpContentString) {
+		try {
+			Map<String, Object> json = objectMapper.readValue(httpContentString, Map.class);
+			return json.containsKey("didState");
+		} catch (JsonProcessingException ex) {
+			return false;
+		}
 	}
 
 	/*
