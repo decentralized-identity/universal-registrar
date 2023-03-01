@@ -22,6 +22,10 @@ public class DecryptionResponse extends JsonObject {
         this.decryptedPayload = decryptedPayload;
     }
 
+    private DecryptionResponse() {
+        this(null);
+    }
+
     /*
      * Factory methods
      */
@@ -32,7 +36,7 @@ public class DecryptionResponse extends JsonObject {
     }
 
     public static DecryptionResponse build() {
-        return new DecryptionResponse(null);
+        return new DecryptionResponse();
     }
 
     /*

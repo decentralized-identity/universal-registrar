@@ -7,6 +7,7 @@ import uniregistrar.JsonObject;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
 import java.util.Map;
 
 @JsonPropertyOrder({ "kid", "enc", "purpose", "payload", "encryptedPayload" })
@@ -38,6 +39,10 @@ public class DecryptionRequest extends JsonObject {
         this.encryptedPayload = encryptedPayload;
     }
 
+    private DecryptionRequest() {
+        this(null, null, null, null, null);
+    }
+
     /*
      * Factory methods
      */
@@ -48,7 +53,7 @@ public class DecryptionRequest extends JsonObject {
     }
 
     public static DecryptionRequest build() {
-        return new DecryptionRequest(null, null, null, null, null);
+        return new DecryptionRequest();
     }
 
     /*

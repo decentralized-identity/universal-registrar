@@ -21,6 +21,10 @@ public class DeactivateState extends State {
 		super(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
 	}
 
+	private DeactivateState() {
+		this(null, new HashMap<> (), new HashMap<> (), new HashMap<> ());
+	}
+
 	/*
 	 * Factory methods
 	 */
@@ -31,7 +35,7 @@ public class DeactivateState extends State {
 	}
 
 	public static DeactivateState build() {
-		return new DeactivateState(null, new HashMap<> (), new HashMap<> (), new HashMap<> ());
+		return new DeactivateState();
 	}
 
 	/*

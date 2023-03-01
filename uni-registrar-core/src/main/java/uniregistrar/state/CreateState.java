@@ -20,6 +20,10 @@ public class CreateState extends State {
 		super(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
 	}
 
+	private CreateState() {
+		this(null, new HashMap<> (), new HashMap<> (), new HashMap<> ());
+	}
+
 	/*
 	 * Factory methods
 	 */
@@ -30,7 +34,7 @@ public class CreateState extends State {
 	}
 
 	public static CreateState build() {
-		return new CreateState(null, new HashMap<>(), new HashMap<>(), new HashMap<>());
+		return new CreateState();
 	}
 
 	/*

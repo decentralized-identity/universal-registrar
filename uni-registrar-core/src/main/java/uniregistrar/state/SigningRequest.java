@@ -38,6 +38,10 @@ public class SigningRequest extends JsonObject {
         this.serializedPayload = serializedPayload;
     }
 
+    private SigningRequest() {
+        this(null, null, null, null, null);
+    }
+
     /*
      * Factory methods
      */
@@ -48,7 +52,7 @@ public class SigningRequest extends JsonObject {
     }
 
     public static SigningRequest build() {
-        return new SigningRequest(null, null, null, null, null);
+        return new SigningRequest();
     }
 
     /*

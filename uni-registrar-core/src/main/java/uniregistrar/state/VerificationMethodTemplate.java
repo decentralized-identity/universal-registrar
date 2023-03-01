@@ -39,6 +39,10 @@ public class VerificationMethodTemplate extends JsonObject {
         this.purpose = purpose;
     }
 
+    private VerificationMethodTemplate() {
+        super();
+    }
+
     /*
      * Factory methods
      */
@@ -49,7 +53,7 @@ public class VerificationMethodTemplate extends JsonObject {
     }
 
     public static VerificationMethodTemplate build() {
-        return new VerificationMethodTemplate(null, null, null, null, null);
+        return new VerificationMethodTemplate();
     }
 
     /*

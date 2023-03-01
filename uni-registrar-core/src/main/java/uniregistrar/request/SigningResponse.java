@@ -22,6 +22,10 @@ public class SigningResponse extends JsonObject {
         this.signature = signature;
     }
 
+    private SigningResponse() {
+        this(null);
+    }
+
     /*
      * Factory methods
      */
@@ -32,7 +36,7 @@ public class SigningResponse extends JsonObject {
     }
 
     public static SigningResponse build() {
-        return new SigningResponse(null);
+        return new SigningResponse();
     }
 
     /*

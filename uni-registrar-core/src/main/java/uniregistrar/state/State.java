@@ -34,6 +34,10 @@ public class State extends JsonObject {
         this.didDocumentMetadata = didDocumentMetadata;
     }
 
+    private State() {
+        this(null, new HashMap<>(), new HashMap<>(), new HashMap<>());
+    }
+
     /*
      * Factory methods
      */
@@ -44,7 +48,7 @@ public class State extends JsonObject {
     }
 
     public static State build() {
-        return new State(null, new HashMap<>(), new HashMap<>(), new HashMap<>());
+        return new State();
     }
 
     /*
