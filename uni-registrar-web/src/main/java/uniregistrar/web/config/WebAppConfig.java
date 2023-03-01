@@ -1,5 +1,6 @@
 package uniregistrar.web.config;
 
+import jakarta.annotation.PostConstruct;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,6 @@ import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.impl.DummyExtension;
 import uniregistrar.web.servlet.*;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;

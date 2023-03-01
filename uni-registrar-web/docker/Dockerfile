@@ -1,6 +1,6 @@
 # Dockerfile for universalregistrar/uni-registrar-web
 
-FROM maven:3-jdk-11 AS build
+FROM maven:3-openjdk-17 AS build
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # build uni-registrar-web
@@ -15,7 +15,7 @@ RUN cd /opt/universal-registrar/uni-registrar-web && mvn clean install package -
 
 # build image
 
-FROM openjdk:11-jre-slim
+FROM openjdk:17-jdk-slim
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 WORKDIR /opt/universal-registrar/uni-registrar-web/

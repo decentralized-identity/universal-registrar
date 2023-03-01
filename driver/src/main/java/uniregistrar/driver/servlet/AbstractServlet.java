@@ -1,11 +1,11 @@
 package uniregistrar.driver.servlet;
 
+import jakarta.servlet.Servlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
-
-import javax.servlet.Servlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
 
 public abstract class AbstractServlet extends HttpServlet implements Servlet {
 
