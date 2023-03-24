@@ -87,14 +87,14 @@
 		<commons-codec.version>1.15</commons-codec.version>
 		<google.guava.version>30.1-jre</google.guava.version>
 		<httpclient.version>4.5.14</httpclient.version>
-		<springframework.version>6.0.0</springframework.version>
-		<jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
 		<io.leonard-base58.version>0.0.2</io.leonard-base58.version>
 
-		<junit-jupiter.version>5.6.2</junit-jupiter.version>
-		<junit-platform.version>1.6.1</junit-platform.version>
+		<springframework.version>6.0.0</springframework.version>
+		<jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
+
+		<junit-jupiter.version>5.9.2</junit-jupiter.version>
 		<mockito-core.version>3.4.4</mockito-core.version>
-		<junit.version>4.13.1</junit.version>
+		<junit.version>4.13.2</junit.version>
 
 		<!-- Plugin Versions -->
 
@@ -103,9 +103,9 @@
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
 		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
 		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
-		<maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
-		<maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
 		<maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
+		<maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
+		<maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
 	</properties>
 
 	<build>
@@ -235,9 +235,29 @@
 				<version>${project.parent.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${slf4j.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>decentralized-identity</groupId>
 				<artifactId>did-common-java</artifactId>
 				<version>${did-common-java.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.core.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.annotations.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.databind.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -260,6 +280,36 @@
 				<version>${commons.collections4.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>com.google.code.gson</groupId>
+				<artifactId>gson</artifactId>
+				<version>${gson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.httpcomponents</groupId>
+				<artifactId>httpclient</artifactId>
+				<version>${httpclient.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.leonard</groupId>
+				<artifactId>base58</artifactId>
+				<version>${io.leonard-base58.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>jakarta.servlet</groupId>
+				<artifactId>jakarta.servlet-api</artifactId>
+				<version>${jakarta.servlet-api.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
@@ -278,56 +328,6 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito-core.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-core</artifactId>
-				<version>${jackson.core.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-annotations</artifactId>
-				<version>${jackson.annotations.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.fasterxml.jackson.core</groupId>
-				<artifactId>jackson-databind</artifactId>
-				<version>${jackson.databind.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.google.code.gson</groupId>
-				<artifactId>gson</artifactId>
-				<version>${gson.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
-				<version>${slf4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.httpcomponents</groupId>
-				<artifactId>httpclient</artifactId>
-				<version>${httpclient.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-web</artifactId>
-				<version>${springframework.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-context</artifactId>
-				<version>${springframework.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>jakarta.servlet</groupId>
-				<artifactId>jakarta.servlet-api</artifactId>
-				<version>${jakarta.servlet-api.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.leonard</groupId>
-				<artifactId>base58</artifactId>
-				<version>${io.leonard-base58.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
