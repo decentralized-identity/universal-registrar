@@ -90,7 +90,7 @@ services:
     ports:
       - "9087:9080"
   driver-did-oyd:
-    image: oydeu/oydid-registrar:latest
+    image: oydeu/oydid-registrar:v0.5.0
     ports:
       - "9088:3000"
   driver-did-cheqd:

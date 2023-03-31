@@ -44,7 +44,7 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/) | 1.0.0 | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
 | [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
 | [did-ebsi](https://github.com/danubetech/uni-registrar-driver-did-ebsi/) | 1.0.0 | (missing) | [universalregistrar/driver-did-ebsi](https://hub.docker.com/r/universalregistrar/driver-did-ebsi/)
-| [did-oyd](https://github.com/OwnYourData/oydid/tree/main/uni-registrar-driver-did-oyd) | 0.4.7 | [0.4](https://ownyourdata.github.io/oydid/) | [oydeu/oydid-registrar](https://hub.docker.com/r/oydeu/oydid-registrar/)
+| [did-oyd](https://github.com/OwnYourData/oydid/tree/main/uni-registrar-driver-did-oyd) | 0.5.0 | [0.5](https://ownyourdata.github.io/oydid/) | [oydeu/oydid-registrar](https://hub.docker.com/r/oydeu/oydid-registrar/)
 | [did-cheqd](https://github.com/cheqd/did-registrar) | 2.0.0 | [0.0](https://docs.cheqd.io/node/architecture/adr-list/adr-002-cheqd-did-method) | [cheqd/did-registrar](https://github.com/cheqd/did-registrar/pkgs/container/did-registrar)
 
 ## More Information
