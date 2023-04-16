@@ -109,8 +109,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.BeforeCreateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
-				extensionStatus.or(extension.beforeCreate(method, createRequest, createState, executionState, this));
+				extensionStatus.or(((Extension.BeforeCreateExtension) extension).beforeCreate(method, createRequest, createState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -139,8 +140,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.AfterCreateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (afterCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
-				extensionStatus.or(extension.afterCreate(method, createRequest, createState, executionState, this));
+				extensionStatus.or(((Extension.AfterCreateExtension) extension).afterCreate(method, createRequest, createState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
@@ -180,8 +182,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.BeforeUpdateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
-				extensionStatus.or(extension.beforeUpdate(method, updateRequest, updateState, executionState, this));
+				extensionStatus.or(((Extension.BeforeUpdateExtension) extension).beforeUpdate(method, updateRequest, updateState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -206,8 +209,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.AfterUpdateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (afterUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
-				extensionStatus.or(extension.afterUpdate(method, updateRequest, updateState, executionState, this));
+				extensionStatus.or(((Extension.AfterUpdateExtension) extension).afterUpdate(method, updateRequest, updateState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}
@@ -247,8 +251,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsBefore()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.BeforeDeactivateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
-				extensionStatus.or(extension.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this));
+				extensionStatus.or(((Extension.BeforeDeactivateExtension) extension).beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this));
 				if (extensionStatus.skipExtensionsBefore()) break;
 			}
 		}
@@ -273,8 +278,9 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (! extensionStatus.skipExtensionsAfter()) {
 			for (Extension extension : this.getExtensions()) {
+				if (! (extension instanceof Extension.AfterDeactivateExtension)) continue;
 				if (log.isDebugEnabled()) log.debug("Executing extension (afterDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
-				extensionStatus.or(extension.afterDeactivate(method, deactivateRequest, deactivateState, executionState, this));
+				extensionStatus.or(((Extension.AfterDeactivateExtension) extension).afterDeactivate(method, deactivateRequest, deactivateState, executionState, this));
 				if (extensionStatus.skipExtensionsAfter()) break;
 			}
 		}

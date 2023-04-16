@@ -1,71 +1,123 @@
 package uniregistrar.web.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
 import uniregistrar.driver.util.HttpBindingServerUtil;
+import uniregistrar.local.LocalUniRegistrar;
+import uniregistrar.local.extensions.Extension;
 import uniregistrar.request.DeactivateRequest;
+import uniregistrar.state.DeactivateState;
 import uniregistrar.state.State;
 import uniregistrar.web.WebUniRegistrar;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 public class DeactivateServlet extends WebUniRegistrar {
 
 	protected static Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
 
-	public static final String MIME_TYPE = "application/json";
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		// read request
 
+		String method = request.getParameter("method");
+
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
+
+		Map<String, Object> requestMap;
+
+		try {
+			requestMap = objectMapper.readValue(request.getReader(), Map.class);
+		} catch (Exception ex) {
+			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (JSON): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
+			return;
+		}
+
+		// [before read]
+
+		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
+			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+			for (Extension extension : localUniRegistrar.getExtensions()) {
+				if (! (extension instanceof Extension.BeforeReadDeactivateExtension)) continue;
+				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadDeactivate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
+				try {
+					((Extension.BeforeReadDeactivateExtension) extension).beforeReadDeactivate(method, requestMap, localUniRegistrar);
+				} catch (Exception ex) {
+					if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
+					return;
+				}
+			}
+		}
+
+		// parse request
 
 		DeactivateRequest deactivateRequest;
 
 		try {
-
-			deactivateRequest = DeactivateRequest.fromJson(request.getReader());
+			deactivateRequest = DeactivateRequest.fromMap(requestMap);
 		} catch (Exception ex) {
-
-			if (log.isWarnEnabled()) log.warn("Request problem: " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Request problem: " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (object): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
 			return;
 		}
 
-		String method = request.getParameter("method");
-
-		if (log.isInfoEnabled()) log.info("Incoming deactivate request for method " + method + ": " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Incoming DEACTIVATE request for method " + method + ": " + deactivateRequest);
 
 		if (deactivateRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No deactivate request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No DEACTIVATE request found.");
 			return;
 		}
 
 		// execute the request
 
 		State state;
+		Map<String, Object> stateMap;
 
 		try {
 
 			state = this.deactivate(method, deactivateRequest);
 			if (state == null) throw new RegistrationException("No state.");
+			stateMap = state.toMap();
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
+			if (log.isWarnEnabled()) log.warn("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
 
-			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("Deactivate problem for " + deactivateRequest + ": " + ex.getMessage());
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
+			stateMap = state.toMap();
 		}
 
-		if (log.isInfoEnabled()) log.info("State for " + deactivateRequest + ": " + state);
+		if (log.isInfoEnabled()) log.info("DEACTIVATE state for " + deactivateRequest + ": " + state);
+
+		// [before write]
+
+		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
+			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+			for (Extension extension : localUniRegistrar.getExtensions()) {
+				if (! (extension instanceof Extension.BeforeWriteDeactivateExtension)) continue;
+				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteDeactivate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
+				try {
+					((Extension.BeforeWriteDeactivateExtension) extension).beforeWriteDeactivate(method, stateMap, localUniRegistrar);
+				} catch (Exception ex) {
+					if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
+					return;
+				}
+			}
+		}
 
 		// write state
 
@@ -73,6 +125,6 @@ public class DeactivateServlet extends WebUniRegistrar {
 				response,
 				HttpBindingServerUtil.httpStatusCodeForState(state),
 				State.MEDIA_TYPE,
-				HttpBindingServerUtil.toHttpBodyStreamState(state));
+				HttpBindingServerUtil.toHttpBodyStreamState(stateMap));
 	}
 }
