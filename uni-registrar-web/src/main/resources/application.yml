@@ -1,10 +1,14 @@
 server:
   servlet:
     contextPath: /
+    mappings:
+      properties: "/1.0/properties"
+      create: "/1.0/create"
+      update: "/1.0/update"
+      deactivate: "/1.0/deactivate"
+      methods: "/1.0/methods"
   port: '9080'
 spring:
-  main:
-    allow-bean-definition-overriding: 'true'
   profiles:
     active: ${uniregistrar_web_spring_profiles_active}
 uniregistrar:

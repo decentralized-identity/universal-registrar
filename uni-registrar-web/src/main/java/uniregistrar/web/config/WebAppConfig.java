@@ -14,6 +14,7 @@ import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.impl.DummyExtension;
 import uniregistrar.web.servlet.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,15 +28,11 @@ public class WebAppConfig {
 	@Autowired
 	private DriverConfigs driverConfigs;
 
+    @Autowired
+    private ServletMappings servletMappings;
+
 	@Autowired
 	private LocalUniRegistrar localUniRegistrar;
-
-    @Bean
-    public List<Extension> extensions(){
-        List<Extension> list = new ArrayList<>();
-        list.add(new DummyExtension());
-        return list;
-    }
 
     @Bean(name = "CreateServlet")
     public CreateServlet createServlet(){
@@ -44,7 +41,7 @@ public class WebAppConfig {
 
     @Bean
     public ServletRegistrationBean<CreateServlet> createServletRegistrationBean() {
-        return new ServletRegistrationBean<>(createServlet(), "/1.0/create/*");
+        return new ServletRegistrationBean<>(createServlet(), fixWildcardPattern(servletMappings.getCreate()));
     }
 
     @Bean(name = "UpdateServlet")
@@ -54,7 +51,7 @@ public class WebAppConfig {
 
     @Bean
     public ServletRegistrationBean<UpdateServlet> updateServletRegistrationBean() {
-        return new ServletRegistrationBean<>(updateServlet(), "/1.0/update/*");
+        return new ServletRegistrationBean<>(updateServlet(), fixWildcardPattern(servletMappings.getUpdate()));
     }
 
     @Bean(name = "DeactivateServlet")
@@ -64,7 +61,7 @@ public class WebAppConfig {
 
     @Bean
     public ServletRegistrationBean<DeactivateServlet> deactivateServletRegistrationBean() {
-        return new ServletRegistrationBean<>(deactivateServlet(), "/1.0/deactivate/*");
+        return new ServletRegistrationBean<>(deactivateServlet(), fixWildcardPattern(servletMappings.getDeactivate()));
     }
 
     @Bean(name = "PropertiesServlet")
@@ -74,7 +71,7 @@ public class WebAppConfig {
 
     @Bean
     public ServletRegistrationBean<PropertiesServlet> propertiesServletRegistrationBean() {
-        return new ServletRegistrationBean<>(propertiesServlet(), "/1.0/properties/*");
+        return new ServletRegistrationBean<>(propertiesServlet(), fixWildcardPattern(servletMappings.getProperties()));
     }
     @Bean(name = "MethodsServlet")
     public MethodsServlet methodsServlet() {
@@ -82,7 +79,24 @@ public class WebAppConfig {
     }
     @Bean
     public ServletRegistrationBean<MethodsServlet> methodServletRegistrationBean() {
-        return new ServletRegistrationBean<>(methodsServlet(), "/1.0/methods/*");
+        return new ServletRegistrationBean<>(methodsServlet(), fixWildcardPattern(servletMappings.getMethods()));
+    }
+
+    public static String fixWildcardPattern(String s) {
+        if(s == null) return "";
+        if (s.endsWith("*")) return s;
+        if (s.endsWith("/")) return s + "*";
+        return s + "/*";
+    }
+
+    public static String normalizeUri(String s, boolean postSlash) {
+        if (s == null) return null;
+        String url = s;
+        if (url.endsWith("*")) url = url.substring(0, url.length() - 1);
+
+        URI uri = URI.create(url + "/").normalize();
+
+        return postSlash ? uri.toString() : uri.toString().substring(0, uri.toString().length() - 1);
     }
 
 	public void configureLocalUniRegistrar(DriverConfigs driverConfigs, LocalUniRegistrar uniRegistrar) {
@@ -95,26 +109,23 @@ public class WebAppConfig {
 			String url = dc.getURL();
 			String propertiesEndpoint = dc.getPropertiesEndpoint();
 
-			if (method == null)
-				throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
+			if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
 			if (url == null) throw new IllegalArgumentException("Missing 'url' entry in driver configuration.");
 
 			// construct HTTP driver
 
 			HttpDriver driver = new HttpDriver();
 
-			if (!url.endsWith("/")) url = url + "/";
-
-			driver.setCreateUri(url + "1.0/create");
-			driver.setUpdateUri(url + "1.0/update");
-			driver.setDeactivateUri(url + "1.0/deactivate");
-			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(url + "1.0/properties");
+			if (! url.endsWith("/")) url = url + "/";
+			driver.setCreateUri(normalizeUri((url + servletMappings.getCreate()), false));
+			driver.setUpdateUri(normalizeUri((url + servletMappings.getUpdate()), false));
+			driver.setDeactivateUri(normalizeUri((url + servletMappings.getDeactivate()), false));
+			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + servletMappings.getProperties()), false));
 
 			// done
 
 			drivers.put(method, driver);
-			if (log.isInfoEnabled())
-				log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+			if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
 		}
 
 		uniRegistrar.setDrivers(drivers);
