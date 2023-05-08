@@ -12,7 +12,7 @@ An example PR for contributing a driver is available [here](https://github.com/d
 
 Your driver will be invoked via an HTTP POST call to:
 
-`http://<your-image>:8080/1.0/register`
+`http://<your-image>:8080/1.0/create`
 
 Your driver will receive a DID request object like the following in the HTTP body:
 
