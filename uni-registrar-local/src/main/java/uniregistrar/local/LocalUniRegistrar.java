@@ -87,6 +87,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 	@Override
 	public CreateState create(String method, CreateRequest createRequest) throws RegistrationException {
 
+		return this.create(method, createRequest, null);
+	}
+
+	public CreateState create(String method, CreateRequest createRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
 		if (method == null) throw new NullPointerException();
 		if (createRequest == null) throw new NullPointerException();
 
@@ -99,6 +104,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare execution state
 
 		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
 
 		// prepare create state
 
@@ -160,6 +166,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 	@Override
 	public UpdateState update(String method, UpdateRequest updateRequest) throws RegistrationException {
 
+		return this.update(method, updateRequest, null);
+	}
+
+	public UpdateState update(String method, UpdateRequest updateRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
 		if (method == null) throw new NullPointerException();
 		if (updateRequest == null) throw new NullPointerException();
 
@@ -172,6 +183,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare execution state
 
 		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
 
 		// prepare update state
 
@@ -229,6 +241,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 	@Override
 	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest) throws RegistrationException {
 
+		return this.deactivate(method, deactivateRequest, null);
+	}
+
+	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
 		if (method == null) throw new NullPointerException();
 		if (deactivateRequest == null) throw new NullPointerException();
 
@@ -241,6 +258,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare execution state
 
 		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
 
 		// prepare deactivate state
 
