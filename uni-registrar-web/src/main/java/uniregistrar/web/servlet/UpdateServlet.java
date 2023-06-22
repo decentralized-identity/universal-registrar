@@ -39,7 +39,7 @@ public class UpdateServlet extends WebUniRegistrar {
 			requestMap = objectMapper.readValue(request.getReader(), Map.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse UPDATE request (JSON): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (JSON): " + ex.getMessage());
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class UpdateServlet extends WebUniRegistrar {
 					((Extension.BeforeReadUpdateExtension) extension).beforeReadUpdate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse UPDATE request (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (extension): " + ex.getMessage());
 					return;
 				}
 			}
@@ -68,7 +68,7 @@ public class UpdateServlet extends WebUniRegistrar {
 			updateRequest = UpdateRequest.fromMap(requestMap);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse UPDATE request (object): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (object): " + ex.getMessage());
 			return;
 		}
 
@@ -76,7 +76,7 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		if (updateRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No UPDATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No UPDATE request found.");
 			return;
 		}
 
@@ -112,7 +112,7 @@ public class UpdateServlet extends WebUniRegistrar {
 					((Extension.BeforeWriteUpdateExtension) extension).beforeWriteUpdate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write UPDATE state (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Cannot write UPDATE state (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE state (extension): " + ex.getMessage());
 					return;
 				}
 			}

@@ -40,7 +40,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 			requestMap = objectMapper.readValue(request.getReader(), Map.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
 			return;
 		}
 
@@ -55,7 +55,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 					((Extension.BeforeReadDeactivateExtension) extension).beforeReadDeactivate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
 					return;
 				}
 			}
@@ -69,7 +69,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 			deactivateRequest = DeactivateRequest.fromMap(requestMap);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
 			return;
 		}
 
@@ -77,7 +77,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		if (deactivateRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No DEACTIVATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No DEACTIVATE request found.");
 			return;
 		}
 
@@ -113,7 +113,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 					((Extension.BeforeWriteDeactivateExtension) extension).beforeWriteDeactivate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
 					return;
 				}
 			}

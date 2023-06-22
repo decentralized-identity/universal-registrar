@@ -39,7 +39,7 @@ public class CreateServlet extends WebUniRegistrar {
 			requestMap = objectMapper.readValue(request.getReader(), Map.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse CREATE request (JSON): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (JSON): " + ex.getMessage());
 			return;
 		}
 
@@ -54,7 +54,7 @@ public class CreateServlet extends WebUniRegistrar {
 					((Extension.BeforeReadCreateExtension) extension).beforeReadCreate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse CREATE request (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (extension): " + ex.getMessage());
 					return;
 				}
 			}
@@ -68,7 +68,7 @@ public class CreateServlet extends WebUniRegistrar {
 			createRequest = CreateRequest.fromMap(requestMap);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Cannot parse CREATE request (object): " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (object): " + ex.getMessage());
 			return;
 		}
 
@@ -76,7 +76,7 @@ public class CreateServlet extends WebUniRegistrar {
 
 		if (createRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "No CREATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No CREATE request found.");
 			return;
 		}
 
@@ -112,7 +112,7 @@ public class CreateServlet extends WebUniRegistrar {
 					((Extension.BeforeWriteCreateExtension) extension).beforeWriteCreate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write CREATE state (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Cannot write CREATE state (extension): " + ex.getMessage());
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write CREATE state (extension): " + ex.getMessage());
 					return;
 				}
 			}

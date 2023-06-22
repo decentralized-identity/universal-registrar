@@ -43,7 +43,7 @@ public class PropertiesServlet extends WebUniRegistrar {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Registrar reported: " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Registrar reported: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Registrar reported: " + ex.getMessage());
 			return;
 		}
 
@@ -53,7 +53,7 @@ public class PropertiesServlet extends WebUniRegistrar {
 
 		if (properties == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No properties.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "No properties.");
 			return;
 		}
 

@@ -2,6 +2,7 @@ package uniregistrar.driver.servlet;
 
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -11,9 +12,7 @@ import uniregistrar.state.CreateState;
 
 import java.io.IOException;
 
-public class CreateServlet extends AbstractServlet implements Servlet {
-
-	private static final long serialVersionUID = 7431292074564723539L;
+public class CreateServlet extends HttpServlet implements Servlet {
 
 	private static Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
@@ -36,7 +35,7 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 
 		if (createRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Driver: No create request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Driver: No create request found.");
 			return;
 		}
 
@@ -52,7 +51,7 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver: Create problem for " + createRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver: Create problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Driver: Create problem: " + ex.getMessage());
 			return;
 		}
 
@@ -62,12 +61,12 @@ public class CreateServlet extends AbstractServlet implements Servlet {
 
 		if (createState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "Driver: No create state.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "Driver: No create state.");
 			return;
 		}
 
 		// write create state
 
-		sendResponse(response, HttpServletResponse.SC_OK, CreateState.MEDIA_TYPE, createStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, CreateState.MEDIA_TYPE, createStateString);
 	}
 }

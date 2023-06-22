@@ -3,6 +3,7 @@ package uniregistrar.driver.servlet;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -12,9 +13,7 @@ import uniregistrar.driver.Driver;
 import java.io.IOException;
 import java.util.Map;
 
-public class PropertiesServlet extends AbstractServlet implements Servlet {
-
-	private static final long serialVersionUID = -2093931014950367385L;
+public class PropertiesServlet extends HttpServlet implements Servlet {
 
 	private static Logger log = LoggerFactory.getLogger(PropertiesServlet.class);
 
@@ -47,7 +46,7 @@ public class PropertiesServlet extends AbstractServlet implements Servlet {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Properties problem: " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Properties problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Properties problem: " + ex.getMessage());
 			return;
 		}
 
@@ -57,12 +56,12 @@ public class PropertiesServlet extends AbstractServlet implements Servlet {
 
 		if (properties == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "No properties.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "No properties.");
 			return;
 		}
 
 		// write properties
 
-		sendResponse(response, HttpServletResponse.SC_OK, Driver.PROPERTIES_MIME_TYPE, propertiesString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, Driver.PROPERTIES_MIME_TYPE, propertiesString);
 	}
 }

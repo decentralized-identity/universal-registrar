@@ -2,6 +2,7 @@ package uniregistrar.driver.servlet;
 
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -11,9 +12,7 @@ import uniregistrar.state.UpdateState;
 
 import java.io.IOException;
 
-public class UpdateServlet extends AbstractServlet implements Servlet {
-
-	private static final long serialVersionUID = 8532462131637520098L;
+public class UpdateServlet extends HttpServlet implements Servlet {
 
 	private static Logger log = LoggerFactory.getLogger(UpdateServlet.class);
 
@@ -36,7 +35,7 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 
 		if (updateRequest == null) {
 
-			sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, null, "Driver: No update request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Driver: No update request found.");
 			return;
 		}
 
@@ -52,7 +51,7 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver: Update problem for " + updateRequest + ": " + ex.getMessage(), ex);
-			sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, null, "Driver: Update problem: " + ex.getMessage());
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Driver: Update problem: " + ex.getMessage());
 			return;
 		}
 
@@ -62,12 +61,12 @@ public class UpdateServlet extends AbstractServlet implements Servlet {
 
 		if (updateState == null) {
 
-			sendResponse(response, HttpServletResponse.SC_NOT_FOUND, null, "Driver: No update state.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_NOT_FOUND, "Driver: No update state.");
 			return;
 		}
 
 		// write update state
 
-		sendResponse(response, HttpServletResponse.SC_OK, UpdateState.MEDIA_TYPE, updateStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, UpdateState.MEDIA_TYPE, updateStateString);
 	}
 }
