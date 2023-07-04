@@ -97,3 +97,13 @@ services:
     image: ghcr.io/cheqd/did-registrar:production-latest
     ports:
       - "9089:3000"
+  driver-did-ethr:
+    image: universalregistrar/driver-did-ethr:latest
+    environment:
+      uniregistrar_driver_did_ethr_ethrEnabled: ${uniregistrar_driver_did_ethr_ethrEnabled}
+      uniregistrar_driver_did_ethr_ethrNetworks: ${uniregistrar_driver_did_ethr_ethrNetworks}
+      uniregistrar_driver_did_ethr_ethrNetworkRpcUrls: ${uniregistrar_driver_did_ethr_ethrNetworkRpcUrls}
+      uniregistrar_driver_did_ethr_ethrNetworkMetaPrivateKeys: ${uniregistrar_driver_did_ethr_ethrNetworkMetaPrivateKeys}
+      uniregistrar_driver_did_ethr_ethrNetworkMetaPublicKeys: ${uniregistrar_driver_did_ethr_ethrNetworkMetaPublicKeys}
+    ports:
+      - "9080:3000"

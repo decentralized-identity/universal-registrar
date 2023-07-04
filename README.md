@@ -26,6 +26,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=ebsi' -d '{"secret":{"token":"ey......"}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=oyd' -d '{"didDocument":{"@context":"https://www.w3.org/ns/did/v1","authentication":[]}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=cheqd' -d '{"didDocument":{...}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=ethr' -d '{"options":{"network":"goerli"}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -35,23 +36,24 @@ Note that there is also a [Universal Registrar frontend](https://github.com/dece
 
 Are you developing a DID method and Universal Registrar driver? Click [Driver Development](/docs/driver-development.md) for instructions.
 
-| Driver Name | Driver Version | DID Method Spec Version | Docker Image or URL |
-| ----------- | -------------- | ----------------------- | ------------------- |
-| [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/) | 0.1-SNAPSHOT | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
-| [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/) | 0.1-SNAPSHOT | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
-| [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/) | 0.1-SNAPSHOT | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
-| [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/) | 1.0.0 | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
-| [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/) | 1.0.0 | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
-| [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/) | 1.0.0 | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
-| [did-ebsi](https://github.com/danubetech/uni-registrar-driver-did-ebsi/) | 1.0.0 | (missing) | [universalregistrar/driver-did-ebsi](https://hub.docker.com/r/universalregistrar/driver-did-ebsi/)
-| [did-oyd](https://github.com/OwnYourData/oydid/tree/main/uni-registrar-driver-did-oyd) | 0.5.0 | [0.5](https://ownyourdata.github.io/oydid/) | [oydeu/oydid-registrar](https://hub.docker.com/r/oydeu/oydid-registrar/)
-| [did-cheqd](https://github.com/cheqd/did-registrar) | 2.0.0 | [0.0](https://docs.cheqd.io/node/architecture/adr-list/adr-002-cheqd-did-method) | [cheqd/did-registrar](https://github.com/cheqd/did-registrar/pkgs/container/did-registrar)
+| Driver Name                                                                            | Driver Version | DID Method Spec Version | Docker Image or URL |
+|----------------------------------------------------------------------------------------|----------------| ----------------------- | ------------------- |
+| [did-btcr](https://github.com/decentralized-identity/uni-registrar-driver-did-btcr/)   | 0.1-SNAPSHOT   | [0.1](https://w3c-ccg.github.io/didm-btcr) | [universalregistrar/driver-did-btcr](https://hub.docker.com/r/universalregistrar/driver-did-btcr/)
+| [did-sov](https://github.com/decentralized-identity/uni-registrar-driver-did-sov/)     | 0.1-SNAPSHOT   | [0.1](https://sovrin-foundation.github.io/sovrin/spec/did-method-spec-template.html) | [universalregistrar/driver-did-sov](https://hub.docker.com/r/universalregistrar/driver-did-sov/)
+| [did-v1](https://github.com/decentralized-identity/uni-registrar-driver-did-v1/)       | 0.1-SNAPSHOT   | [0.1](https://w3c-ccg.github.io/did-method-v1/) | [universalregistrar/driver-did-v1](https://hub.docker.com/r/universalregistrar/driver-did-v1/)
+| [did-key](https://github.com/decentralized-identity/uni-registrar-driver-did-key/)     | 1.0.0          | [0.7](https://w3c-ccg.github.io/did-method-key/) | [universalregistrar/driver-did-key](https://hub.docker.com/r/universalregistrar/driver-did-key/)
+| [did-ion](https://github.com/decentralized-identity/uni-registrar-driver-did-ion/)     | 1.0.0          | [0.0](https://github.com/decentralized-identity/ion-did-method) | [universalregistrar/driver-did-ion](https://hub.docker.com/r/universalregistrar/driver-did-ion/)
+| [did-web](https://github.com/decentralized-identity/uni-registrar-driver-did-web/)     | 1.0.0          | [0.0](https://w3c-ccg.github.io/did-method-web/) | [universalregistrar/driver-did-web](https://hub.docker.com/r/universalregistrar/driver-did-web/)
+| [did-ebsi](https://github.com/danubetech/uni-registrar-driver-did-ebsi/)               | 1.0.0          | (missing) | [universalregistrar/driver-did-ebsi](https://hub.docker.com/r/universalregistrar/driver-did-ebsi/)
+| [did-oyd](https://github.com/OwnYourData/oydid/tree/main/uni-registrar-driver-did-oyd) | 0.5.0          | [0.5](https://ownyourdata.github.io/oydid/) | [oydeu/oydid-registrar](https://hub.docker.com/r/oydeu/oydid-registrar/)
+| [did-cheqd](https://github.com/cheqd/did-registrar)                                    | 2.0.0          | [0.0](https://docs.cheqd.io/node/architecture/adr-list/adr-002-cheqd-did-method) | [cheqd/did-registrar](https://github.com/cheqd/did-registrar/pkgs/container/did-registrar)
+| [did-ethr](https://github.com/danubetech/uni-registrar-driver-did-ethr/)               | 0.2.0          | [0.0](https://github.com/decentralized-identity/ethr-did-resolver/blob/master/doc/did-method-spec.md) | [universalregistrar/driver-did-ethr](https://hub.docker.com/r/universalregistrar/driver-did-ethr/)
 
 ## More Information
 
  * [Driver Development](/docs/driver-development.md)
  * [Troubleshooting](/docs/troubleshooting.md)
-* [Java Components](/docs/java-components.md)
+ * [Java Components](/docs/java-components.md)
 
 ## About
 
