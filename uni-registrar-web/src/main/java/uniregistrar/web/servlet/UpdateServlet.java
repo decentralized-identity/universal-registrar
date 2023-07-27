@@ -1,6 +1,8 @@
 package uniregistrar.web.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import foundation.identity.did.DID;
+import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,8 +30,6 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		// read request
 
-		String method = request.getParameter("method");
-
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -42,6 +42,27 @@ public class UpdateServlet extends WebUniRegistrar {
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (JSON): " + ex.getMessage());
 			return;
 		}
+
+		String method = request.getParameter("method");
+		if (method == null) {
+			Object didString = requestMap.get("did");
+			if (didString instanceof String) {
+				if (log.isInfoEnabled()) log.info("Found DID in UPDATE request: " + didString);
+				try {
+					DID did = DID.fromString((String) didString);
+					method = did.getMethodName();
+				} catch (ParserException ex) {
+					if (log.isErrorEnabled()) log.error("Cannot parse DID: " + didString);
+				}
+			}
+		}
+		if (method == null) {
+			if (log.isWarnEnabled()) log.warn("Missing DID method in UPDATE request.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in UPDATE request.");
+			return;
+		}
+
+		if (log.isInfoEnabled()) log.info("Incoming UPDATE request for method " + method + ": " + requestMap);
 
 		// [before read]
 
@@ -72,11 +93,11 @@ public class UpdateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Incoming UPDATE request for method " + method + ": " + updateRequest);
+		if (log.isInfoEnabled()) log.info("Parsed UPDATE request for method " + method + ": " + updateRequest);
 
 		if (updateRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No UPDATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid UPDATE request found.");
 			return;
 		}
 

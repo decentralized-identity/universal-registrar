@@ -28,8 +28,6 @@ public class CreateServlet extends WebUniRegistrar {
 
 		// read request
 
-		String method = request.getParameter("method");
-
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -42,6 +40,15 @@ public class CreateServlet extends WebUniRegistrar {
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (JSON): " + ex.getMessage());
 			return;
 		}
+
+		String method = request.getParameter("method");
+		if (method == null) {
+			if (log.isWarnEnabled()) log.warn("Missing DID method in CREATE request.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in CREATE request.");
+			return;
+		}
+
+		if (log.isInfoEnabled()) log.info("Incoming CREATE request for method " + method + ": " + requestMap);
 
 		// [before read]
 
@@ -72,11 +79,11 @@ public class CreateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Incoming CREATE request for method " + method + ": " + createRequest);
+		if (log.isInfoEnabled()) log.info("Parsed CREATE request for method " + method + ": " + createRequest);
 
 		if (createRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No CREATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid CREATE request found.");
 			return;
 		}
 

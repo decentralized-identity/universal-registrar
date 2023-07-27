@@ -1,6 +1,8 @@
 package uniregistrar.web.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import foundation.identity.did.DID;
+import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +13,6 @@ import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.request.DeactivateRequest;
-import uniregistrar.state.DeactivateState;
 import uniregistrar.state.State;
 import uniregistrar.web.WebUniRegistrar;
 
@@ -29,8 +30,6 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		// read request
 
-		String method = request.getParameter("method");
-
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
@@ -43,6 +42,27 @@ public class DeactivateServlet extends WebUniRegistrar {
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
 			return;
 		}
+
+		String method = request.getParameter("method");
+		if (method == null) {
+			Object didString = requestMap.get("did");
+			if (didString instanceof String) {
+				if (log.isInfoEnabled()) log.info("Found DID in DEACTIVATE request: " + didString);
+				try {
+					DID did = DID.fromString((String) didString);
+					method = did.getMethodName();
+				} catch (ParserException ex) {
+					if (log.isErrorEnabled()) log.error("Cannot parse DID: " + didString);
+				}
+			}
+		}
+		if (method == null) {
+			if (log.isWarnEnabled()) log.warn("Missing DID method in DEACTIVATE request.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in DEACTIVATE request.");
+			return;
+		}
+
+		if (log.isInfoEnabled()) log.info("Incoming DEACTIVATE request for method " + method + ": " + requestMap);
 
 		// [before read]
 
@@ -73,11 +93,11 @@ public class DeactivateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Incoming DEACTIVATE request for method " + method + ": " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Parsed DEACTIVATE request for method " + method + ": " + deactivateRequest);
 
 		if (deactivateRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No DEACTIVATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid DEACTIVATE request found.");
 			return;
 		}
 
