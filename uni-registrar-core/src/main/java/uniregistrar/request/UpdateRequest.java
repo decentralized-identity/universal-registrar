@@ -1,29 +1,25 @@
 package uniregistrar.request;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import foundation.identity.did.DIDDocument;
+import uniregistrar.JsonObject;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import foundation.identity.did.DIDDocument;
-import uniregistrar.JsonObject;
-
 public class UpdateRequest extends JsonObject implements Request {
 
 	public static final String MIME_TYPE = "application/json";
+	public static final String DIDDOCUMENTOPERATION_SET_DIDDOCUMENT = "setDidDocument";
+	public static final String DIDDOCUMENTOPERATION_ADD_TO_DIDDOCUMENT = "addToDidDocument";
+	public static final String DIDDOCUMENTOPERATION_REMOVE_FROM_DIDDOCUMENT = "removeFromDidDocument";
 
-	private static final ObjectMapper objectMapper;
-
-	static {
-		objectMapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
-	}
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	@JsonProperty
 	private String jobId;
