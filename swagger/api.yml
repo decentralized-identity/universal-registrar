@@ -74,14 +74,6 @@ paths:
         <p>See the <a href="https://identity.foundation/did-registration/#update">DID Registration</a>
         specification for additional details.</p>
       operationId: update
-      parameters:
-        - in: query
-          required: true
-          name: method
-          schema:
-            type: string
-          description: The requested DID method for the operation.
-          example: btcr
       requestBody:
         content:
           application/json:
@@ -122,14 +114,6 @@ paths:
         <p>See the <a href="https://identity.foundation/did-registration/#deactivate">DID Registration</a>
         specification for additional details.</p>
       operationId: deactivate
-      parameters:
-        - in: query
-          required: true
-          name: method
-          schema:
-            type: string
-          description: The requested DID method for the operation.
-          example: btcr
       requestBody:
         content:
           application/json:
