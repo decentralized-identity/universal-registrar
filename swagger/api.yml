@@ -170,7 +170,7 @@ paths:
                 items:
                   type: string
                 description: The list of supported DID methods.
-                example: ["btcr","sov","v1","key"]
+                example: ["btcr","indy","v1","key"]
 components:
   schemas:
     CreateRequest:
@@ -218,7 +218,7 @@ components:
           description:
             This input field indicates the DID that is the target of the DID update operation.
           type: string
-          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+          example: "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
         options:
           description:
             This input field contains an object with various options for the DID update operation.
@@ -260,7 +260,7 @@ components:
           description:
             This input field indicates the DID that is the target of the DID deactivation operation.
           type: string
-          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+          example: "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
         options:
           description:
             This input field contains an object with various options for the DID deactivate operation.
@@ -329,12 +329,12 @@ components:
           example: "finished"
         did:
           type: string
-          example: "did:sov:WRfXPg8dantKVubE3HX8pw"
+          example: "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw"
         secret:
           type: object
           example: {
             "verificationMethod": [{
-              "id": "did:sov:WRfXPg8dantKVubE3HX8pw#key-1",
+              "id": "did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1",
               "type": "JsonWebKey2020",
               "privateKeyJwk": {
                 "kty": "OKP",
