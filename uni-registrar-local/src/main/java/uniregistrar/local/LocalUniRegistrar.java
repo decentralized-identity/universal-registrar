@@ -113,14 +113,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before create]
 
-		if (! extensionStatus.skipExtensionsBefore()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeCreateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.BeforeCreateExtension) extension).beforeCreate(method, createRequest, createState, executionState, this));
-				if (extensionStatus.skipExtensionsBefore()) break;
-			}
+		List<Extension> skippedBeforeCreateExtensions = new ArrayList<>();
+		List<Extension> inapplicableBeforeCreateExtensions = new ArrayList<>();
+
+		for (Extension.BeforeCreateExtension extension : this.getBeforeCreateExtensions()) {
+			if (extensionStatus.skipExtensionsBefore()) { skippedBeforeCreateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.beforeCreate(method, createRequest, createState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableBeforeCreateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (beforeCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (beforeCreate): {}, inapplicable extensions (beforeCreate): {}", extensionClassNames(skippedBeforeCreateExtensions), extensionClassNames(inapplicableBeforeCreateExtensions));
 
 		// [create]
 
@@ -144,14 +148,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after create]
 
-		if (! extensionStatus.skipExtensionsAfter()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.AfterCreateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (afterCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.AfterCreateExtension) extension).afterCreate(method, createRequest, createState, executionState, this));
-				if (extensionStatus.skipExtensionsAfter()) break;
-			}
+		List<Extension> skippedAfterCreateExtensions = new ArrayList<>();
+		List<Extension> inapplicableAfterCreateExtensions = new ArrayList<>();
+
+		for (Extension.AfterCreateExtension extension : this.getAfterCreateExtensions()) {
+			if (extensionStatus.skipExtensionsAfter()) { skippedAfterCreateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.afterCreate(method, createRequest, createState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableAfterCreateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (afterCreate) " + extension.getClass().getSimpleName() + " with request " + createRequest + " and state " + createState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (afterCreate): {}, inapplicable extensions (afterCreate): {}", extensionClassNames(skippedAfterCreateExtensions), extensionClassNames(inapplicableAfterCreateExtensions));
 
 		// additional metadata
 
@@ -192,14 +200,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before update]
 
-		if (! extensionStatus.skipExtensionsBefore()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeUpdateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.BeforeUpdateExtension) extension).beforeUpdate(method, updateRequest, updateState, executionState, this));
-				if (extensionStatus.skipExtensionsBefore()) break;
-			}
+		List<Extension> skippedBeforeUpdateExtensions = new ArrayList<>();
+		List<Extension> inapplicableBeforeUpdateExtensions = new ArrayList<>();
+
+		for (Extension.BeforeUpdateExtension extension : this.getBeforeUpdateExtensions()) {
+			if (extensionStatus.skipExtensionsBefore()) { skippedBeforeUpdateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.beforeUpdate(method, updateRequest, updateState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableBeforeUpdateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (beforeUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (beforeUpdate): {}, inapplicable extensions (beforeUpdate): {}", extensionClassNames(skippedBeforeUpdateExtensions), extensionClassNames(inapplicableBeforeUpdateExtensions));
 
 		// [update]
 
@@ -219,14 +231,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after update]
 
-		if (! extensionStatus.skipExtensionsAfter()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.AfterUpdateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (afterUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.AfterUpdateExtension) extension).afterUpdate(method, updateRequest, updateState, executionState, this));
-				if (extensionStatus.skipExtensionsAfter()) break;
-			}
+		List<Extension> skippedAfterUpdateExtensions = new ArrayList<>();
+		List<Extension> inapplicableAfterUpdateExtensions = new ArrayList<>();
+
+		for (Extension.AfterUpdateExtension extension : this.getAfterUpdateExtensions()) {
+			if (extensionStatus.skipExtensionsAfter()) { skippedAfterUpdateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.afterUpdate(method, updateRequest, updateState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableAfterUpdateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (afterUpdate) " + extension.getClass().getSimpleName() + " with request " + updateRequest + " and state " + updateState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (afterUpdate): {}, inapplicable extensions (afterUpdate): {}", extensionClassNames(skippedAfterUpdateExtensions), extensionClassNames(inapplicableAfterUpdateExtensions));
 
 		// additional metadata
 
@@ -267,14 +283,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before deactivate]
 
-		if (! extensionStatus.skipExtensionsBefore()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeDeactivateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.BeforeDeactivateExtension) extension).beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this));
-				if (extensionStatus.skipExtensionsBefore()) break;
-			}
+		List<Extension> skippedBeforeDeactivateExtensions = new ArrayList<>();
+		List<Extension> inapplicableBeforeDeactivateExtensions = new ArrayList<>();
+
+		for (Extension.BeforeDeactivateExtension extension : this.getBeforeDeactivateExtensions()) {
+			if (extensionStatus.skipExtensionsBefore()) { skippedBeforeDeactivateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableBeforeDeactivateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (beforeDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (beforeDeactivate): {}, inapplicable extensions (beforeDeactivate): {}", extensionClassNames(skippedBeforeDeactivateExtensions), extensionClassNames(inapplicableBeforeDeactivateExtensions));
 
 		// [deactivate]
 
@@ -294,14 +314,18 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after deactivate]
 
-		if (! extensionStatus.skipExtensionsAfter()) {
-			for (Extension extension : this.getExtensions()) {
-				if (! (extension instanceof Extension.AfterDeactivateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (afterDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
-				extensionStatus.or(((Extension.AfterDeactivateExtension) extension).afterDeactivate(method, deactivateRequest, deactivateState, executionState, this));
-				if (extensionStatus.skipExtensionsAfter()) break;
-			}
+		List<Extension> skippedAfterDeactivateExtensions = new ArrayList<>();
+		List<Extension> inapplicableAfterDeactivateExtensions = new ArrayList<>();
+
+		for (Extension.AfterDeactivateExtension extension : this.getAfterDeactivateExtensions()) {
+			if (extensionStatus.skipExtensionsAfter()) { skippedAfterDeactivateExtensions.add(extension); continue; }
+			ExtensionStatus returnedExtensionStatus = extension.afterDeactivate(method, deactivateRequest, deactivateState, executionState, this);
+			extensionStatus.or(returnedExtensionStatus);
+			if (returnedExtensionStatus == null) { inapplicableAfterDeactivateExtensions.add(extension); continue; }
+			if (log.isDebugEnabled()) log.debug("Executed extension (afterDeactivate) " + extension.getClass().getSimpleName() + " with request " + deactivateRequest + " and state " + deactivateState + " and execution state " + executionState);
 		}
+
+		if (log.isDebugEnabled()) log.debug("Skipped extensions (afterDeactivate): {}, inapplicable extensions (afterDeactivate): {}", extensionClassNames(skippedAfterDeactivateExtensions), extensionClassNames(inapplicableAfterDeactivateExtensions));
 
 		// additional metadata
 
@@ -347,6 +371,62 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		if (log.isDebugEnabled()) log.debug("Loaded methods: " + methods);
 		return methods;
+	}
+
+	/*
+	 * Helper methods
+	 */
+
+	private static List<String> extensionClassNames(List<Extension> extensions) {
+		return extensions.stream().map(e -> e.getClass().getSimpleName()).toList();
+	}
+
+	public List<Extension.BeforeReadCreateExtension> getBeforeReadCreateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeReadCreateExtension.class::isInstance).map(Extension.BeforeReadCreateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeReadUpdateExtension> getBeforeReadUpdateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeReadUpdateExtension.class::isInstance).map(Extension.BeforeReadUpdateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeReadDeactivateExtension> getBeforeReadDeactivateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeReadDeactivateExtension.class::isInstance).map(Extension.BeforeReadDeactivateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeCreateExtension> getBeforeCreateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeCreateExtension.class::isInstance).map(Extension.BeforeCreateExtension.class::cast).toList();
+	}
+
+	public List<Extension.AfterCreateExtension> getAfterCreateExtensions() {
+		return this.getExtensions().stream().filter(Extension.AfterCreateExtension.class::isInstance).map(Extension.AfterCreateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeUpdateExtension> getBeforeUpdateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeUpdateExtension.class::isInstance).map(Extension.BeforeUpdateExtension.class::cast).toList();
+	}
+
+	public List<Extension.AfterUpdateExtension> getAfterUpdateExtensions() {
+		return this.getExtensions().stream().filter(Extension.AfterUpdateExtension.class::isInstance).map(Extension.AfterUpdateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeDeactivateExtension> getBeforeDeactivateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeDeactivateExtension.class::isInstance).map(Extension.BeforeDeactivateExtension.class::cast).toList();
+	}
+
+	public List<Extension.AfterDeactivateExtension> getAfterDeactivateExtensions() {
+		return this.getExtensions().stream().filter(Extension.AfterDeactivateExtension.class::isInstance).map(Extension.AfterDeactivateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeWriteCreateExtension> getBeforeWriteCreateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeWriteCreateExtension.class::isInstance).map(Extension.BeforeWriteCreateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeWriteUpdateExtension> getBeforeWriteUpdateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeWriteUpdateExtension.class::isInstance).map(Extension.BeforeWriteUpdateExtension.class::cast).toList();
+	}
+
+	public List<Extension.BeforeWriteDeactivateExtension> getBeforeWriteDeactivateExtensions() {
+		return this.getExtensions().stream().filter(Extension.BeforeWriteDeactivateExtension.class::isInstance).map(Extension.BeforeWriteDeactivateExtension.class::cast).toList();
 	}
 
 	/*

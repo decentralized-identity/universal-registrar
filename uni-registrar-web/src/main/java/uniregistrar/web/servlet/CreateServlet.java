@@ -10,6 +10,7 @@ import uniregistrar.RegistrationException;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
+import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.request.CreateRequest;
 import uniregistrar.state.State;
 import uniregistrar.web.WebUniRegistrar;
@@ -54,11 +55,10 @@ public class CreateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeReadCreateExtension)) continue;
+			for (Extension.BeforeReadCreateExtension extension : localUniRegistrar.getBeforeReadCreateExtensions()) {
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadCreate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
 				try {
-					((Extension.BeforeReadCreateExtension) extension).beforeReadCreate(method, requestMap, localUniRegistrar);
+					extension.beforeReadCreate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (extension): " + ex.getMessage());
@@ -112,11 +112,10 @@ public class CreateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeWriteCreateExtension)) continue;
+			for (Extension.BeforeWriteCreateExtension extension : localUniRegistrar.getBeforeWriteCreateExtensions()) {
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteCreate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
 				try {
-					((Extension.BeforeWriteCreateExtension) extension).beforeWriteCreate(method, stateMap, localUniRegistrar);
+					extension.beforeWriteCreate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write CREATE state (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write CREATE state (extension): " + ex.getMessage());

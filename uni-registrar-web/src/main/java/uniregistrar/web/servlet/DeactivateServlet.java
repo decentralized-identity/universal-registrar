@@ -68,11 +68,10 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeReadDeactivateExtension)) continue;
+			for (Extension.BeforeReadDeactivateExtension extension : localUniRegistrar.getBeforeReadDeactivateExtensions()) {
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadDeactivate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
 				try {
-					((Extension.BeforeReadDeactivateExtension) extension).beforeReadDeactivate(method, requestMap, localUniRegistrar);
+					extension.beforeReadDeactivate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
@@ -126,11 +125,10 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeWriteDeactivateExtension)) continue;
+			for (Extension.BeforeWriteDeactivateExtension extension : localUniRegistrar.getBeforeWriteDeactivateExtensions()) {
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteDeactivate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
 				try {
-					((Extension.BeforeWriteDeactivateExtension) extension).beforeWriteDeactivate(method, stateMap, localUniRegistrar);
+					extension.beforeWriteDeactivate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());

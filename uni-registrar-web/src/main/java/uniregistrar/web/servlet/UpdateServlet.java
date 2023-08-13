@@ -68,11 +68,10 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeReadUpdateExtension)) continue;
+			for (Extension.BeforeReadUpdateExtension extension : localUniRegistrar.getBeforeReadUpdateExtensions()) {
 				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadUpdate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
 				try {
-					((Extension.BeforeReadUpdateExtension) extension).beforeReadUpdate(method, requestMap, localUniRegistrar);
+					extension.beforeReadUpdate(method, requestMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (extension): " + ex.getMessage());
@@ -126,11 +125,10 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension extension : localUniRegistrar.getExtensions()) {
-				if (! (extension instanceof Extension.BeforeWriteUpdateExtension)) continue;
-				if (log.isDebugEnabled()) log.debug("Executing extension (() " + extension.getClass().getSimpleName() + " with state map " + stateMap);
+			for (Extension.BeforeWriteUpdateExtension extension : localUniRegistrar.getBeforeWriteUpdateExtensions()) {
+				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteUpdate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
 				try {
-					((Extension.BeforeWriteUpdateExtension) extension).beforeWriteUpdate(method, stateMap, localUniRegistrar);
+					extension.beforeWriteUpdate(method, stateMap, localUniRegistrar);
 				} catch (Exception ex) {
 					if (log.isWarnEnabled()) log.warn("Cannot write UPDATE state (extension): " + ex.getMessage(), ex);
 					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE state (extension): " + ex.getMessage());
