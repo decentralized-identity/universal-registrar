@@ -33,6 +33,25 @@ public class ExtensionStatus {
 		this.skipExtensionsAfter |= extensionStatus.skipExtensionsAfter;
 	}
 
+	public boolean skip(String extensionStage) {
+		return switch (extensionStage) {
+			case "beforeReadCreate" -> false;
+			case "beforeReadUpdate" -> false;
+			case "beforeReadDeactivate" -> false;
+			case "beforeCreate" -> this.skipExtensionsBefore;
+			case "beforeUpdate" -> this.skipExtensionsBefore;
+			case "beforeDeactivate" -> this.skipExtensionsBefore;
+			case "afterCreate" -> this.skipExtensionsAfter;
+			case "afterUpdate" -> this.skipExtensionsAfter;
+			case "afterDeactivate" -> this.skipExtensionsAfter;
+			case "after" -> false;
+			case "beforeWriteCreate" -> false;
+			case "beforeWriteUpdate" -> false;
+			case "beforeWriteDeactivate" -> false;
+			default -> throw new IllegalStateException("Unexpected extension stage: " + extensionStage);
+		};
+	}
+
 	public boolean skipExtensionsBefore() {
 
 		return this.skipExtensionsBefore;

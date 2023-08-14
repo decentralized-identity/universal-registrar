@@ -33,7 +33,7 @@ public class UpdateServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		Map<String, Object> requestMap;
+		final Map<String, Object> requestMap;
 
 		try {
 			requestMap = objectMapper.readValue(request.getReader(), Map.class);
@@ -43,8 +43,10 @@ public class UpdateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String method = request.getParameter("method");
-		if (method == null) {
+		final String method;
+		if (request.getParameter("method") != null) {
+			method = request.getParameter("method");
+		} else {
 			Object didString = requestMap.get("did");
 			if (didString instanceof String) {
 				if (log.isInfoEnabled()) log.info("Found DID in UPDATE request: " + didString);
@@ -52,8 +54,11 @@ public class UpdateServlet extends WebUniRegistrar {
 					DID did = DID.fromString((String) didString);
 					method = did.getMethodName();
 				} catch (ParserException ex) {
-					if (log.isErrorEnabled()) log.error("Cannot parse DID: " + didString);
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
+					return;
 				}
+			} else {
+				method = null;
 			}
 		}
 		if (method == null) {
@@ -67,16 +72,13 @@ public class UpdateServlet extends WebUniRegistrar {
 		// [before read]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
-			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension.BeforeReadUpdateExtension extension : localUniRegistrar.getBeforeReadUpdateExtensions()) {
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadUpdate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
-				try {
-					extension.beforeReadUpdate(method, requestMap, localUniRegistrar);
-				} catch (Exception ex) {
-					if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (extension): " + ex.getMessage());
-					return;
-				}
+			try {
+				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+				localUniRegistrar.executeExtensions(Extension.BeforeReadUpdateExtension.class, e -> e.beforeReadUpdate(method, requestMap, localUniRegistrar), requestMap);
+			} catch (Exception ex) {
+				if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (extension): " + ex.getMessage());
+				return;
 			}
 		}
 
@@ -102,21 +104,21 @@ public class UpdateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		State state;
-		Map<String, Object> stateMap;
+		State state = null;
+		final Map<String, Object> stateMap;
 
 		try {
 
 			state = this.update(method, updateRequest);
 			if (state == null) throw new RegistrationException("No state.");
-			stateMap = state.toMap();
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("UPDATE problem for " + updateRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("UPDATE problem for " + updateRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
-			stateMap = state.toMap();
+		} finally {
+			stateMap = state == null ? null : state.toMap();
 		}
 
 		if (log.isInfoEnabled()) log.info("State for " + updateRequest + ": " + state);
@@ -124,16 +126,13 @@ public class UpdateServlet extends WebUniRegistrar {
 		// [before write]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
-			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension.BeforeWriteUpdateExtension extension : localUniRegistrar.getBeforeWriteUpdateExtensions()) {
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteUpdate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
-				try {
-					extension.beforeWriteUpdate(method, stateMap, localUniRegistrar);
-				} catch (Exception ex) {
-					if (log.isWarnEnabled()) log.warn("Cannot write UPDATE state (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE state (extension): " + ex.getMessage());
-					return;
-				}
+			try {
+				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+				localUniRegistrar.executeExtensions(Extension.BeforeWriteUpdateExtension.class, e -> e.beforeWriteUpdate(method, stateMap, localUniRegistrar), stateMap);
+			} catch (Exception ex) {
+				if (log.isWarnEnabled()) log.warn("Cannot write UPDATE state (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE state (extension): " + ex.getMessage());
+				return;
 			}
 		}
 

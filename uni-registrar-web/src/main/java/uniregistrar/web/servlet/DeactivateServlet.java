@@ -43,8 +43,10 @@ public class DeactivateServlet extends WebUniRegistrar {
 			return;
 		}
 
-		String method = request.getParameter("method");
-		if (method == null) {
+		final String method;
+		if (request.getParameter("method") != null) {
+			method = request.getParameter("method");
+		} else {
 			Object didString = requestMap.get("did");
 			if (didString instanceof String) {
 				if (log.isInfoEnabled()) log.info("Found DID in DEACTIVATE request: " + didString);
@@ -52,8 +54,11 @@ public class DeactivateServlet extends WebUniRegistrar {
 					DID did = DID.fromString((String) didString);
 					method = did.getMethodName();
 				} catch (ParserException ex) {
-					if (log.isErrorEnabled()) log.error("Cannot parse DID: " + didString);
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
+					return;
 				}
+			} else {
+				method = null;
 			}
 		}
 		if (method == null) {
@@ -67,16 +72,13 @@ public class DeactivateServlet extends WebUniRegistrar {
 		// [before read]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
-			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension.BeforeReadDeactivateExtension extension : localUniRegistrar.getBeforeReadDeactivateExtensions()) {
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeReadDeactivate) " + extension.getClass().getSimpleName() + " with request map " + requestMap);
-				try {
-					extension.beforeReadDeactivate(method, requestMap, localUniRegistrar);
-				} catch (Exception ex) {
-					if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
-					return;
-				}
+			try {
+				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+				localUniRegistrar.executeExtensions(Extension.BeforeReadDeactivateExtension.class, e -> e.beforeReadDeactivate(method, requestMap, localUniRegistrar), requestMap);
+			} catch (Exception ex) {
+				if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
+				return;
 			}
 		}
 
@@ -102,21 +104,21 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		State state;
-		Map<String, Object> stateMap;
+		State state = null;
+		final Map<String, Object> stateMap;
 
 		try {
 
 			state = this.deactivate(method, deactivateRequest);
 			if (state == null) throw new RegistrationException("No state.");
-			stateMap = state.toMap();
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
-			stateMap = state.toMap();
+		} finally {
+			stateMap = state == null ? null : state.toMap();
 		}
 
 		if (log.isInfoEnabled()) log.info("DEACTIVATE state for " + deactivateRequest + ": " + state);
@@ -124,16 +126,13 @@ public class DeactivateServlet extends WebUniRegistrar {
 		// [before write]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
-			LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-			for (Extension.BeforeWriteDeactivateExtension extension : localUniRegistrar.getBeforeWriteDeactivateExtensions()) {
-				if (log.isDebugEnabled()) log.debug("Executing extension (beforeWriteDeactivate) " + extension.getClass().getSimpleName() + " with state map " + stateMap);
-				try {
-					extension.beforeWriteDeactivate(method, stateMap, localUniRegistrar);
-				} catch (Exception ex) {
-					if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
-					return;
-				}
+			try {
+				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
+				localUniRegistrar.executeExtensions(Extension.BeforeWriteDeactivateExtension.class, e -> e.beforeWriteDeactivate(method, stateMap, localUniRegistrar), stateMap);
+			} catch (Exception ex) {
+				if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
+				return;
 			}
 		}
 
