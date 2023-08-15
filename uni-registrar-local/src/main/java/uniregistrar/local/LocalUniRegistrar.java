@@ -278,7 +278,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		String extensionStage = extensionClass.getAnnotation(Extension.ExtensionStage.class).value();
 
 		List<E> extensions = this.getExtensions().stream().filter(extensionClass::isInstance).map(extensionClass::cast).toList();
-		if (log.isDebugEnabled()) log.debug("For extension stage '" + extensionStage + "' trying the following extensions: " + Extension.extensionClassNames(extensions));
+		if (log.isDebugEnabled()) log.debug("EXTENSIONS (" + extensionStage + "), TRYING: {}", Extension.extensionClassNames(extensions));
 
 		List<Extension> skippedExtensions = new ArrayList<>();
 		List<Extension> inapplicableExtensions = new ArrayList<>();
@@ -300,7 +300,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + " with request " + changedRequest + " and state " + changedState + " and execution state " + changedExecutionState);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Skipped extensions (" + extensionStage + "): {}, inapplicable extensions (" + extensionStage + "): {}", Extension.extensionClassNames(skippedExtensions), Extension.extensionClassNames(inapplicableExtensions));
+		if (log.isDebugEnabled()) {
+			List<E> executedExtensions = extensions.stream().filter(e -> ! skippedExtensions.contains(e)).filter(e -> ! inapplicableExtensions.contains(e)).toList();
+			log.debug("EXTENSIONS (" + extensionStage + "), EXECUTED: {}, SKIPPED: {}, INAPPLICABLE: {}", Extension.extensionClassNames(executedExtensions), Extension.extensionClassNames(skippedExtensions), Extension.extensionClassNames(inapplicableExtensions));
+		}
 	}
 
 	public <E extends Extension> void executeExtensions(Class<E> extensionClass, Extension.ExtensionFunctionVoid<E> extensionFunction, Map<String, Object> map) throws RegistrationException {
