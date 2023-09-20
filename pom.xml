@@ -69,8 +69,8 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<github.global.server>github</github.global.server>
 		<java.version>17</java.version>
+		<github.global.server>github</github.global.server>
 		<project.build.timestamp>${maven.build.timestamp}</project.build.timestamp>
 
 		<!-- Dependency Versions -->
