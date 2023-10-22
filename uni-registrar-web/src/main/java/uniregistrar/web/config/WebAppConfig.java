@@ -102,7 +102,7 @@ public class WebAppConfig {
 		for (DriverConfigs.DriverConfig dc : driverConfigs.getDrivers()) {
 
 			String method = dc.getMethod();
-			String url = dc.getURL();
+			String url = dc.getUrl();
 			String propertiesEndpoint = dc.getPropertiesEndpoint();
 
 			if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");

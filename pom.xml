@@ -75,40 +75,58 @@
 
 		<!-- Dependency Versions -->
 
-		<did-common-java.version>1.7.0</did-common-java.version>
+		<did-common-java.version>1.9.0</did-common-java.version>
 
-		<slf4j.version>2.0.6</slf4j.version>
+		<slf4j.version>2.0.9</slf4j.version>
 		<gson.version>2.10.1</gson.version>
-		<jackson.databind.version>2.14.2</jackson.databind.version>
-		<jackson.core.version>2.14.2</jackson.core.version>
-		<jackson.annotations.version>2.14.2</jackson.annotations.version>
-		<commons.lang3.version>3.12.0</commons.lang3.version>
-		<commons.collections4.version>4.4</commons.collections4.version>
-		<commons-codec.version>1.15</commons-codec.version>
-		<google.guava.version>32.0.0-jre</google.guava.version>
+		<jackson.databind.version>2.15.3</jackson.databind.version>
+		<jackson.core.version>2.15.3</jackson.core.version>
+		<jackson.annotations.version>2.15.3</jackson.annotations.version>
 		<httpclient.version>4.5.14</httpclient.version>
-		<io.leonard-base58.version>0.0.2</io.leonard-base58.version>
 
-		<springframework.version>6.0.0</springframework.version>
+		<springframework.version>6.0.13</springframework.version>
 		<jakarta.servlet-api.version>5.0.0</jakarta.servlet-api.version>
 
-		<junit-jupiter.version>5.9.2</junit-jupiter.version>
-		<mockito-core.version>3.4.4</mockito-core.version>
+		<junit-jupiter.version>5.10.0</junit-jupiter.version>
+		<mockito-core.version>5.6.0</mockito-core.version>
 		<junit.version>4.13.2</junit.version>
 
 		<!-- Plugin Versions -->
 
-		<maven-surefire-plugin.version>2.22.2</maven-surefire-plugin.version>
-		<maven-war-plugin.version>3.2.3</maven-war-plugin.version>
-		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
-		<maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-		<maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
-		<maven-scm-plugin.version>1.11.2</maven-scm-plugin.version>
-		<maven-release-plugin.version>3.0.0-M4</maven-release-plugin.version>
-		<maven-deploy-plugin.version>3.0.0-M1</maven-deploy-plugin.version>
+		<maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+		<maven-war-plugin.version>3.4.0</maven-war-plugin.version>
+		<maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+		<maven-source-plugin.version>3.3.0</maven-source-plugin.version>
+		<maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
+		<maven-scm-plugin.version>2.0.1</maven-scm-plugin.version>
+		<maven-release-plugin.version>3.0.1</maven-release-plugin.version>
+		<maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
+		<maven-enforcer-plugin.version>3.4.1</maven-enforcer-plugin.version>
 	</properties>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>enforce-no-snapshots</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.6.3</version>
+								</requireMavenVersion>
+							</rules>
+							<fail>true</fail>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<resources>
 			<resource>
 				<directory>${project.basedir}/src/main/resources/</directory>
@@ -198,9 +216,45 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>${maven-deploy-plugin.version}</version>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-enforcer-plugin</artifactId>
+					<version>${maven-enforcer-plugin.version}</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>ci</id>
+			<properties><packaging.type>jar</packaging.type></properties>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-enforcer-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>enforce-no-snapshots</id>
+								<goals>
+									<goal>enforce</goal>
+								</goals>
+								<configuration>
+									<rules>
+										<requireReleaseDeps>
+											<message>No Snapshots Allowed!</message>
+										</requireReleaseDeps>
+									</rules>
+									<fail>true</fail>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -260,26 +314,6 @@
 				<version>${jackson.databind.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${google.guava.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>commons-codec</groupId>
-				<artifactId>commons-codec</artifactId>
-				<version>${commons-codec.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-lang3</artifactId>
-				<version>${commons.lang3.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.commons</groupId>
-				<artifactId>commons-collections4</artifactId>
-				<version>${commons.collections4.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>com.google.code.gson</groupId>
 				<artifactId>gson</artifactId>
 				<version>${gson.version}</version>
@@ -288,11 +322,6 @@
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpclient</artifactId>
 				<version>${httpclient.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>io.leonard</groupId>
-				<artifactId>base58</artifactId>
-				<version>${io.leonard-base58.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
