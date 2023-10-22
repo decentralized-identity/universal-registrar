@@ -1,21 +1,20 @@
 package uniregistrar.web.servlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.UniRegistrar;
 import uniregistrar.web.WebUniRegistrar;
 
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Map;
 import java.util.Set;
 
 public class MethodsServlet extends WebUniRegistrar {
 
-	protected static Logger log = LoggerFactory.getLogger(MethodsServlet.class);
+	protected static final Logger log = LoggerFactory.getLogger(MethodsServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

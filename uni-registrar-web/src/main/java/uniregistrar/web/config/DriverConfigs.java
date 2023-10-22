@@ -34,11 +34,11 @@ public class DriverConfigs {
 			this.method = value;
 		}
 
-		public String getURL() {
+		public String getUrl() {
 			return url;
 		}
 
-		public void setURL(String value) {
+		public void setUrl(String value) {
 			this.url = value;
 		}
 

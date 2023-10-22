@@ -32,7 +32,7 @@ import java.util.Set;
 
 public class ClientUniRegistrar implements UniRegistrar {
 
-	private static Logger log = LoggerFactory.getLogger(ClientUniRegistrar.class);
+	private static final Logger log = LoggerFactory.getLogger(ClientUniRegistrar.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -56,14 +56,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public static ClientUniRegistrar create(URI baseUri) {
 
-		if (! baseUri.toString().endsWith("/")) baseUri = URI.create(baseUri.toString() + "/");
+		if (! baseUri.toString().endsWith("/")) baseUri = URI.create(baseUri + "/");
 
 		ClientUniRegistrar clientUniRegistrar = new ClientUniRegistrar();
-		clientUniRegistrar.setCreateUri(URI.create(baseUri.toString() + "create"));
-		clientUniRegistrar.setUpdateUri(URI.create(baseUri.toString() + "update"));
-		clientUniRegistrar.setDeactivateUri(URI.create(baseUri.toString() + "deactivate"));
-		clientUniRegistrar.setPropertiesUri(URI.create(baseUri.toString() + "properties"));
-		clientUniRegistrar.setMethodsUri(URI.create(baseUri.toString() + "methods"));
+		clientUniRegistrar.setCreateUri(URI.create(baseUri + "create"));
+		clientUniRegistrar.setUpdateUri(URI.create(baseUri + "update"));
+		clientUniRegistrar.setDeactivateUri(URI.create(baseUri + "deactivate"));
+		clientUniRegistrar.setPropertiesUri(URI.create(baseUri + "properties"));
+		clientUniRegistrar.setMethodsUri(URI.create(baseUri + "methods"));
 
 		return clientUniRegistrar;
 	}

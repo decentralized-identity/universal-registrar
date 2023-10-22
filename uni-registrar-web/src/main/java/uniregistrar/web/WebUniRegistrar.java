@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.lang.NonNull;
 import org.springframework.web.HttpRequestHandler;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
@@ -34,7 +35,7 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
-	public void handleRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void handleRequest(HttpServletRequest request, @NonNull HttpServletResponse response) throws ServletException, IOException {
 		if ("GET".equals(request.getMethod())) this.doGet(request, response);
 		if ("POST".equals(request.getMethod())) this.doPost(request, response);
 		if ("PUT".equals(request.getMethod())) this.doPut(request, response);

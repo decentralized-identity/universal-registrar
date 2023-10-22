@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -30,7 +29,7 @@ public class DeactivateState extends State {
 	 */
 
 	@JsonCreator
-	public static DeactivateState build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata", required=false) Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata", required=false) Map<String, Object> didDocumentMetadata) {
+	public static DeactivateState build(@JsonProperty(value="jobId") String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata") Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata") Map<String, Object> didDocumentMetadata) {
 		return new DeactivateState(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
 	}
 

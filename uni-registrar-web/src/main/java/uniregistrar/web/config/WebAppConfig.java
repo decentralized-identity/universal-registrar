@@ -10,14 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.http.HttpDriver;
 import uniregistrar.local.LocalUniRegistrar;
-import uniregistrar.local.extensions.Extension;
-import uniregistrar.local.extensions.impl.DummyExtension;
 import uniregistrar.web.servlet.*;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Configuration

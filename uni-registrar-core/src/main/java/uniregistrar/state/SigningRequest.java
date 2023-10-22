@@ -47,7 +47,7 @@ public class SigningRequest extends JsonObject {
      */
 
     @JsonCreator
-    public static SigningRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="alg", required=true) String alg, @JsonProperty(value="purpose", required=false) String purpose, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="serializedPayload", required=false) String serializedPayload) {
+    public static SigningRequest build(@JsonProperty(value="kid") String kid, @JsonProperty(value="alg", required=true) String alg, @JsonProperty(value="purpose") String purpose, @JsonProperty(value="payload") Map<String, Object> payload, @JsonProperty(value="serializedPayload") String serializedPayload) {
         return new SigningRequest(kid, alg, purpose, payload, serializedPayload);
     }
 

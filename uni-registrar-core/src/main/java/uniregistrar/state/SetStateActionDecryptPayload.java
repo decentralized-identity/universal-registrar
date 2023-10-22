@@ -27,7 +27,7 @@ public final class SetStateActionDecryptPayload {
 		if (decryptionRequests == null) return null;
 		return decryptionRequests.entrySet()
 				.stream()
-				.collect(Collectors.toMap(map -> map.getKey(), map -> DecryptionRequest.fromMap(map.getValue())));
+				.collect(Collectors.toMap(Map.Entry::getKey, map -> DecryptionRequest.fromMap(map.getValue())));
 	}
 
 	public static void addStateActionDecryptionRequest(State state, String decryptionRequestId, DecryptionRequest decryptionRequest) {

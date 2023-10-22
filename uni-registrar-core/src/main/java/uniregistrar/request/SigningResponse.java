@@ -31,7 +31,7 @@ public class SigningResponse extends JsonObject {
      */
 
     @JsonCreator
-    public static SigningResponse build(@JsonProperty(value="signature", required=false) String signature) {
+    public static SigningResponse build(@JsonProperty(value="signature") String signature) {
         return new SigningResponse(signature);
     }
 

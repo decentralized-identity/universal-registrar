@@ -48,7 +48,7 @@ public class VerificationMethodTemplate extends JsonObject {
      */
 
     @JsonCreator
-    public static VerificationMethodTemplate build(@JsonProperty(value="id", required=false) String id, @JsonProperty(value="type", required=false) String type, @JsonProperty(value="controller", required=false) String controller, @JsonProperty(value="publicKeyJwk", required=false) Map<String, Object> publicKeyJwk, @JsonProperty(value="purpose", required=false) List<String> purpose) {
+    public static VerificationMethodTemplate build(@JsonProperty(value="id") String id, @JsonProperty(value="type") String type, @JsonProperty(value="controller") String controller, @JsonProperty(value="publicKeyJwk") Map<String, Object> publicKeyJwk, @JsonProperty(value="purpose") List<String> purpose) {
         return new VerificationMethodTemplate(id, type, controller, publicKeyJwk, purpose);
     }
 

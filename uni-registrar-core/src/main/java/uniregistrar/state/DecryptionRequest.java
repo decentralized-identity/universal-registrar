@@ -7,7 +7,6 @@ import uniregistrar.JsonObject;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
 import java.util.Map;
 
 @JsonPropertyOrder({ "kid", "enc", "purpose", "payload", "encryptedPayload" })
@@ -48,7 +47,7 @@ public class DecryptionRequest extends JsonObject {
      */
 
     @JsonCreator
-    public static DecryptionRequest build(@JsonProperty(value="kid", required=false) String kid, @JsonProperty(value="enc", required=true) String enc, @JsonProperty(value="purpose", required=false) String purpose, @JsonProperty(value="payload", required=false) Map<String, Object> payload, @JsonProperty(value="encryptedPayload", required=false) String encryptedPayload) {
+    public static DecryptionRequest build(@JsonProperty(value="kid") String kid, @JsonProperty(value="enc", required=true) String enc, @JsonProperty(value="purpose") String purpose, @JsonProperty(value="payload") Map<String, Object> payload, @JsonProperty(value="encryptedPayload") String encryptedPayload) {
         return new DecryptionRequest(kid, enc, purpose, payload, encryptedPayload);
     }
 

@@ -18,7 +18,7 @@ public final class SetSecretDecryptionResponses {
 		if (decryptionResponses == null) return null;
 		return decryptionResponses.entrySet()
 				.stream()
-				.collect(Collectors.toMap(map -> map.getKey(), map -> DecryptionResponse.fromMap(map.getValue())));
+				.collect(Collectors.toMap(Map.Entry::getKey, map -> DecryptionResponse.fromMap(map.getValue())));
 	}
 
 	public static void addSecretDecryptionResponse(State state, String decryptionRequestId, DecryptionResponse decryptionResponse) {

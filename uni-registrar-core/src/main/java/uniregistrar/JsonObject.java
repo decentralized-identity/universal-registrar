@@ -2,8 +2,6 @@ package uniregistrar;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import foundation.identity.did.DIDDocument;
-import jakarta.json.Json;
 
 import java.util.Map;
 

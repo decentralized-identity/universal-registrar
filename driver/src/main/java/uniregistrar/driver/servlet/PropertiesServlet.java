@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class PropertiesServlet extends HttpServlet implements Servlet {
 
-	private static Logger log = LoggerFactory.getLogger(PropertiesServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(PropertiesServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

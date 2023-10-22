@@ -31,7 +31,7 @@ public class DecryptionResponse extends JsonObject {
      */
 
     @JsonCreator
-    public static DecryptionResponse build(@JsonProperty(value="decryptedPayload", required=false) String decryptedPayload) {
+    public static DecryptionResponse build(@JsonProperty(value="decryptedPayload") String decryptedPayload) {
         return new DecryptionResponse(decryptedPayload);
     }
 
@@ -65,7 +65,7 @@ public class DecryptionResponse extends JsonObject {
     }
 
     @JsonSetter
-    public void setDecryptedPayload(String kid) {
+    public void setDecryptedPayload(String decryptedPayload) {
         this.decryptedPayload = decryptedPayload;
     }
 }

@@ -33,7 +33,7 @@ import java.util.Map;
 
 public class HttpDriver implements Driver {
 
-	private static Logger log = LoggerFactory.getLogger(HttpDriver.class);
+	private static final Logger log = LoggerFactory.getLogger(HttpDriver.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -286,14 +286,9 @@ public class HttpDriver implements Driver {
 
 		// prepare properties
 
-		Map<String, Object> httpProperties = new HashMap<String, Object> ();
+		Map<String, Object> httpProperties = getHttpProperties();
 
-		if (this.getCreateUri() != null) httpProperties.put("createUri", this.getCreateUri().toString());
-		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
-		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
-		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
-
-		Map<String, Object> properties = new HashMap<String, Object> ();
+		Map<String, Object> properties = new HashMap<>();
 		properties.put("http", httpProperties);
 
 		// remote properties
@@ -311,6 +306,16 @@ public class HttpDriver implements Driver {
 		// done
 
 		return properties;
+	}
+
+	private Map<String, Object> getHttpProperties() {
+		Map<String, Object> httpProperties = new HashMap<>();
+
+		if (this.getCreateUri() != null) httpProperties.put("createUri", this.getCreateUri().toString());
+		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
+		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
+		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
+		return httpProperties;
 	}
 
 	public Map<String, Object> remoteProperties() throws RegistrationException {

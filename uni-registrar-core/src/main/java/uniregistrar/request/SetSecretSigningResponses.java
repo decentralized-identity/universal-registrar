@@ -16,7 +16,7 @@ public final class SetSecretSigningResponses {
 		if (signingResponses == null) return null;
 		return signingResponses.entrySet()
 				.stream()
-				.collect(Collectors.toMap(map -> map.getKey(), map -> SigningResponse.fromMap(map.getValue())));
+				.collect(Collectors.toMap(Map.Entry::getKey, map -> SigningResponse.fromMap(map.getValue())));
 	}
 
 	public static void addSecretSigningResponse(Map<String, Object> secret, String signingRequestId, SigningResponse signingResponse) {

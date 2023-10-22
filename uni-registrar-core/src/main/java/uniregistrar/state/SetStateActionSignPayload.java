@@ -27,7 +27,7 @@ public final class SetStateActionSignPayload {
 		if (signingRequests == null) return null;
 		return signingRequests.entrySet()
 				.stream()
-				.collect(Collectors.toMap(map -> map.getKey(), map -> SigningRequest.fromMap(map.getValue())));
+				.collect(Collectors.toMap(Map.Entry::getKey, map -> SigningRequest.fromMap(map.getValue())));
 	}
 
 	public static void addStateActionSigningRequest(State state, String signingRequestId, SigningRequest signingRequest) {

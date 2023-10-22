@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class CreateServlet extends HttpServlet implements Servlet {
 
-	private static Logger log = LoggerFactory.getLogger(CreateServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	public CreateServlet() {
 

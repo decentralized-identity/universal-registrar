@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class DummyExtension extends AbstractExtension implements Extension {
 
-	private static Logger log = LoggerFactory.getLogger(DummyExtension.class);
+	private static final Logger log = LoggerFactory.getLogger(DummyExtension.class);
 
 	@Override
 	public ExtensionStatus afterCreate(String method, CreateRequest createRequest, CreateState createState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {

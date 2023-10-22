@@ -29,7 +29,7 @@ public class CreateState extends State {
 	 */
 
 	@JsonCreator
-	public static CreateState build(@JsonProperty(value="jobId", required=false) String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata", required=false) Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata", required=false) Map<String, Object> didDocumentMetadata) {
+	public static CreateState build(@JsonProperty(value="jobId") String jobId, @JsonProperty(value="didState", required=true) Map<String, Object> didState, @JsonProperty(value="didRegistrationMetadata") Map<String, Object> didRegistrationMetadata, @JsonProperty(value="didDocumentMetadata") Map<String, Object> didDocumentMetadata) {
 		return new CreateState(jobId, didState, didRegistrationMetadata, didDocumentMetadata);
 	}
 

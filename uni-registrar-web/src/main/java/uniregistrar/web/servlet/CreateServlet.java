@@ -19,7 +19,7 @@ import java.util.Map;
 
 public class CreateServlet extends WebUniRegistrar {
 
-	protected static Logger log = LoggerFactory.getLogger(CreateServlet.class);
+	protected static final Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

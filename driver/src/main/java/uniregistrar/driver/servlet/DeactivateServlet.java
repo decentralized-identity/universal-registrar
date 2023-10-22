@@ -14,7 +14,7 @@ import java.io.IOException;
 
 public class DeactivateServlet extends HttpServlet implements Servlet {
 
-	private static Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
 
 	public DeactivateServlet() {
 

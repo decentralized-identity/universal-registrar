@@ -21,7 +21,7 @@ import java.util.Map;
 
 public class DeactivateServlet extends WebUniRegistrar {
 
-	protected static Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
+	protected static final Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
