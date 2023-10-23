@@ -1,4 +1,4 @@
-![DIF Logo](https://raw.githubusercontent.com/decentralized-identity/universal-registrar/master/docs/logo-dif.png)
+![DIF Logo](https://raw.githubusercontent.com/decentralized-identity/universal-registrar/main/docs/logo-dif.png)
 
 # Universal Registrar
 
@@ -57,12 +57,18 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 
 ## About
 
-<img align="left" src="https://raw.githubusercontent.com/decentralized-identity/universal-registrar/master/docs/logo-dif.png" width="115">
+<img align="left" src="https://raw.githubusercontent.com/decentralized-identity/universal-registrar/main/docs/logo-dif.png" width="115">
 
 Decentralized Identity Foundation - https://identity.foundation/
 
 <br clear="left" />
 
-<img align="left" src="https://raw.githubusercontent.com/decentralized-identity/universal-registrar/master/docs/logo-ngi0pet.png" width="115">
+<img align="left" src="https://raw.githubusercontent.com/decentralized-identity/universal-registrar/main/docs/logo-ngi0pet.png" width="115">
 
 Supported by [NLnet](https://nlnet.nl/) and [NGI0 PET](https://nlnet.nl/PET/#NGI), which is made possible with financial support from the European Commission's [Next Generation Internet](https://ngi.eu/) programme.
+
+<br clear="left" />
+
+<img align="left" src="https://raw.githubusercontent.com/decentralized-identity/universal-registrar/main/docs/logo-ngitrustchain.png" width="115">
+
+Supported by [NGI TRUSTCHAIN](https://trustchain.ngi.eu/), which is made possible with financial support from the European Commission's [Next Generation Internet](https://ngi.eu/) programme.
