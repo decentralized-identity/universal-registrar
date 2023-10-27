@@ -106,4 +106,4 @@ services:
       uniregistrar_driver_did_ethr_ethrNetworkMetaPrivateKeys: ${uniregistrar_driver_did_ethr_ethrNetworkMetaPrivateKeys}
       uniregistrar_driver_did_ethr_ethrNetworkMetaPublicKeys: ${uniregistrar_driver_did_ethr_ethrNetworkMetaPublicKeys}
     ports:
-      - "9080:3000"
+      - "9090:3000"
