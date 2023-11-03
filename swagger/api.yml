@@ -146,7 +146,7 @@ paths:
                 $ref: '#/components/schemas/DeactivateState'
   /properties:
     get:
-      summary: Returns a map of properties of the resolver.
+      summary: Returns a map of properties of the registrar.
       operationId: universalRegistrarGetProperties
       responses:
         '200':
