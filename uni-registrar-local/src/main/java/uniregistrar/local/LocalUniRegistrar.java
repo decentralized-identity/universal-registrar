@@ -260,7 +260,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			String changedRequest = afterRequest.equals(beforeRequest) ? "(unchanged)" : afterRequest;
 			String changedState = afterState.equals(beforeState) ? "(unchanged)" : afterState;
 			String changedExecutionState = afterExecutionState.equals(beforeExecutionState) ? "(unchanged)" : afterExecutionState;
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST " + changedRequest + "\n-->STATE: " + changedState + "\n-->EXECUTION STATE: " + changedExecutionState);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + changedRequest + "\n-->STATE: " + changedState + "\n-->EXECUTION STATE: " + changedExecutionState);
 		}
 
 		if (log.isDebugEnabled()) {
