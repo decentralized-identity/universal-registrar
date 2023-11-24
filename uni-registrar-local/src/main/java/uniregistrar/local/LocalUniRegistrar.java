@@ -86,7 +86,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isInfoEnabled()) log.info("Attempting to create " + createRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Executing create with request " + createRequest + " with driver " + driver.getClass().getSimpleName());
 
 			CreateState driverCreateState = driver.create(createRequest);
 			if (driverCreateState != null) {
@@ -97,6 +97,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			}
 
 			createState.getDidRegistrationMetadata().put("method", method);
+			if (log.isInfoEnabled()) log.info("Executed create with state " + createState + " with driver " + driver.getClass().getSimpleName());
 		}
 
 		// [after create]
@@ -150,7 +151,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isInfoEnabled()) log.info("Attempting to update " + updateRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Executing update with request " + updateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			if (driverUpdateState != null) {
@@ -161,6 +162,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			}
 
 			updateState.getDidRegistrationMetadata().put("method", method);
+			if (log.isInfoEnabled()) log.info("Executed update with state " + updateState + " with driver " + driver.getClass().getSimpleName());
 		}
 
 		// [after update]
@@ -214,7 +216,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isInfoEnabled()) log.info("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Executing deactivate with request " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			if (driverDeactivateState != null) {
@@ -225,6 +227,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			}
 
 			deactivateState.getDidRegistrationMetadata().put("method", method);
+			if (log.isInfoEnabled()) log.info("Executed deactivate with state " + deactivateState + " with driver " + driver.getClass().getSimpleName());
 		}
 
 		// [after deactivate]
