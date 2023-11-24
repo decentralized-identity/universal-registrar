@@ -92,8 +92,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (driverCreateState != null) {
 				createState.setJobId(driverCreateState.getJobId());
 				createState.setDidState(driverCreateState.getDidState());
-				createState.setDidRegistrationMetadata(driverCreateState.getDidRegistrationMetadata());
-				createState.setDidDocumentMetadata(driverCreateState.getDidDocumentMetadata());
+				if (driverCreateState.getDidRegistrationMetadata() != null) createState.getDidRegistrationMetadata().putAll(driverCreateState.getDidRegistrationMetadata());
+				if (driverCreateState.getDidDocumentMetadata() != null) createState.getDidDocumentMetadata().putAll(driverCreateState.getDidDocumentMetadata());
 			}
 
 			createState.getDidRegistrationMetadata().put("method", method);
@@ -156,8 +156,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (driverUpdateState != null) {
 				updateState.setJobId(driverUpdateState.getJobId());
 				updateState.setDidState(driverUpdateState.getDidState());
-				updateState.setDidRegistrationMetadata(driverUpdateState.getDidRegistrationMetadata());
-				updateState.setDidDocumentMetadata(driverUpdateState.getDidDocumentMetadata());
+				if (driverUpdateState.getDidRegistrationMetadata() != null) updateState.getDidRegistrationMetadata().putAll(driverUpdateState.getDidRegistrationMetadata());
+				if (driverUpdateState.getDidDocumentMetadata() != null) updateState.getDidDocumentMetadata().putAll(driverUpdateState.getDidDocumentMetadata());
 			}
 
 			updateState.getDidRegistrationMetadata().put("method", method);
@@ -220,8 +220,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (driverDeactivateState != null) {
 				deactivateState.setJobId(driverDeactivateState.getJobId());
 				deactivateState.setDidState(driverDeactivateState.getDidState());
-				deactivateState.setDidRegistrationMetadata(driverDeactivateState.getDidRegistrationMetadata());
-				deactivateState.setDidDocumentMetadata(driverDeactivateState.getDidDocumentMetadata());
+				if (driverDeactivateState.getDidRegistrationMetadata() != null) deactivateState.getDidRegistrationMetadata().putAll(driverDeactivateState.getDidRegistrationMetadata());
+				if (driverDeactivateState.getDidDocumentMetadata() != null) deactivateState.getDidDocumentMetadata().putAll(driverDeactivateState.getDidDocumentMetadata());
 			}
 
 			deactivateState.getDidRegistrationMetadata().put("method", method);
