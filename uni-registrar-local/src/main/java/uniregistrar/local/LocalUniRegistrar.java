@@ -253,19 +253,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		for (E extension : extensions) {
 			if (extensionStatus.skip(extensionStage)) { skippedExtensions.add(extension); continue; }
-			String beforeRequest = "" + request;
-			String beforeState = "" + state;
-			String beforeExecutionState = "" + executionState;
 			ExtensionStatus returnedExtensionStatus = extensionFunction.apply(extension);
 			extensionStatus.or(returnedExtensionStatus);
 			if (returnedExtensionStatus == null) { inapplicableExtensions.add(extension); continue; }
-			String afterRequest = "" + request;
-			String afterState = "" + state;
-			String afterExecutionState = "" + executionState;
-			String changedRequest = afterRequest.equals(beforeRequest) ? "(unchanged)" : afterRequest;
-			String changedState = afterState.equals(beforeState) ? "(unchanged)" : afterState;
-			String changedExecutionState = afterExecutionState.equals(beforeExecutionState) ? "(unchanged)" : afterExecutionState;
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + changedRequest + "\n-->STATE: " + changedState + "\n-->EXECUTION STATE: " + changedExecutionState);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + request + "\n-->STATE: " + state + "\n-->EXECUTION STATE: " + executionState);
 		}
 
 		if (log.isDebugEnabled()) {
@@ -282,11 +273,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (log.isDebugEnabled()) log.debug("For extension stage '" + extensionStage + "' trying the following extensions: " + Extension.extensionClassNames(extensions));
 
 		for (E extension : extensions) {
-			String beforeMap = "" + map;
 			extensionFunction.apply(extension);
-			String afterMap = "" + map;
-			String changedMap = afterMap.equals(beforeMap) ? "(unchanged)" : afterMap;
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + " with map " + changedMap);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + " with map " + map);
 		}
 	}
 
