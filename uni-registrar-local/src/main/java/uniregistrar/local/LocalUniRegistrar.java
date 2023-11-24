@@ -86,14 +86,13 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to create " + createRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Attempting to create " + createRequest + " with driver " + driver.getClass().getSimpleName());
 
 			CreateState driverCreateState = driver.create(createRequest);
-
 			if (driverCreateState != null) {
-
 				createState.setJobId(driverCreateState.getJobId());
 				createState.setDidState(driverCreateState.getDidState());
+				createState.setDidRegistrationMetadata(driverCreateState.getDidRegistrationMetadata());
 				createState.setDidDocumentMetadata(driverCreateState.getDidDocumentMetadata());
 			}
 
@@ -151,12 +150,15 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to update " + updateRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Attempting to update " + updateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
-			updateState.setJobId(driverUpdateState.getJobId());
-			updateState.setDidState(driverUpdateState.getDidState());
-			updateState.setDidDocumentMetadata(driverUpdateState.getDidDocumentMetadata());
+			if (driverUpdateState != null) {
+				updateState.setJobId(driverUpdateState.getJobId());
+				updateState.setDidState(driverUpdateState.getDidState());
+				updateState.setDidRegistrationMetadata(driverUpdateState.getDidRegistrationMetadata());
+				updateState.setDidDocumentMetadata(driverUpdateState.getDidDocumentMetadata());
+			}
 
 			updateState.getDidRegistrationMetadata().put("method", method);
 		}
@@ -212,12 +214,15 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
-			if (log.isDebugEnabled()) log.debug("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
+			if (log.isInfoEnabled()) log.info("Attempting to deactivate " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
-			deactivateState.setJobId(driverDeactivateState.getJobId());
-			deactivateState.setDidState(driverDeactivateState.getDidState());
-			deactivateState.setDidDocumentMetadata(driverDeactivateState.getDidDocumentMetadata());
+			if (driverDeactivateState != null) {
+				deactivateState.setJobId(driverDeactivateState.getJobId());
+				deactivateState.setDidState(driverDeactivateState.getDidState());
+				deactivateState.setDidRegistrationMetadata(driverDeactivateState.getDidRegistrationMetadata());
+				deactivateState.setDidDocumentMetadata(driverDeactivateState.getDidDocumentMetadata());
+			}
 
 			deactivateState.getDidRegistrationMetadata().put("method", method);
 		}
