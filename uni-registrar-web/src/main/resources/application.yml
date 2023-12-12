@@ -42,3 +42,6 @@ uniregistrar:
     - method: ethr
       url: http://driver-did-ethr:9080/ethr/
       propertiesEndpoint: 'true'
+    - method: dyne
+      url: http://driver-did-dyne:3000/
+      propertiesEndpoint: 'true'
