@@ -96,7 +96,6 @@ public class LocalUniRegistrar implements UniRegistrar {
 				if (driverCreateState.getDidDocumentMetadata() != null) createState.getDidDocumentMetadata().putAll(driverCreateState.getDidDocumentMetadata());
 			}
 
-			createState.getDidRegistrationMetadata().put("method", method);
 			if (log.isInfoEnabled()) log.info("Executed create with state " + createState + " with driver " + driver.getClass().getSimpleName());
 		}
 
@@ -108,6 +107,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long stop = System.currentTimeMillis();
 		createState.getDidRegistrationMetadata().put("duration", stop - start);
+		createState.getDidRegistrationMetadata().put("method", method);
 
 		// done
 
@@ -161,7 +161,6 @@ public class LocalUniRegistrar implements UniRegistrar {
 				if (driverUpdateState.getDidDocumentMetadata() != null) updateState.getDidDocumentMetadata().putAll(driverUpdateState.getDidDocumentMetadata());
 			}
 
-			updateState.getDidRegistrationMetadata().put("method", method);
 			if (log.isInfoEnabled()) log.info("Executed update with state " + updateState + " with driver " + driver.getClass().getSimpleName());
 		}
 
@@ -173,6 +172,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long stop = System.currentTimeMillis();
 		updateState.getDidRegistrationMetadata().put("duration", stop - start);
+		updateState.getDidRegistrationMetadata().put("method", method);
 
 		// done
 
@@ -226,7 +226,6 @@ public class LocalUniRegistrar implements UniRegistrar {
 				if (driverDeactivateState.getDidDocumentMetadata() != null) deactivateState.getDidDocumentMetadata().putAll(driverDeactivateState.getDidDocumentMetadata());
 			}
 
-			deactivateState.getDidRegistrationMetadata().put("method", method);
 			if (log.isInfoEnabled()) log.info("Executed deactivate with state " + deactivateState + " with driver " + driver.getClass().getSimpleName());
 		}
 
@@ -238,6 +237,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		long stop = System.currentTimeMillis();
 		deactivateState.getDidRegistrationMetadata().put("duration", stop - start);
+		deactivateState.getDidRegistrationMetadata().put("method", method);
 
 		// done
 
