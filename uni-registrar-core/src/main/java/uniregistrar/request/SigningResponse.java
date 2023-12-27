@@ -15,15 +15,27 @@ import java.util.Map;
 public class SigningResponse extends JsonObject {
 
     @JsonProperty
+    private String kid;
+
+    @JsonProperty
+    private String alg;
+
+    @JsonProperty
+    private String purpose;
+
+    @JsonProperty
     private String signature;
 
-    private SigningResponse(String signature) {
+    private SigningResponse(String kid, String alg, String purpose, String signature) {
         super();
+        this.kid = kid;
+        this.alg = alg;
+        this.purpose = purpose;
         this.signature = signature;
     }
 
     private SigningResponse() {
-        this(null);
+        this(null, null, null, null);
     }
 
     /*
@@ -31,8 +43,8 @@ public class SigningResponse extends JsonObject {
      */
 
     @JsonCreator
-    public static SigningResponse build(@JsonProperty(value="signature") String signature) {
-        return new SigningResponse(signature);
+    public static SigningResponse build(@JsonProperty(value="kid") String kid, @JsonProperty(value="alg") String alg, @JsonProperty(value="purpose") String purpose, @JsonProperty(value="signature") String signature) {
+        return new SigningResponse(kid, alg, purpose, signature);
     }
 
     public static SigningResponse build() {
@@ -58,6 +70,36 @@ public class SigningResponse extends JsonObject {
     /*
      * Getters and setters
      */
+
+    @JsonGetter
+    public String getKid() {
+        return kid;
+    }
+
+    @JsonSetter
+    public void setKid(String kid) {
+        this.kid = kid;
+    }
+
+    @JsonGetter
+    public String getAlg() {
+        return alg;
+    }
+
+    @JsonSetter
+    public void setAlg(String alg) {
+        this.alg = alg;
+    }
+
+    @JsonGetter
+    public String getPurpose() {
+        return purpose;
+    }
+
+    @JsonSetter
+    public void setPurpose(String purpose) {
+        this.purpose = purpose;
+    }
 
     @JsonGetter
     public String getSignature() {
