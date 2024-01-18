@@ -6,6 +6,7 @@ import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
 import uniregistrar.local.configuration.LocalUniRegistrarConfigurator;
+import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.request.CreateRequest;
@@ -260,6 +261,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			extensionStatus.or(returnedExtensionStatus);
 			if (returnedExtensionStatus == null) { inapplicableExtensions.add(extension); continue; }
 			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + request + "\n-->STATE: " + state + "\n-->EXECUTION STATE: " + executionState);
+			ExecutionStateUtil.addExtensionStage(executionState, extensionClass, extension);
 		}
 
 		if (log.isDebugEnabled()) {
