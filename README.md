@@ -28,7 +28,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=cheqd' -d '{"didDocument":{...}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=ethr' -d '{"options":{"network":"goerli"}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=dyne' -d '{"didDocument":{}}'
-curl -X POST 'http://localhost:9080/1.0/create?method=bid' -d '{"options":{"chain":"TESTNET","keyType":"Ed25519"}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=bid' -d '{"options":{"chain":"TESTNET","keyType":"Ed25519"}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
