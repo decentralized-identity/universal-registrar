@@ -45,3 +45,6 @@ uniregistrar:
     - method: dyne
       url: http://driver-did-dyne:3000/
       propertiesEndpoint: 'true'
+    - method: bid
+      url: http://driver-did-bid:9091/
+      propertiesEndpoint: 'true'
