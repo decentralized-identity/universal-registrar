@@ -111,3 +111,7 @@ services:
     image: dyne/did-registrar:0.2
     ports:
       - "9091:3000"
+   driver-did-bid:
+    image: caictdevelop/uni-registrar-driver-did-bid:latest
+    ports:
+      - "9091:9091"
