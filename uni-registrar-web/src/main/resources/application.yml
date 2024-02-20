@@ -10,7 +10,7 @@ server:
   port: '9080'
 spring:
   profiles:
-    active: ${uniregistrar_web_spring_profiles_active}
+    active: ${uniregistrar_web_spring_profiles_active:default}
 uniregistrar:
   drivers:
     - method: btcr
