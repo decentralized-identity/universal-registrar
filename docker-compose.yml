@@ -108,6 +108,6 @@ services:
     ports:
       - "9090:3000"
   driver-did-dyne:
-    image: dyne/did-registrar:0.2
+    image: dyne/did-registrar:0.3
     ports:
       - "9091:3000"
