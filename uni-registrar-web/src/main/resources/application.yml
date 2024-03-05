@@ -38,7 +38,7 @@ uniregistrar:
       propertiesEndpoint: 'true'
     - method: cheqd
       url: http://driver-did-cheqd:3000/
-      propertiesEndpoint: 'true'
+      propertiesEndpoint: 'false'
     - method: ethr
       url: http://driver-did-ethr:9080/ethr/
       propertiesEndpoint: 'true'
