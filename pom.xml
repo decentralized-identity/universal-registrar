@@ -84,7 +84,7 @@
 		<jackson.annotations.version>2.16.1</jackson.annotations.version>
 		<httpclient.version>4.5.14</httpclient.version>
 
-		<springframework.version>6.1.4</springframework.version>
+		<springframework.version>6.1.5</springframework.version>
 		<jakarta.servlet-api.version>6.0.0</jakarta.servlet-api.version>
 
 		<junit-jupiter.version>5.10.2</junit-jupiter.version>
