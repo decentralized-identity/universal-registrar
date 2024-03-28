@@ -17,8 +17,8 @@
   "paths": {
     "/create": {
       "post": {
-        "summary": "Create a DID.",
-        "description": "<p>This endpoint creates a DID. As input it takes the DID plus options, a DID document, and optionally secrets needed to create a DID. The output is a state object that represents the current state of the DID creation process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#create\">DID Registration</a> specification for additional details.</p>",
+        "summary": "Create a DID",
+        "description": "<p>This endpoint creates a DID. As input it takes the DID, a DID document, plus optional DID registration <a href=\"https://identity.foundation/did-registration/#options\">options</a> and <a href=\"https://identity.foundation/did-registration/#secret\">secrets</a> needed to create a DID. The output is a state object that represents the current state of the DID creation process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#create\">DID Registration</a> specification for additional details.</p>",
         "operationId": "create",
         "tags": [
           "Universal Registrar"
@@ -26,13 +26,13 @@
         "parameters": [
           {
             "in": "query",
-            "required": false,
+            "required": true,
             "name": "method",
             "schema": {
               "type": "string"
             },
             "description": "The requested DID method for the operation.",
-            "example": "btcr"
+            "example": "key"
           }
         ],
         "requestBody": {
@@ -90,8 +90,8 @@
     },
     "/update": {
       "post": {
-        "summary": "Update a DID.",
-        "description": "<p>This endpoint updates a DID. As input it takes the existing DID plus options, a DID document, and optionally secrets needed to update a DID. The output is a state object that represents the current state of the DID update process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#update\">DID Registration</a> specification for additional details.</p>",
+        "summary": "Update a DID",
+        "description": "<p>This endpoint updates a DID. As input it takes the existing DID, a DID document, plus optional DID registration <a href=\"https://identity.foundation/did-registration/#options\">options</a> and <a href=\"https://identity.foundation/did-registration/#secret\">secrets</a> needed to update a DID. The output is a state object that represents the current state of the DID update process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#update\">DID Registration</a> specification for additional details.</p>",
         "operationId": "update",
         "tags": [
           "Universal Registrar"
@@ -141,8 +141,8 @@
     },
     "/deactivate": {
       "post": {
-        "summary": "Deactivate a DID.",
-        "description": "<p>This endpoint deactivates a DID. As input it takes the existing DID plus options, and optionally secrets needed to deactivate a DID. The output is a state object that represents the current state of the DID deactivation process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#deactivate\">DID Registration</a> specification for additional details.</p>",
+        "summary": "Deactivate a DID",
+        "description": "<p>This endpoint deactivates a DID. As input it takes the existing DID, plus optional DID registration <a href=\"https://identity.foundation/did-registration/#options\">options</a> and <a href=\"https://identity.foundation/did-registration/#secret\">secrets</a> needed to deactivate a DID. The output is a state object that represents the current state of the DID deactivation process.</p> <p>See the <a href=\"https://identity.foundation/did-registration/#deactivate\">DID Registration</a> specification for additional details.</p>",
         "operationId": "deactivate",
         "tags": [
           "Universal Registrar"
@@ -192,7 +192,8 @@
     },
     "/properties": {
       "get": {
-        "summary": "Returns a map of properties of the registrar.",
+        "summary": "Return a map of configuration properties",
+        "description": "<p>This endpoint returns a map of the configuration properties of the DID Registrar, including of its drivers.</p>",
         "operationId": "universalRegistrarGetProperties",
         "tags": [
           "Universal Registrar"
@@ -214,7 +215,8 @@
     },
     "/methods": {
       "get": {
-        "summary": "Returns a list of supported DID methods.",
+        "summary": "Return a list of supported DID methods",
+        "description": "<p>This endpoint returns a list of DID methods supported by the DID Registrar.</p>",
         "operationId": "universalRegistrarGetMethods",
         "tags": [
           "Universal Registrar"
@@ -308,7 +310,8 @@
             "type": "array",
             "items": {
               "type": "string"
-            }
+            },
+            "example": ["setDidDocument"]
           },
           "didDocument": {
             "description": "This input field contains either a complete DID document, or an incremental change (diff) to a DID document. See <a href=\"https://identity.foundation/did-registration/#diddocument\">https://identity.foundation/did-registration/#diddocument</a>.",
