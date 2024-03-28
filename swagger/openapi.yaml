@@ -1,0 +1,357 @@
+openapi: 3.1.0
+servers:
+  - url: "/1.0/"
+info:
+  title: Universal Registrar
+  description: Universal Registrar
+  version: 1.0.1
+  contact:
+    name: Decentralized Identity Foundation
+    email: markus@danubetech.com
+paths:
+  "/create":
+    post:
+      summary: Create a DID
+      description: <p>This endpoint creates a DID. As input it takes the DID, a DID
+        document, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to create a DID. The output is a state object that represents the current
+        state of the DID creation process.</p> <p>See the <a href="https://identity.foundation/did-registration/#create">DID
+        Registration</a> specification for additional details.</p>
+      operationId: create
+      tags:
+        - Universal Registrar
+      parameters:
+        - in: query
+          required: true
+          name: method
+          schema:
+            type: string
+          description: The requested DID method for the operation.
+          example: key
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/CreateRequest"
+      responses:
+        '200':
+          description: The request was successful, but the DID may not be fully created
+            yet, as indicated by the "didState.state" and "jobId" output fields. Additional
+            state information plus metadata are available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateState"
+        '201':
+          description: The DID has been successfully created, as indicated by the
+            "didState.state" output field. Additional state information (including
+            the created DID) plus metadata are available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateState"
+        '400':
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateState"
+        '500':
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/CreateState"
+  "/update":
+    post:
+      summary: Update a DID
+      description: <p>This endpoint updates a DID. As input it takes the existing
+        DID, a DID document, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to update a DID. The output is a state object that represents the current
+        state of the DID update process.</p> <p>See the <a href="https://identity.foundation/did-registration/#update">DID
+        Registration</a> specification for additional details.</p>
+      operationId: update
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/UpdateRequest"
+      responses:
+        '200':
+          description: The request was successful, and the DID may or may not be fully
+            updated yet, as indicated by the "didState.state" and "jobId" output fields.
+            Additional state information plus metadata are available in the response
+            body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateState"
+        '400':
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateState"
+        '500':
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/UpdateState"
+  "/deactivate":
+    post:
+      summary: Deactivate a DID
+      description: <p>This endpoint deactivates a DID. As input it takes the existing
+        DID, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to deactivate a DID. The output is a state object that represents the
+        current state of the DID deactivation process.</p> <p>See the <a href="https://identity.foundation/did-registration/#deactivate">DID
+        Registration</a> specification for additional details.</p>
+      operationId: deactivate
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              "$ref": "#/components/schemas/DeactivateRequest"
+      responses:
+        '200':
+          description: The request was successful, and the DID may or may not be fully
+            deactivated yet, as indicated by the "didState.state" and "jobId" output
+            fields. Additional state information plus metadata are available in the
+            response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeactivateState"
+        '400':
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeactivateState"
+        '500':
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                "$ref": "#/components/schemas/DeactivateState"
+  "/properties":
+    get:
+      summary: Return a map of configuration properties
+      description: "<p>This endpoint returns a map of the configuration properties
+        of the DID Registrar, including of its drivers.</p>"
+      operationId: universalRegistrarGetProperties
+      tags:
+        - Universal Registrar
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: object
+                description: A map of properties.
+  "/methods":
+    get:
+      summary: Return a list of supported DID methods
+      description: "<p>This endpoint returns a list of DID methods supported by the
+        DID Registrar.</p>"
+      operationId: universalRegistrarGetMethods
+      tags:
+        - Universal Registrar
+      responses:
+        '200':
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: array
+                items:
+                  type: string
+                description: The list of supported DID methods.
+                example:
+                  - indy
+                  - ebsi
+                  - ion
+                  - cheqd
+                  - key
+components:
+  schemas:
+    CreateRequest:
+      description: Input fields for the create operation.
+      type: object
+      additionalProperties: false
+      properties:
+        jobId:
+          description: This input field is used to keep track of an ongoing DID creation
+            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        options:
+          description: This input field contains an object with various options for
+            the DID create operation, such as the network where the DID should be
+            created. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+          type: object
+          example:
+            chain: testnet
+        secret:
+          description: This input field contains an object with DID controller keys
+            and other secrets needed for performing the DID create operation. See
+            <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
+          type: object
+          example:
+            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
+        didDocument:
+          description: This input field contains either a complete DID document, or
+            an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
+          type: object
+    UpdateRequest:
+      description: Input fields for the update operation.
+      type: object
+      additionalProperties: false
+      required:
+        - did
+      properties:
+        jobId:
+          description: This input field is used to keep track of an ongoing DID update
+            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        did:
+          description: This input field indicates the DID that is the target of the
+            DID update operation.
+          type: string
+          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        options:
+          description: This input field contains an object with various options for
+            the DID update operation. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+          type: object
+        secret:
+          description: This input field contains an object with DID controller keys
+            and other secrets needed for performing the DID update operation. See
+            <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
+          type: object
+        didDocumentOperation:
+          description: This input field indicates which update operation should be
+            applied to a DID’s associated DID document. See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#diddocumentoperation</a>.
+          type: array
+          items:
+            type: string
+          example:
+            - setDidDocument
+        didDocument:
+          description: This input field contains either a complete DID document, or
+            an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
+          type: array
+          items:
+            type: object
+    DeactivateRequest:
+      description: Input fields for the deactivate operation.
+      type: object
+      additionalProperties: false
+      required:
+        - did
+      properties:
+        jobId:
+          description: This input field is used to keep track of an ongoing DID deactivation
+            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        did:
+          description: This input field indicates the DID that is the target of the
+            DID deactivation operation.
+          type: string
+          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        options:
+          description: This input field contains an object with various options for
+            the DID deactivate operation. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+          type: object
+        secret:
+          description: This input field contains an object with DID controller keys
+            and other secrets needed for performing the DID deactivate operation.
+            See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
+          type: object
+    CreateState:
+      description: The state after a create operation.
+      type: object
+      additionalProperties: false
+      required:
+        - didState
+      properties:
+        jobId:
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          "$ref": "#/components/schemas/DidState"
+        didRegistrationMetadata:
+          type: object
+        didDocumentMetadata:
+          type: object
+    UpdateState:
+      description: The state after an update operation.
+      type: object
+      additionalProperties: false
+      required:
+        - didState
+      properties:
+        jobId:
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          "$ref": "#/components/schemas/DidState"
+        didRegistrationMetadata:
+          type: object
+        didDocumentMetadata:
+          type: object
+    DeactivateState:
+      description: The state after a deactivate operation.
+      type: object
+      additionalProperties: false
+      required:
+        - didState
+      properties:
+        jobId:
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          "$ref": "#/components/schemas/DidState"
+        didRegistrationMetadata:
+          type: object
+        didDocumentMetadata:
+          type: object
+    DidState:
+      description: The current state of a DID.
+      type: object
+      additionalProperties: true
+      properties:
+        state:
+          type: string
+          example: finished
+        did:
+          type: string
+          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        secret:
+          type: object
+          example:
+            verificationMethod:
+              - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
+                type: JsonWebKey2020
+                privateKeyJwk:
+                  kty: OKP
+                  d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+                  crv: Ed25519
+                  x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+        didDocument:
+          type: object
