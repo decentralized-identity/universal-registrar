@@ -219,9 +219,13 @@ components:
                   - $ref: '#/components/schemas/VerificationMethodPublicData'
                   - $ref: '#/components/schemas/VerificationMethodPrivateData'
             signingResponse:
-              - $ref: '#/components/schemas/SigningResponseSet'
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/SigningResponse'
             decryptionResponse:
-              - $ref: '#/components/schemas/DecryptionResponseSet'
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/DecryptionResponse'
           example:
             seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
     CreateRequest:
@@ -344,11 +348,11 @@ components:
         signingRequest:
           type: object
           additionalProperties:
-            - $ref: '#/components/schemas/SigningRequest'
+            $ref: '#/components/schemas/SigningRequest'
         decryptionRequest:
           type: object
           additionalProperties:
-            - $ref: '#/components/schemas/DecryptionRequest'
+            $ref: '#/components/schemas/DecryptionRequest'
     SigningRequest:
       description: A signing request, see https://identity.foundation/did-registration/#signing-request-set.
       type: object
