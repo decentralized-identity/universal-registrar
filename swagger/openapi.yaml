@@ -189,152 +189,126 @@ paths:
                   - key
 components:
   schemas:
-    CreateRequest:
-      description: Input fields for the create operation.
+    RegistrarRequest:
+      description: Input fields for a DID operation.
       type: object
-      additionalProperties: false
       properties:
         jobId:
-          description: This input field is used to keep track of an ongoing DID creation
+          description: This input field is used to keep track of an ongoing DID operation
             process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
           description: This input field contains an object with various options for
-            the DID create operation, such as the network where the DID should be
-            created. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+            the DID operation, such as the network where the DID operation should be executed.
+            See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
           example:
             chain: testnet
         secret:
           description: This input field contains an object with DID controller keys
-            and other secrets needed for performing the DID create operation. See
+            and other secrets needed for performing the DID operation. See
             <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
           type: object
+          additionalProperties: true
+          properties:
+            verificationMethod:
+              type: array
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/VerificationMethodPublicData'
+                  - $ref: '#/components/schemas/VerificationMethodPrivateData'
+            signingResponse:
+              - $ref: '#/components/schemas/SigningResponseSet'
+            decryptionResponse:
+              - $ref: '#/components/schemas/DecryptionResponseSet'
           example:
             seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
-        didDocument:
-          description: This input field contains either a complete DID document, or
-            an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
-          type: object
+    CreateRequest:
+      description: Input fields for a DID create operation.
+      allOf:
+        - $ref: '#/components/schemas/RegistrarRequest'
+        - type: object
+          additionalProperties: false
+          properties:
+            didDocument:
+              description: This input field contains the DID document to be used for the DID create operation. See
+                <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
+              type: object
     UpdateRequest:
-      description: Input fields for the update operation.
-      type: object
-      additionalProperties: false
-      required:
-        - did
-      properties:
-        jobId:
-          description: This input field is used to keep track of an ongoing DID update
-            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        did:
-          description: This input field indicates the DID that is the target of the
-            DID update operation.
-          type: string
-          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
-        options:
-          description: This input field contains an object with various options for
-            the DID update operation. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
-          type: object
-        secret:
-          description: This input field contains an object with DID controller keys
-            and other secrets needed for performing the DID update operation. See
-            <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
-          type: object
-        didDocumentOperation:
-          description: This input field indicates which update operation should be
-            applied to a DID’s associated DID document. See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#diddocumentoperation</a>.
-          type: array
-          items:
-            type: string
-          example:
-            - setDidDocument
-        didDocument:
-          description: This input field contains either a complete DID document, or
-            an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
-          type: array
-          items:
-            type: object
+      description: Input fields for a DID update operation.
+      allOf:
+        - $ref: '#/components/schemas/RegistrarRequest'
+        - type: object
+          additionalProperties: false
+          required:
+            - did
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID update operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+            didDocumentOperation:
+              description: This input field indicates which update operation should be
+                applied to a DID’s associated DID document. See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#diddocumentoperation</a>.
+              type: array
+              items:
+                type: string
+              example:
+                - setDidDocument
+            didDocument:
+              description: This input field contains either a complete DID document, or
+                an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
+              type: array
+              items:
+                type: object
     DeactivateRequest:
-      description: Input fields for the deactivate operation.
+      description: Input fields for a DID deactivate operation.
+      allOf:
+        - $ref: '#/components/schemas/RegistrarRequest'
+        - type: object
+          additionalProperties: false
+          required:
+            - did
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID deactivation operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+    RegistrarState:
+      description: The state after a DID operation.
       type: object
-      additionalProperties: false
       required:
-        - did
+        - didState
       properties:
         jobId:
-          description: This input field is used to keep track of an ongoing DID deactivation
-            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        did:
-          description: This input field indicates the DID that is the target of the
-            DID deactivation operation.
-          type: string
-          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
-        options:
-          description: This input field contains an object with various options for
-            the DID deactivate operation. See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+        didState:
+          "$ref": "#/components/schemas/DidState"
+        didRegistrationMetadata:
           type: object
-        secret:
-          description: This input field contains an object with DID controller keys
-            and other secrets needed for performing the DID deactivate operation.
-            See <a href="https://identity.foundation/did-registration/#secret">https://identity.foundation/did-registration/#secret</a>.
+        didDocumentMetadata:
           type: object
     CreateState:
-      description: The state after a create operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          "$ref": "#/components/schemas/DidState"
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
+      description: The state after a DID create operation.
+      allOf:
+        - $ref: '#/components/schemas/RegistrarState'
     UpdateState:
       description: The state after an update operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          "$ref": "#/components/schemas/DidState"
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
+      allOf:
+        - $ref: '#/components/schemas/RegistrarState'
     DeactivateState:
       description: The state after a deactivate operation.
-      type: object
-      additionalProperties: false
-      required:
-        - didState
-      properties:
-        jobId:
-          type: string
-          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          "$ref": "#/components/schemas/DidState"
-        didRegistrationMetadata:
-          type: object
-        didDocumentMetadata:
-          type: object
+      allOf:
+        - $ref: '#/components/schemas/RegistrarState'
     DidState:
       description: The current state of a DID.
       type: object
-      additionalProperties: true
+      required:
+        - state
       properties:
         state:
           type: string
@@ -344,6 +318,14 @@ components:
           example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
         secret:
           type: object
+          additionalProperties: true
+          properties:
+            verificationMethod:
+              type: array
+              items:
+                anyOf:
+                  - $ref: '#/components/schemas/VerificationMethodPublicData'
+                  - $ref: '#/components/schemas/VerificationMethodPrivateData'
           example:
             verificationMethod:
               - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
@@ -354,4 +336,154 @@ components:
                   crv: Ed25519
                   x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
         didDocument:
+          type: object
+        verificationMethodTemplate:
+          type: array
+          items:
+            - $ref: '#/components/schemas/VerificationMethodTemplate'
+        signingRequest:
+          type: object
+          additionalProperties:
+            - $ref: '#/components/schemas/SigningRequest'
+        decryptionRequest:
+          type: object
+          additionalProperties:
+            - $ref: '#/components/schemas/DecryptionRequest'
+    SigningRequest:
+      description: A signing request, see https://identity.foundation/did-registration/#signing-request-set.
+      type: object
+      required:
+        - serializedPayload
+        - alg
+      properties:
+        payload:
+          type: object
+        serializedPayload:
+          type: string
+        kid:
+          type: string
+        alg:
+          type: string
+        purpose:
+          type: string
+    SigningRequestSet:
+      description: A signing request set, see https://identity.foundation/did-registration/#signing-request-set.
+      type: object
+      additionalProperties:
+        - $ref: '#/components/schemas/SigningRequest'
+    SigningResponse:
+      description: A signing response, see https://identity.foundation/did-registration/#signing-response-set.
+      type: object
+      required:
+        - signature
+      properties:
+        signature:
+          type: string
+        kid:
+          type: string
+        alg:
+          type: string
+        purpose:
+          type: string
+    SigningResponseSet:
+      description: A signing response set, see https://identity.foundation/did-registration/#signing-response-set.
+      type: object
+      additionalProperties:
+        - $ref: '#/components/schemas/SigningResponse'
+    DecryptionRequest:
+      description: A decryption request, see https://identity.foundation/did-registration/#decryption-request-set.
+      type: object
+      required:
+        - encryptedPayload
+        - enc
+      properties:
+        payload:
+          type: object
+        encryptedPayload:
+          type: string
+        kid:
+          type: string
+        enc:
+          type: string
+        purpose:
+          type: string
+    DecryptionRequestSet:
+      description: A decryption request set, see https://identity.foundation/did-registration/#decryption-request-set.
+      type: object
+      additionalProperties:
+        - $ref: '#/components/schemas/DecryptionRequest'
+    DecryptionResponse:
+      description: A decryption response, see https://identity.foundation/did-registration/#decryption-response-set.
+      type: object
+      required:
+        - decryptedPayload
+      properties:
+        decryptedPayload:
+          type: string
+        kid:
+          type: string
+        enc:
+          type: string
+        purpose:
+          type: string
+    DecryptionResponseSet:
+      description: A decryption response set, see https://identity.foundation/did-registration/#decryption-response-set.
+      type: object
+      additionalProperties:
+        - $ref: '#/components/schemas/DecryptionResponse'
+    VerificationMethodPublicData:
+      description: A verification method public data object, see http://localhost/did-registration/#verification-method-public-data
+      type: object
+      required:
+        type
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        purpose:
+          type: array
+          items:
+            type: string
+        publicKeyJwk:
+          type: object
+        publicKeyMultibase:
+          type: string
+    VerificationMethodPrivateData:
+      description: A verification method private data object, see http://localhost/did-registration/#verification-method-private-data
+      type: object
+      required:
+        type
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        purpose:
+          type: array
+          items:
+            type: string
+        privateKeyJwk:
+          type: object
+        privateKeyMultibase:
+          type: string
+    VerificationMethodTemplate:
+      description: A verification method template, see http://localhost/did-registration/#verification-method-template
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        purpose:
+          type: array
+          items:
+            type: string
+        publicKeyJwk:
           type: object
