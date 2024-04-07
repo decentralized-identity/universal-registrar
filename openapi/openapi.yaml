@@ -203,6 +203,7 @@ components:
             the DID operation, such as the network where the DID operation should be executed.
             See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
+          additionalProperties: { }
           example:
             network: testnet
         secret:
@@ -216,7 +217,7 @@ components:
             didDocument:
               description: This input field contains the DID document to be used for the DID create operation. See
                 <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
-              type: object
+              $ref: "#/components/schemas/DidDocument"
     UpdateRequest:
       description: Input fields for a DID update operation.
       allOf:
@@ -243,7 +244,7 @@ components:
                 an incremental change (diff) to a DID document. See <a href="https://identity.foundation/did-registration/#diddocument">https://identity.foundation/did-registration/#diddocument</a>.
               type: array
               items:
-                type: object
+                $ref: "#/components/schemas/DidDocument"
     DeactivateRequest:
       description: Input fields for a DID deactivate operation.
       allOf:
@@ -257,6 +258,27 @@ components:
                 DID deactivation operation.
               type: string
               example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+    DidDocument:
+      type: object
+      properties:
+        id:
+          $ref: "#/components/schemas/String"
+          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        verificationMethod:
+          $ref: "#/components/schemas/DidDocumentVerificationMethods"
+        service:
+          $ref: "#/components/schemas/DidDocumentServices"
+      additionalProperties: { }
+    DidDocumentVerificationMethods:
+      type: array
+      items:
+        type: object
+        additionalProperties: { }
+    DidDocumentServices:
+      type: array
+      items:
+        type: object
+        additionalProperties: { }
     RegistrarState:
       description: The state after a DID operation.
       type: object
@@ -303,15 +325,15 @@ components:
           wait: "#/components/schemas/DidStateWait"
       properties:
         state:
-          type: string
+          $ref: "#/components/schemas/String"
           example: finished
         did:
-          type: string
+          $ref: "#/components/schemas/String"
           example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
         secret:
           $ref: "#/components/schemas/DidStateSecret"
         didDocument:
-          type: object
+          $ref: "#/components/schemas/DidDocument"
       additionalProperties: { }
     DidStateFinished:
       description: This state indicates that the DID operation has been completed. See
@@ -337,6 +359,8 @@ components:
         - $ref: "#/components/schemas/DidState"
         - type: object
           properties:
+            action:
+              type: string
             verificationMethodTemplate:
               type: array
               items:
@@ -366,11 +390,7 @@ components:
       type: object
       properties:
         verificationMethod:
-          type: array
-          items:
-            anyOf:
-              - $ref: "#/components/schemas/VerificationMethodPublicData"
-              - $ref: "#/components/schemas/VerificationMethodPrivateData"
+          $ref: "#/components/schemas/SecretVerificationMethod"
       additionalProperties: { }
       example:
         verificationMethod:
@@ -381,6 +401,16 @@ components:
               crv: Ed25519
               d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
               x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+    SecretVerificationMethod:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/VerificationMethodPublicData"
+          - $ref: "#/components/schemas/VerificationMethodPrivateData"
+          - type:
+              array
+            items:
+              $ref: "#/components/schemas/VerificationMethodTemplate"
     RequestSecret:
       description: This input field contains an object with DID controller keys
         and other secrets needed for performing the DID operation. See
@@ -397,7 +427,6 @@ components:
               type: object
               additionalProperties:
                 $ref: "#/components/schemas/DecryptionResponse"
-          additionalProperties: { }
           example:
             seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
     DidStateSecret:
@@ -405,6 +434,9 @@ components:
         https://identity.foundation/did-registration/#didstatesecret.
       allOf:
         - $ref: "#/components/schemas/Secret"
+        - type: object
+          example:
+            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
     SigningRequest:
       description: A signing request, see https://identity.foundation/did-registration/#signing-request-set.
       type: object
@@ -505,6 +537,7 @@ components:
             type: string
         publicKeyJwk:
           type: object
+          additionalProperties: { }
         publicKeyMultibase:
           type: string
     VerificationMethodPrivateData:
@@ -525,6 +558,7 @@ components:
             type: string
         privateKeyJwk:
           type: object
+          additionalProperties: { }
         privateKeyMultibase:
           type: string
     VerificationMethodTemplate:
@@ -543,3 +577,6 @@ components:
             type: string
         publicKeyJwk:
           type: object
+          additionalProperties: { }
+    String:
+      type: string
