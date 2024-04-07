@@ -1,5 +1,6 @@
 package uniregistrar.driver.servlet;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -7,14 +8,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.state.DeactivateState;
+import uniregistrar.RegistrationMediaTypes;
+import uniregistrar.openapi.model.DeactivateRequest;
+import uniregistrar.openapi.model.DeactivateState;
 
 import java.io.IOException;
 
 public class DeactivateServlet extends HttpServlet implements Servlet {
 
 	private static final Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
+
+	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public DeactivateServlet() {
 
@@ -29,7 +33,7 @@ public class DeactivateServlet extends HttpServlet implements Servlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		DeactivateRequest deactivateRequest = DeactivateRequest.fromJson(request.getReader());
+		DeactivateRequest deactivateRequest = objectMapper.readValue(request.getReader(), DeactivateRequest.class);
 
 		if (log.isInfoEnabled()) log.info("Driver: Incoming deactivate request: " + deactivateRequest);
 
@@ -47,7 +51,7 @@ public class DeactivateServlet extends HttpServlet implements Servlet {
 		try {
 
 			deactivateState = InitServlet.getDriver().deactivate(deactivateRequest);
-			deactivateStateString = deactivateState == null ? null : deactivateState.toJson();
+			deactivateStateString = deactivateState == null ? null : objectMapper.writeValueAsString(deactivateState);
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver: Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
@@ -67,6 +71,6 @@ public class DeactivateServlet extends HttpServlet implements Servlet {
 
 		// write deactivate state
 
-		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, DeactivateState.MEDIA_TYPE, deactivateStateString);
+		ServletUtil.sendResponse(response, HttpServletResponse.SC_OK, RegistrationMediaTypes.STATE_MEDIA_TYPE, deactivateStateString);
 	}
 }

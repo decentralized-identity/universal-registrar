@@ -1,12 +1,7 @@
 package uniregistrar.driver;
 
 import uniregistrar.RegistrationException;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.state.UpdateState;
+import uniregistrar.openapi.model.*;
 
 import java.util.Collections;
 import java.util.Map;

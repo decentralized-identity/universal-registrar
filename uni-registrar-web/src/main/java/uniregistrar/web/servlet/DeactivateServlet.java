@@ -9,11 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
+import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.state.State;
+import uniregistrar.openapi.model.DeactivateRequest;
+import uniregistrar.openapi.model.RegistrarState;
 import uniregistrar.web.WebUniRegistrar;
 
 import java.io.IOException;
@@ -87,7 +88,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		DeactivateRequest deactivateRequest;
 
 		try {
-			deactivateRequest = DeactivateRequest.fromMap(requestMap);
+			deactivateRequest = objectMapper.convertValue(requestMap, DeactivateRequest.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (object): " + ex.getMessage(), ex);
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
@@ -104,7 +105,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		State state = null;
+		RegistrarState state = null;
 		final Map<String, Object> stateMap;
 
 		try {
@@ -118,7 +119,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
 		} finally {
-			stateMap = state == null ? null : state.toMap();
+			stateMap = state == null ? null : objectMapper.convertValue(state, Map.class);
 		}
 
 		if (log.isInfoEnabled()) log.info("DEACTIVATE state for " + deactivateRequest + ": " + state);
@@ -141,7 +142,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		ServletUtil.sendResponse(
 				response,
 				HttpBindingServerUtil.httpStatusCodeForState(state),
-				State.MEDIA_TYPE,
+				RegistrationMediaTypes.STATE_MEDIA_TYPE,
 				HttpBindingServerUtil.toHttpBodyStreamState(stateMap));
 	}
 }

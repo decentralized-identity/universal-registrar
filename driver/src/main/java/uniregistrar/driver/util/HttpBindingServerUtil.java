@@ -5,10 +5,10 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.SetStateFailed;
-import uniregistrar.state.SetStateFinished;
-import uniregistrar.state.State;
+import uniregistrar.openapi.model.CreateState;
+import uniregistrar.openapi.model.DidStateFailed;
+import uniregistrar.openapi.model.DidStateFinished;
+import uniregistrar.openapi.model.RegistrarState;
 
 import java.io.IOException;
 import java.util.Map;
@@ -25,16 +25,22 @@ public class HttpBindingServerUtil {
         return jsonString;
     }
 
-    public static int httpStatusCodeForState(State state) {
-        if (RegistrationException.ERROR_NOTFOUND.equals(SetStateFailed.getStateFailedError(state)))
-            return HttpStatus.SC_NOT_FOUND;
-        else if (RegistrationException.ERROR_BADREQUEST.equals(SetStateFailed.getStateFailedError(state)))
-            return HttpStatus.SC_BAD_REQUEST;
-        else if (SetStateFailed.isStateFailed(state))
-            return HttpStatus.SC_INTERNAL_SERVER_ERROR;
-        else if (SetStateFinished.isStateFinished(state) && (state instanceof CreateState))
-            return HttpStatus.SC_CREATED;
-        else
+    public static int httpStatusCodeForState(RegistrarState state) {
+        if (state.getDidState() instanceof DidStateFailed didStateFailed) {
+            if (RegistrationException.ERROR_NOTFOUND.equals(didStateFailed.getError()))
+                return HttpStatus.SC_NOT_FOUND;
+            else if (RegistrationException.ERROR_BADREQUEST.equals(didStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else
+                return HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        } else if (state.getDidState() instanceof DidStateFinished) {
+            if (state instanceof CreateState) {
+                return HttpStatus.SC_CREATED;
+            } else {
+                return HttpStatus.SC_OK;
+            }
+        } else {
             return HttpStatus.SC_OK;
+        }
     }
 }

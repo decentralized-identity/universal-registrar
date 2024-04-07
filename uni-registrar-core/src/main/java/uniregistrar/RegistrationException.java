@@ -2,8 +2,8 @@ package uniregistrar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uniregistrar.state.SetStateFailed;
-import uniregistrar.state.State;
+import uniregistrar.openapi.model.DidStateFailed;
+import uniregistrar.openapi.model.RegistrarState;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class RegistrationException extends Exception {
 	private final String error;
 	private final Map<String, Object> didRegistrationMetadata;
 
-	private final State state;
+	private final RegistrarState state;
 
 	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
 		super(message, ex);
@@ -54,10 +54,9 @@ public class RegistrationException extends Exception {
 		this(ex.getMessage(), ex);
 	}
 
-	public RegistrationException(State state) {
-		super(SetStateFailed.getStateFailedReason(state));
-		if (! SetStateFailed.isStateFailed(state)) throw new IllegalArgumentException("No failed state: " + state);
-		this.error = SetStateFailed.getStateFailedError(state);
+	public RegistrationException(RegistrarState state) {
+		super(((DidStateFailed) state.getDidState()).getReason());
+		this.error = ((DidStateFailed) state.getDidState()).getError();
 		this.didRegistrationMetadata = state.getDidRegistrationMetadata();
 		this.state = state;
 	}
@@ -66,12 +65,15 @@ public class RegistrationException extends Exception {
 	 * Error methods
 	 */
 
-	public State toFailedState() {
+	public RegistrarState toFailedState() {
 		if (this.getState() != null) {
 			return this.getState();
 		} else {
-			State state = State.build();
-			SetStateFailed.setStateFailed(state, this.getError(), this.getMessage());
+			RegistrarState state = new RegistrarState();
+			DidStateFailed didStateFailed = new DidStateFailed();
+			didStateFailed.setError(this.getError());
+			didStateFailed.setReason(this.getMessage());
+			state.setDidState(didStateFailed);
 			if (this.getDidRegistrationMetadata() != null) state.setDidRegistrationMetadata(this.getDidRegistrationMetadata());
 			state.setJobId(null);
 			if (log.isDebugEnabled()) log.debug("Created failed state: " + state);
@@ -91,7 +93,7 @@ public class RegistrationException extends Exception {
 		return didRegistrationMetadata;
 	}
 
-	public State getState() {
+	public RegistrarState getState() {
 		return state;
 	}
 }

@@ -9,14 +9,7 @@ import uniregistrar.local.configuration.LocalUniRegistrarConfigurator;
 import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.Request;
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.state.State;
-import uniregistrar.state.UpdateState;
+import uniregistrar.openapi.model.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -74,7 +67,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// prepare create state
 
-		CreateState createState = CreateState.build();
+		CreateState createState = new CreateState();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before create]
@@ -139,7 +132,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// prepare update state
 
-		UpdateState updateState = UpdateState.build();
+		UpdateState updateState = new UpdateState();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before update]
@@ -204,7 +197,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// prepare deactivate state
 
-		DeactivateState deactivateState = DeactivateState.build();
+		DeactivateState deactivateState = new DeactivateState();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before deactivate]
@@ -245,7 +238,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return deactivateState;
 	}
 
-	public <E extends Extension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, Extension.ExtensionFunction<E> extensionFunction, Request request, State state, Map<String, Object> executionState) throws RegistrationException {
+	public <E extends Extension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, Extension.ExtensionFunction<E> extensionFunction, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState) throws RegistrationException {
 
 		String extensionStage = extensionClass.getAnnotation(Extension.ExtensionStage.class).value();
 

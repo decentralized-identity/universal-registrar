@@ -14,13 +14,9 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
+import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.UniRegistrar;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.state.UpdateState;
+import uniregistrar.openapi.model.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -82,15 +78,15 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try {
 
-			body = createRequest.toJson();
+			body = objectMapper.writeValueAsString(createRequest);
 		} catch (JsonProcessingException ex) {
 
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(CreateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", CreateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -119,7 +115,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			createState = CreateState.fromJson(httpBody);
+			createState = objectMapper.readValue(httpBody, CreateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -146,15 +142,15 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try {
 
-			body = updateRequest.toJson();
+			body = objectMapper.writeValueAsString(updateRequest);
 		} catch (JsonProcessingException ex) {
 
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(UpdateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", UpdateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -183,7 +179,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			updateState = UpdateState.fromJson(httpBody);
+			updateState = objectMapper.readValue(httpBody, UpdateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -210,15 +206,15 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try {
 
-			body = deactivateRequest.toJson();
+			body = objectMapper.writeValueAsString(deactivateRequest);
 		} catch (JsonProcessingException ex) {
 
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(DeactivateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", DeactivateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request
 
@@ -247,7 +243,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			deactivateState = DeactivateState.fromJson(httpBody);
+			deactivateState = objectMapper.readValue(httpBody, DeactivateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);

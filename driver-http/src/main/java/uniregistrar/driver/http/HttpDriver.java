@@ -15,14 +15,9 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
+import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.Driver;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.state.SetStateFailed;
-import uniregistrar.state.UpdateState;
+import uniregistrar.openapi.model.*;
 
 import java.io.IOException;
 import java.net.URI;
@@ -63,14 +58,14 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-			body = createRequest.toJson();
+			body = objectMapper.writeValueAsString(createRequest);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(CreateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", CreateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
@@ -102,20 +97,20 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
 			if (isStateHttpContent(httpBodyString)) {
-				createState = CreateState.fromJson(httpBodyString);
+				createState = objectMapper.readValue(httpBodyBytes, CreateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createState == null) {
 				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
 			}
 
-			if (createState != null && SetStateFailed.isStateFailed(createState)) {
-				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(createState) + " -> " + SetStateFailed.getStateFailedReason(createState));
+			if (createState != null && createState.getDidState() instanceof DidStateFailed didStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
 				throw new RegistrationException(createState);
 			}
 
 			if (createState == null) {
-				createState = CreateState.fromJson(httpBodyString);
+				createState = objectMapper.readValue(httpBodyString, CreateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -139,14 +134,14 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-			body = updateRequest.toJson();
+			body = objectMapper.writeValueAsString(updateRequest);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(UpdateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", UpdateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
@@ -178,20 +173,20 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
 			if (isStateHttpContent(httpBodyString)) {
-				updateState = UpdateState.fromJson(httpBodyString);
+				updateState = objectMapper.readValue(httpBodyString, UpdateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateState == null) {
 				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
 			}
 
-			if (updateState != null && SetStateFailed.isStateFailed(updateState)) {
-				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(updateState) + " -> " + SetStateFailed.getStateFailedReason(updateState));
+			if (updateState != null && updateState.getDidState() instanceof DidStateFailed didStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
 				throw new RegistrationException(updateState);
 			}
 
 			if (updateState == null) {
-				updateState = UpdateState.fromJson(httpBodyString);
+				updateState = objectMapper.readValue(httpBodyString, UpdateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -215,14 +210,14 @@ public class HttpDriver implements Driver {
 		String body;
 
 		try {
-			body = deactivateRequest.toJson();
+			body = objectMapper.writeValueAsString(deactivateRequest);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(DeactivateRequest.MIME_TYPE, StandardCharsets.UTF_8)));
-		httpPost.addHeader("Accept", DeactivateState.MEDIA_TYPE);
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
@@ -254,20 +249,20 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
 
 			if (isStateHttpContent(httpBodyString)) {
-				deactivateState = DeactivateState.fromJson(httpBodyString);
+				deactivateState = objectMapper.readValue(httpBodyString, DeactivateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateState == null) {
 				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
 			}
 
-			if (deactivateState != null && SetStateFailed.isStateFailed(deactivateState)) {
-				if (log.isWarnEnabled()) log.warn(SetStateFailed.getStateFailedError(deactivateState) + " -> " + SetStateFailed.getStateFailedReason(deactivateState));
+			if (deactivateState != null && deactivateState.getDidState() instanceof DidStateFailed didStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
 				throw new RegistrationException(deactivateState);
 			}
 
 			if (deactivateState == null) {
-				deactivateState = DeactivateState.fromJson(httpBodyString);
+				deactivateState = objectMapper.readValue(httpBodyString, DeactivateState.class);
 			}
 		} catch (IOException ex) {
 

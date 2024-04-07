@@ -7,11 +7,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
+import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.state.State;
+import uniregistrar.openapi.model.CreateRequest;
+import uniregistrar.openapi.model.RegistrarState;
 import uniregistrar.web.WebUniRegistrar;
 
 import java.io.IOException;
@@ -68,7 +69,7 @@ public class CreateServlet extends WebUniRegistrar {
 		CreateRequest createRequest;
 
 		try {
-			createRequest = CreateRequest.fromMap(requestMap);
+			createRequest = objectMapper.convertValue(requestMap, CreateRequest.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (object): " + ex.getMessage(), ex);
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (object): " + ex.getMessage());
@@ -85,7 +86,7 @@ public class CreateServlet extends WebUniRegistrar {
 
 		// execute the request
 
-		State state = null;
+		RegistrarState state = null;
 		final Map<String, Object> stateMap;
 
 		try {
@@ -99,7 +100,7 @@ public class CreateServlet extends WebUniRegistrar {
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("CREATE problem for " + createRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
 		} finally {
-			stateMap = state == null ? null : state.toMap();
+			stateMap = state == null ? null : objectMapper.convertValue(state, Map.class);
 		}
 
 		if (log.isInfoEnabled()) log.info("CREATE state for " + createRequest + ": " + state);
@@ -122,7 +123,7 @@ public class CreateServlet extends WebUniRegistrar {
 		ServletUtil.sendResponse(
 				response,
 				HttpBindingServerUtil.httpStatusCodeForState(state),
-				State.MEDIA_TYPE,
+				RegistrationMediaTypes.STATE_MEDIA_TYPE,
 				HttpBindingServerUtil.toHttpBodyStreamState(stateMap));
 	}
 }

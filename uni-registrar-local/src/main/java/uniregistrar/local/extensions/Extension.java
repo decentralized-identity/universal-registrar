@@ -2,14 +2,7 @@ package uniregistrar.local.extensions;
 
 import uniregistrar.RegistrationException;
 import uniregistrar.local.LocalUniRegistrar;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.request.DeactivateRequest;
-import uniregistrar.request.Request;
-import uniregistrar.request.UpdateRequest;
-import uniregistrar.state.CreateState;
-import uniregistrar.state.DeactivateState;
-import uniregistrar.state.State;
-import uniregistrar.state.UpdateState;
+import uniregistrar.openapi.model.*;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -154,7 +147,7 @@ public interface Extension {
 			return this.beforeRequest(method, deactivateRequest, deactivateState, executionState, localUniRegistrar);
 		}
 
-		abstract public ExtensionStatus beforeRequest(String method, Request request, State state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+		abstract public ExtensionStatus beforeRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	abstract class AbstractAfterRequestExtension implements Extension.AfterCreateExtension, Extension.AfterUpdateExtension, Extension.AfterDeactivateExtension {
@@ -174,7 +167,7 @@ public interface Extension {
 			return this.afterRequest(method, deactivateRequest, deactivateState, executionState, localUniRegistrar);
 		}
 
-		abstract public ExtensionStatus afterRequest(String method, Request request, State state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+		abstract public ExtensionStatus afterRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	abstract class AbstractBeforeWriteExtension implements Extension.BeforeWriteCreateExtension, Extension.BeforeWriteUpdateExtension, Extension.BeforeWriteDeactivateExtension {
@@ -229,9 +222,9 @@ public interface Extension {
 			return this.afterRequest(method, deactivateRequest, deactivateState, executionState, localUniRegistrar);
 		}
 
-		abstract public ExtensionStatus beforeRequest(String method, Request request, State state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+		abstract public ExtensionStatus beforeRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 
-		abstract public ExtensionStatus afterRequest(String method, Request request, State state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+		abstract public ExtensionStatus afterRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	static List<String> extensionClassNames(List<? extends Extension> extensions) {

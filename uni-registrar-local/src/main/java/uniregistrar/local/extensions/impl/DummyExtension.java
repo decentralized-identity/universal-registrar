@@ -7,8 +7,8 @@ import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.Extension.AbstractExtension;
 import uniregistrar.local.extensions.ExtensionStatus;
-import uniregistrar.request.CreateRequest;
-import uniregistrar.state.CreateState;
+import uniregistrar.openapi.model.CreateRequest;
+import uniregistrar.openapi.model.CreateState;
 
 import java.util.Map;
 
