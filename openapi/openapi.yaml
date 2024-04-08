@@ -203,11 +203,24 @@ components:
             the DID operation, such as the network where the DID operation should be executed.
             See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
           type: object
+          properties:
+            clientSecretMode:
+              $ref: "#/components/schemas/Boolean"
+            storeSecrets:
+              $ref: "#/components/schemas/Boolean"
+            returnSecrets:
+              $ref: "#/components/schemas/Boolean"
+            requestVerificationMethod:
+              $ref: "#/components/schemas/RegistrarRequestOptionsRequestVerificationMethod"
           additionalProperties: { }
           example:
             network: testnet
         secret:
           $ref: "#/components/schemas/RequestSecret"
+    RegistrarRequestOptionsRequestVerificationMethod:
+      type: array
+      items:
+        $ref: "#/components/schemas/VerificationMethodTemplate"
     CreateRequest:
       description: Input fields for a DID create operation.
       allOf:
@@ -265,16 +278,16 @@ components:
           $ref: "#/components/schemas/String"
           example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
         verificationMethod:
-          $ref: "#/components/schemas/DidDocumentVerificationMethods"
+          $ref: "#/components/schemas/DidDocumentVerificationMethod"
         service:
-          $ref: "#/components/schemas/DidDocumentServices"
+          $ref: "#/components/schemas/DidDocumentService"
       additionalProperties: { }
-    DidDocumentVerificationMethods:
+    DidDocumentVerificationMethod:
       type: array
       items:
         type: object
         additionalProperties: { }
-    DidDocumentServices:
+    DidDocumentService:
       type: array
       items:
         type: object
@@ -519,48 +532,43 @@ components:
       type: object
       additionalProperties:
         $ref: "#/components/schemas/DecryptionResponse"
+    VerificationMethodData:
+      type: object
+      required:
+        - type
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        controller:
+          type: string
+        purpose:
+          type: array
+          items:
+            type: string
     VerificationMethodPublicData:
       description: A verification method public data object, see http://localhost/did-registration/#verification-method-public-data
-      type: object
-      required:
-        - type
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        controller:
-          type: string
-        purpose:
-          type: array
-          items:
-            type: string
-        publicKeyJwk:
-          type: object
-          additionalProperties: { }
-        publicKeyMultibase:
-          type: string
+      allOf:
+        - $ref: "#/components/schemas/VerificationMethodData"
+        - type: object
+          properties:
+            publicKeyJwk:
+              type: object
+              additionalProperties: { }
+            publicKeyMultibase:
+              type: string
     VerificationMethodPrivateData:
       description: A verification method private data object, see http://localhost/did-registration/#verification-method-private-data
-      type: object
-      required:
-        - type
-      properties:
-        id:
-          type: string
-        type:
-          type: string
-        controller:
-          type: string
-        purpose:
-          type: array
-          items:
-            type: string
-        privateKeyJwk:
-          type: object
-          additionalProperties: { }
-        privateKeyMultibase:
-          type: string
+      allOf:
+        - $ref: "#/components/schemas/VerificationMethodData"
+        - type: object
+          properties:
+            privateKeyJwk:
+              type: object
+              additionalProperties: { }
+            privateKeyMultibase:
+              type: string
     VerificationMethodTemplate:
       description: A verification method template, see http://localhost/did-registration/#verification-method-template
       type: object
@@ -580,3 +588,5 @@ components:
           additionalProperties: { }
     String:
       type: string
+    Boolean:
+      type: boolean
