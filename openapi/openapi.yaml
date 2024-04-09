@@ -426,7 +426,8 @@ components:
     SecretVerificationMethodVerificationMethodTemplate:
       type: array
       items:
-        $ref: "#/components/schemas/VerificationMethodTemplate"
+        oneOf:
+         - $ref: "#/components/schemas/VerificationMethodTemplate"
     RequestSecret:
       description: This input field contains an object with DID controller keys
         and other secrets needed for performing the DID operation. See
