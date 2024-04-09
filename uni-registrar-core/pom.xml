@@ -73,8 +73,10 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-patch-plugin</artifactId>
 				<configuration>
-					<patchFile>src/main/patches/uniregistrar/openapi/model/SecretVerificationMethodInner.patch</patchFile>
+					<patchDirectory>src/main/patches/</patchDirectory>
 					<targetDirectory>openapi/java-client-generated/</targetDirectory>
+					<naturalOrderProcessing>true</naturalOrderProcessing>
+					<skipApplication>false</skipApplication>
 				</configuration>
 				<executions>
 					<execution>
