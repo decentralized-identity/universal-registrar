@@ -199,25 +199,27 @@ components:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
-          description: This input field contains an object with various options for
-            the DID operation, such as the network where the DID operation should be executed.
-            See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
-          type: object
-          properties:
-            clientSecretMode:
-              $ref: "#/components/schemas/Boolean"
-            storeSecrets:
-              $ref: "#/components/schemas/Boolean"
-            returnSecrets:
-              $ref: "#/components/schemas/Boolean"
-            requestVerificationMethod:
-              $ref: "#/components/schemas/RegistrarRequestOptionsRequestVerificationMethod"
-          additionalProperties: { }
-          example:
-            network: testnet
+          $ref: "#/components/schemas/RequestOptions"
         secret:
           $ref: "#/components/schemas/RequestSecret"
-    RegistrarRequestOptionsRequestVerificationMethod:
+    RequestOptions:
+      description: This input field contains an object with various options for
+        the DID operation, such as the network where the DID operation should be executed.
+        See <a href="https://identity.foundation/did-registration/#options">https://identity.foundation/did-registration/#options</a>.
+      type: object
+      properties:
+        clientSecretMode:
+          $ref: "#/components/schemas/Boolean"
+        storeSecrets:
+          $ref: "#/components/schemas/Boolean"
+        returnSecrets:
+          $ref: "#/components/schemas/Boolean"
+        requestVerificationMethod:
+          $ref: "#/components/schemas/RequestOptionsRequestVerificationMethod"
+      additionalProperties: { }
+      example:
+        network: testnet
+    RequestOptionsRequestVerificationMethod:
       type: array
       items:
         $ref: "#/components/schemas/VerificationMethodTemplate"
@@ -420,10 +422,11 @@ components:
         oneOf:
           - $ref: "#/components/schemas/VerificationMethodPublicData"
           - $ref: "#/components/schemas/VerificationMethodPrivateData"
-          - type:
-              array
-            items:
-              $ref: "#/components/schemas/VerificationMethodTemplate"
+          - $ref: "#/components/schemas/SecretVerificationMethodVerificationMethodTemplate"
+    SecretVerificationMethodVerificationMethodTemplate:
+      type: array
+      items:
+        $ref: "#/components/schemas/VerificationMethodTemplate"
     RequestSecret:
       description: This input field contains an object with DID controller keys
         and other secrets needed for performing the DID operation. See

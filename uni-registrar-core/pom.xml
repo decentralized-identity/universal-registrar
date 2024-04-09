@@ -69,6 +69,23 @@
 					</execution>
 				</executions>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-patch-plugin</artifactId>
+				<configuration>
+					<patchFile>src/main/patches/uniregistrar/openapi/model/SecretVerificationMethodInner.patch</patchFile>
+					<targetDirectory>openapi/java-client-generated/</targetDirectory>
+				</configuration>
+				<executions>
+					<execution>
+						<id>patch</id>
+						<phase>process-sources</phase>
+						<goals>
+							<goal>apply</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
