@@ -1,5 +1,5 @@
 --- src/main/java/uniregistrar/openapi/model/DidState.java	2024-04-09 18:30:27.916587018 +0200
-+++ src/main/java/uniregistrar/openapi/model/DidState.java.patched	2024-04-09 18:31:19.292781832 +0200
++++ src/main/java/uniregistrar/openapi/model/DidState.java.changed	2024-04-09 18:31:19.292781832 +0200
 @@ -64,7 +64,7 @@
    @JsonSubTypes.Type(value = DidStateWait.class, name = "wait"),
  })
