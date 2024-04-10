@@ -279,11 +279,18 @@ components:
         id:
           $ref: "#/components/schemas/String"
           example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        controller:
+          $ref: "#/components/schemas/DidDocumentController"
+          example: ['did:indy:sovrin:WRfXPg8dantKVubE3HX8pw']
         verificationMethod:
           $ref: "#/components/schemas/DidDocumentVerificationMethod"
         service:
           $ref: "#/components/schemas/DidDocumentService"
       additionalProperties: { }
+    DidDocumentController:
+      type: array
+      items:
+        type: string
     DidDocumentVerificationMethod:
       type: array
       items:
