@@ -388,11 +388,11 @@ components:
               items:
                 $ref: "#/components/schemas/VerificationMethodTemplate"
             signingRequest:
-              type: object
+              type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/SigningRequest"
             decryptionRequest:
-              type: object
+              type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/DecryptionRequest"
     DidStateWait:
@@ -443,11 +443,11 @@ components:
         - type: object
           properties:
             signingResponse:
-              type: object
+              type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/SigningResponse"
             decryptionResponse:
-              type: object
+              type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/DecryptionResponse"
           example:
@@ -564,7 +564,7 @@ components:
         - type: object
           properties:
             publicKeyJwk:
-              type: object
+              type: [object, null]
               additionalProperties: { }
             publicKeyMultibase:
               type: string
@@ -575,7 +575,7 @@ components:
         - type: object
           properties:
             privateKeyJwk:
-              type: object
+              type: [object, null]
               additionalProperties: { }
             privateKeyMultibase:
               type: string
@@ -594,7 +594,7 @@ components:
           items:
             type: string
         publicKeyJwk:
-          type: object
+          type: [object, null]
           additionalProperties: { }
     String:
       type: string
