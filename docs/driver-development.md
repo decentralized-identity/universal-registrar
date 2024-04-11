@@ -47,7 +47,7 @@ It should return a DID state object like the following in the HTTP body:
 }
 ```
 
-A Swagger API definition is available [here](https://github.com/decentralized-identity/universal-registrar/blob/master/swagger/api-driver.yml).
+A Swagger API definition is available [here](https://github.com/decentralized-identity/universal-registrar/blob/main/openapi/openapi.yaml).
 
 For more information about this interface, see the [DID Registration](https://identity.foundation/did-registration/) specification.
 
