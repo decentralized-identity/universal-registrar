@@ -92,7 +92,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		CreateState createState;
 
-		if (log.isDebugEnabled()) log.debug("Request for create request " + createRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for create request " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -156,7 +156,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		UpdateState updateState;
 
-		if (log.isDebugEnabled()) log.debug("Request for update request " + updateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for update request " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -220,7 +220,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		DeactivateState deactivateState;
 
-		if (log.isDebugEnabled()) log.debug("Request for deactivate request " + deactivateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for deactivate request " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 

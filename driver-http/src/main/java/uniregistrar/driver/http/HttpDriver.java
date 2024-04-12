@@ -71,7 +71,7 @@ public class HttpDriver implements Driver {
 
 		CreateState createState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for CREATE REQUEST " + createRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for CREATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -147,7 +147,7 @@ public class HttpDriver implements Driver {
 
 		UpdateState updateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE REQUEST " + updateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -223,7 +223,7 @@ public class HttpDriver implements Driver {
 
 		DeactivateState deactivateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE REQUEST " + deactivateRequest + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
