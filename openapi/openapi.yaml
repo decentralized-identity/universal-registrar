@@ -477,6 +477,7 @@ components:
           type: string
         purpose:
           type: string
+      additionalProperties: { }
     SigningRequestSet:
       description: A signing request set, see https://identity.foundation/did-registration/#signing-request-set.
       type: object
@@ -496,6 +497,7 @@ components:
           type: string
         purpose:
           type: string
+      additionalProperties: { }
     SigningResponseSet:
       description: A signing response set, see https://identity.foundation/did-registration/#signing-response-set.
       type: object
@@ -518,6 +520,7 @@ components:
           type: string
         purpose:
           type: string
+      additionalProperties: { }
     DecryptionRequestSet:
       description: A decryption request set, see https://identity.foundation/did-registration/#decryption-request-set.
       type: object
@@ -537,6 +540,7 @@ components:
           type: string
         purpose:
           type: string
+      additionalProperties: { }
     DecryptionResponseSet:
       description: A decryption response set, see https://identity.foundation/did-registration/#decryption-response-set.
       type: object

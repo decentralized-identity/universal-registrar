@@ -1,0 +1,11 @@
+--- src/main/java/uniregistrar/openapi/model/DecryptionResponse.java	2024-04-09 18:30:31.424600307 +0200
++++ src/main/java/uniregistrar/openapi/model/DecryptionResponse.java.changed	2024-04-09 18:31:14.092762096 +0200
+@@ -47,7 +47,7 @@
+   DidDocument.JSON_PROPERTY_PURPOSE
+ })
+ @jakarta.annotation.Generated(value = "org.openapitools.codegen.languages.JavaClientCodegen", comments = "Generator version: 7.4.0")
+-public class DecryptionResponse extends HashMap<String, Object> {
++public class DecryptionResponse {
+   public static final String JSON_PROPERTY_DECRYPTED_PAYLOAD = "decryptedPayload";
+   private Object decryptedPayload = null;
+ 
