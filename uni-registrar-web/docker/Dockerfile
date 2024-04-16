@@ -3,6 +3,13 @@
 FROM maven:3-eclipse-temurin-17-focal AS build
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
+# install dependencies
+
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get -y update && \
+    apt-get install -y --no-install-recommends patch && \
+    apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 # build uni-registrar-web
 
 ADD . /opt/universal-registrar
