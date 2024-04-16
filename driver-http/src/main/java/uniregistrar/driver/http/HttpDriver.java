@@ -1,7 +1,13 @@
 package uniregistrar.driver.http;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -17,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
 import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.Driver;
+import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.*;
 
 import java.io.IOException;
@@ -30,7 +37,17 @@ public class HttpDriver implements Driver {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpDriver.class);
 
-	private static final ObjectMapper objectMapper = new ObjectMapper();
+	private static final ObjectMapper objectMapper = JsonMapper.builder()
+			.serializationInclusion(JsonInclude.Include.NON_NULL)
+			.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
+			.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+			.enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
+			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
+			.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
+			.defaultDateFormat(new RFC3339DateFormat())
+			.addModule(new JavaTimeModule())
+			.build();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
 	public static final URI DEFAULT_CREATE_URI = null;
