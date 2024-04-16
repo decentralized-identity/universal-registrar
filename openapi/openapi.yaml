@@ -558,7 +558,7 @@ components:
           items:
             type: string
     VerificationMethodPublicData:
-      description: A verification method public data object, see http://localhost/did-registration/#verification-method-public-data
+      description: A verification method public data object, see https://identity.foundation/did-registration/#verification-method-public-data
       allOf:
         - $ref: "#/components/schemas/VerificationMethodData"
         - type: object
@@ -569,7 +569,7 @@ components:
             publicKeyMultibase:
               type: string
     VerificationMethodPrivateData:
-      description: A verification method private data object, see http://localhost/did-registration/#verification-method-private-data
+      description: A verification method private data object, see https://identity.foundation/did-registration/#verification-method-private-data
       allOf:
         - $ref: "#/components/schemas/VerificationMethodData"
         - type: object
@@ -580,7 +580,7 @@ components:
             privateKeyMultibase:
               type: string
     VerificationMethodTemplate:
-      description: A verification method template, see http://localhost/did-registration/#verification-method-template
+      description: A verification method template, see https://identity.foundation/did-registration/#verification-method-template
       type: object
       properties:
         id:
