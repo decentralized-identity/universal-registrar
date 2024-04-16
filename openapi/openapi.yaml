@@ -405,8 +405,7 @@ components:
             wait:
               type: string
             waittime:
-              type: integer
-              format: int64
+              type: string
     Secret:
       description: Secrets in requests and states.
       type: object
