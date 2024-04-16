@@ -470,13 +470,13 @@ components:
         payload:
           type: object
         serializedPayload:
-          type: string
+          $ref: "#/components/schemas/String"
         kid:
-          type: string
+          $ref: "#/components/schemas/String"
         alg:
-          type: string
+          $ref: "#/components/schemas/String"
         purpose:
-          type: string
+          $ref: "#/components/schemas/String"
       additionalProperties: { }
     SigningRequestSet:
       description: A signing request set, see https://identity.foundation/did-registration/#signing-request-set.
@@ -490,13 +490,13 @@ components:
         - signature
       properties:
         signature:
-          type: string
+          $ref: "#/components/schemas/String"
         kid:
-          type: string
+          $ref: "#/components/schemas/String"
         alg:
-          type: string
+          $ref: "#/components/schemas/String"
         purpose:
-          type: string
+          $ref: "#/components/schemas/String"
       additionalProperties: { }
     SigningResponseSet:
       description: A signing response set, see https://identity.foundation/did-registration/#signing-response-set.
@@ -511,15 +511,15 @@ components:
         - enc
       properties:
         payload:
-          type: object
+          $ref: "#/components/schemas/String"
         encryptedPayload:
-          type: string
+          $ref: "#/components/schemas/String"
         kid:
-          type: string
+          $ref: "#/components/schemas/String"
         enc:
-          type: string
+          $ref: "#/components/schemas/String"
         purpose:
-          type: string
+          $ref: "#/components/schemas/String"
       additionalProperties: { }
     DecryptionRequestSet:
       description: A decryption request set, see https://identity.foundation/did-registration/#decryption-request-set.
@@ -533,13 +533,13 @@ components:
         - decryptedPayload
       properties:
         decryptedPayload:
-          type: string
+          $ref: "#/components/schemas/String"
         kid:
-          type: string
+          $ref: "#/components/schemas/String"
         enc:
-          type: string
+          $ref: "#/components/schemas/String"
         purpose:
-          type: string
+          $ref: "#/components/schemas/String"
       additionalProperties: { }
     DecryptionResponseSet:
       description: A decryption response set, see https://identity.foundation/did-registration/#decryption-response-set.
