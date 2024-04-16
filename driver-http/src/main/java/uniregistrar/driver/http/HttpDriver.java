@@ -30,8 +30,12 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class HttpDriver implements Driver {
 
@@ -61,6 +65,13 @@ public class HttpDriver implements Driver {
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 
+	private Consumer<Map<String, Object>> beforeWriteCreateConsumer;
+	private Consumer<Map<String, Object>> beforeReadCreateConsumer;
+	private Consumer<Map<String, Object>> beforeWriteUpdateConsumer;
+	private Consumer<Map<String, Object>> beforeReadUpdateConsumer;
+	private Consumer<Map<String, Object>> beforeWriteDeactivateConsumer;
+	private Consumer<Map<String, Object>> beforeReadDeactivateConsumer;
+
 	public HttpDriver() {
 
 	}
@@ -72,53 +83,61 @@ public class HttpDriver implements Driver {
 
 		String uriString = this.getCreateUri().toString();
 
-		String body;
+		Map<String, Object> requestMap = objectMapper.convertValue(createRequest, Map.class);
+
+		this.getBeforeWriteCreateConsumer().accept(requestMap);
+
+		String httpRequestBodyString;
 
 		try {
-			body = objectMapper.writeValueAsString(createRequest);
+			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
 		CreateState createState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for CREATE REQUEST " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for CREATE REQUEST " + httpRequestBodyString + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
 			// execute HTTP request
 
-			HttpEntity httpEntity = httpResponse.getEntity();
-			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
-			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
-			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
-			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) return null;
 
 			// read result
 
-			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
-			String httpBodyString = new String(httpBodyBytes, httpCharset);
-			EntityUtils.consume(httpEntity);
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			if (isStateHttpContent(httpBodyString)) {
-				createState = objectMapper.readValue(httpBodyBytes, CreateState.class);
+			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+
+			this.getBeforeReadCreateConsumer().accept(stateMap);
+
+			if (isStateHttpContent(stateMap)) {
+				createState = objectMapper.convertValue(stateMap, CreateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (createState != null && createState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -127,7 +146,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (createState == null) {
-				createState = objectMapper.readValue(httpBodyString, CreateState.class);
+				createState = objectMapper.convertValue(stateMap, CreateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -146,55 +165,63 @@ public class HttpDriver implements Driver {
 
 		// prepare HTTP request
 
-		String uriString = this.getUpdateUri().toString();
+		String uriString = this.getCreateUri().toString();
 
-		String body;
+		Map<String, Object> requestMap = objectMapper.convertValue(updateRequest, Map.class);
+
+		this.getBeforeWriteUpdateConsumer().accept(requestMap);
+
+		String httpRequestBodyString;
 
 		try {
-			body = objectMapper.writeValueAsString(updateRequest);
+			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
 		UpdateState updateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE REQUEST " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE REQUEST " + httpRequestBodyString + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
 			// execute HTTP request
 
-			HttpEntity httpEntity = httpResponse.getEntity();
-			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
-			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
-			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
-			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) return null;
 
 			// read result
 
-			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
-			String httpBodyString = new String(httpBodyBytes, httpCharset);
-			EntityUtils.consume(httpEntity);
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			if (isStateHttpContent(httpBodyString)) {
-				updateState = objectMapper.readValue(httpBodyString, UpdateState.class);
+			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+
+			this.getBeforeReadUpdateConsumer().accept(stateMap);
+
+			if (isStateHttpContent(stateMap)) {
+				updateState = objectMapper.convertValue(stateMap, UpdateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (updateState != null && updateState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -203,7 +230,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (updateState == null) {
-				updateState = objectMapper.readValue(httpBodyString, UpdateState.class);
+				updateState = objectMapper.convertValue(stateMap, UpdateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -222,55 +249,63 @@ public class HttpDriver implements Driver {
 
 		// prepare HTTP request
 
-		String uriString = this.getDeactivateUri().toString();
+		String uriString = this.getCreateUri().toString();
 
-		String body;
+		Map<String, Object> requestMap = objectMapper.convertValue(deactivateRequest, Map.class);
+
+		this.getBeforeWriteDeactivateConsumer().accept(requestMap);
+
+		String httpRequestBodyString;
 
 		try {
-			body = objectMapper.writeValueAsString(deactivateRequest);
+			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
-		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
 
 		// execute HTTP request and read response
 
 		DeactivateState deactivateState = null;
 
-		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE REQUEST " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE REQUEST " + httpRequestBodyString + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
 			// execute HTTP request
 
-			HttpEntity httpEntity = httpResponse.getEntity();
-			int httpStatusCode = httpResponse.getStatusLine().getStatusCode();
-			String httpStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
-			ContentType httpContentType = ContentType.get(httpResponse.getEntity());
-			Charset httpCharset = (httpContentType != null && httpContentType.getCharset() != null) ? httpContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpStatusCode + " " + httpStatusMessage);
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpContentType + " / " + httpCharset);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) return null;
 
 			// read result
 
-			byte[] httpBodyBytes = EntityUtils.toByteArray(httpEntity);
-			String httpBodyString = new String(httpBodyBytes, httpCharset);
-			EntityUtils.consume(httpEntity);
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
 
-			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpBodyString);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			if (isStateHttpContent(httpBodyString)) {
-				deactivateState = objectMapper.readValue(httpBodyString, DeactivateState.class);
+			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+
+			this.getBeforeReadDeactivateConsumer().accept(stateMap);
+
+			if (isStateHttpContent(stateMap)) {
+				deactivateState = objectMapper.convertValue(stateMap, DeactivateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpStatusCode + " " + httpStatusMessage + " (" + httpBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (deactivateState != null && deactivateState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -279,7 +314,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (deactivateState == null) {
-				deactivateState = objectMapper.readValue(httpBodyString, DeactivateState.class);
+				deactivateState = objectMapper.convertValue(stateMap, DeactivateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -385,13 +420,8 @@ public class HttpDriver implements Driver {
 	 * Helper methods
 	 */
 
-	public static boolean isStateHttpContent(String httpContentString) {
-		try {
-			Map<String, Object> json = objectMapper.readValue(httpContentString, Map.class);
-			return json.containsKey("didState");
-		} catch (JsonProcessingException ex) {
-			return false;
-		}
+	public static boolean isStateHttpContent(Map<String, Object> httpContentJson) {
+		return httpContentJson.containsKey("didState");
 	}
 
 	/*
@@ -453,5 +483,53 @@ public class HttpDriver implements Driver {
 
 	public void setPropertiesUri(String propertiesUri) {
 		this.propertiesUri = URI.create(propertiesUri);
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteCreateConsumer() {
+		return beforeWriteCreateConsumer;
+	}
+
+	public void setBeforeWriteCreateConsumer(Consumer<Map<String, Object>> beforeWriteCreateConsumer) {
+		this.beforeWriteCreateConsumer = beforeWriteCreateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadCreateConsumer() {
+		return beforeReadCreateConsumer;
+	}
+
+	public void setBeforeReadCreateConsumer(Consumer<Map<String, Object>> beforeReadCreateConsumer) {
+		this.beforeReadCreateConsumer = beforeReadCreateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteUpdateConsumer() {
+		return beforeWriteUpdateConsumer;
+	}
+
+	public void setBeforeWriteUpdateConsumer(Consumer<Map<String, Object>> beforeWriteUpdateConsumer) {
+		this.beforeWriteUpdateConsumer = beforeWriteUpdateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadUpdateConsumer() {
+		return beforeReadUpdateConsumer;
+	}
+
+	public void setBeforeReadUpdateConsumer(Consumer<Map<String, Object>> beforeReadUpdateConsumer) {
+		this.beforeReadUpdateConsumer = beforeReadUpdateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteDeactivateConsumer() {
+		return beforeWriteDeactivateConsumer;
+	}
+
+	public void setBeforeWriteDeactivateConsumer(Consumer<Map<String, Object>> beforeWriteDeactivateConsumer) {
+		this.beforeWriteDeactivateConsumer = beforeWriteDeactivateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadDeactivateConsumer() {
+		return beforeReadDeactivateConsumer;
+	}
+
+	public void setBeforeReadDeactivateConsumer(Consumer<Map<String, Object>> beforeReadDeactivateConsumer) {
+		this.beforeReadDeactivateConsumer = beforeReadDeactivateConsumer;
 	}
 }

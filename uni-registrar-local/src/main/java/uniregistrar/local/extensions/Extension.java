@@ -29,6 +29,10 @@ public interface Extension {
 		void apply(E extension) throws RegistrationException;
 	}
 
+	/*
+	 * beforeRead
+	 */
+
 	@ExtensionStage("beforeReadCreate")
 	interface BeforeReadCreateExtension extends Extension {
 		default void beforeReadCreate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
@@ -46,6 +50,10 @@ public interface Extension {
 		default void beforeReadDeactivate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
 		}
 	}
+
+	/*
+	 * before
+	 */
 
 	@ExtensionStage("beforeCreate")
 	interface BeforeCreateExtension extends Extension {
@@ -68,6 +76,54 @@ public interface Extension {
 		}
 	}
 
+	/*
+	 * beforeDriverWrite
+	 */
+
+	@ExtensionStage("beforeDriverWriteCreate")
+	interface BeforeDriverWriteCreateExtension extends Extension {
+		default void beforeDriverWriteCreate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverWriteUpdate")
+	interface BeforeDriverWriteUpdateExtension extends Extension {
+		default void beforeDriverWriteUpdate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverWriteDeactivate")
+	interface BeforeDriverWriteDeactivateExtension extends Extension {
+		default void beforeDriverWriteDeactivate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	/*
+	 * beforeDriverRead
+	 */
+
+	@ExtensionStage("beforeDriverReadCreate")
+	interface BeforeDriverReadCreateExtension extends Extension {
+		default void beforeDriverReadCreate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverReadUpdate")
+	interface BeforeDriverReadUpdateExtension extends Extension {
+		default void beforeDriverReadUpdate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverReadDeactivate")
+	interface BeforeDriverReadDeactivateExtension extends Extension {
+		default void beforeDriverReadDeactivate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	/*
+	 * after
+	 */
+
 	@ExtensionStage("afterCreate")
 	interface AfterCreateExtension extends Extension {
 		default ExtensionStatus afterCreate(String method, CreateRequest createRequest, CreateState createState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
@@ -89,6 +145,10 @@ public interface Extension {
 		}
 	}
 
+	/*
+	 * beforeWrite
+	 */
+
 	@ExtensionStage("beforeWriteCreate")
 	interface BeforeWriteCreateExtension extends Extension {
 		default void beforeWriteCreate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
@@ -107,7 +167,11 @@ public interface Extension {
 		}
 	}
 
-	abstract class AbstractExtension implements BeforeReadCreateExtension, BeforeReadUpdateExtension, BeforeReadDeactivateExtension, BeforeCreateExtension, BeforeUpdateExtension, BeforeDeactivateExtension, AfterCreateExtension, AfterUpdateExtension, AfterDeactivateExtension, BeforeWriteCreateExtension, BeforeWriteUpdateExtension, BeforeWriteDeactivateExtension {
+	/*
+	 * Helper classes
+	 */
+
+	abstract class AbstractExtension implements BeforeReadCreateExtension, BeforeReadUpdateExtension, BeforeReadDeactivateExtension, BeforeCreateExtension, BeforeUpdateExtension, BeforeDeactivateExtension, BeforeDriverWriteCreateExtension, BeforeDriverWriteUpdateExtension, BeforeDriverWriteDeactivateExtension, BeforeDriverReadCreateExtension, BeforeDriverReadUpdateExtension, BeforeDriverReadDeactivateExtension, AfterCreateExtension, AfterUpdateExtension, AfterDeactivateExtension, BeforeWriteCreateExtension, BeforeWriteUpdateExtension, BeforeWriteDeactivateExtension {
 	}
 
 	abstract class AbstractBeforeReadExtension implements Extension.BeforeReadCreateExtension, Extension.BeforeReadUpdateExtension, Extension.BeforeReadDeactivateExtension {
@@ -148,6 +212,46 @@ public interface Extension {
 		}
 
 		abstract public ExtensionStatus beforeRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractBeforeDriverWriteExtension implements Extension.BeforeDriverWriteCreateExtension, Extension.BeforeDriverWriteUpdateExtension, Extension.BeforeDriverWriteDeactivateExtension {
+
+		@Override
+		public final void beforeDriverWriteCreate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWrite(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverWriteUpdate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWrite(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverWriteDeactivate(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWrite(method, requestMap, localUniRegistrar);
+		}
+
+		abstract public void beforeDriverWrite(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractBeforeDriverReadExtension implements Extension.BeforeDriverReadCreateExtension, Extension.BeforeDriverReadUpdateExtension, Extension.BeforeDriverReadDeactivateExtension {
+
+		@Override
+		public final void beforeDriverReadCreate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverRead(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverReadUpdate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverRead(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverReadDeactivate(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverRead(method, stateMap, localUniRegistrar);
+		}
+
+		abstract public void beforeDriverRead(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	abstract class AbstractAfterRequestExtension implements Extension.AfterCreateExtension, Extension.AfterUpdateExtension, Extension.AfterDeactivateExtension {

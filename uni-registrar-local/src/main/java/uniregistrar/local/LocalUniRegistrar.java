@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
+import uniregistrar.driver.http.HttpDriver;
 import uniregistrar.local.configuration.LocalUniRegistrarConfigurator;
 import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.local.extensions.Extension;
@@ -15,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class LocalUniRegistrar implements UniRegistrar {
 
@@ -74,6 +77,26 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		this.executeExtensions(Extension.BeforeCreateExtension.class, extensionStatus, e -> e.beforeCreate(method, createRequest, createState, executionState, this), createRequest, createState, executionState);
 
+		// [before driver write create]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteCreateConsumer = requestMap -> {
+            try {
+                LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteCreateExtension.class, e -> e.beforeDriverWriteCreate(method, requestMap, LocalUniRegistrar.this), requestMap);
+            } catch (RegistrationException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            }
+        };
+
+		// [before driver read create]
+
+		final Consumer<Map<String, Object>> beforeDriverReadCreateConsumer = stateMap -> {
+            try {
+                LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadCreateExtension.class, e -> e.beforeDriverReadCreate(method, stateMap, LocalUniRegistrar.this), stateMap);
+            } catch (RegistrationException ex) {
+                throw new RuntimeException(ex.getMessage(), ex);
+            }
+        };
+
 		// [create]
 
 		if (! extensionStatus.skipDriver()) {
@@ -81,6 +104,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing create with request " + createRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteCreateConsumer(beforeDriverWriteCreateConsumer);
+				httpDriver.setBeforeReadCreateConsumer(beforeDriverReadCreateConsumer);
+			}
 
 			CreateState driverCreateState = driver.create(createRequest);
 			if (driverCreateState != null) {
@@ -139,6 +167,26 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		this.executeExtensions(Extension.BeforeUpdateExtension.class, extensionStatus, e -> e.beforeUpdate(method, updateRequest, updateState, executionState, this), updateRequest, updateState, executionState);
 
+		// [before driver write update]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteUpdateConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteUpdateExtension.class, e -> e.beforeDriverWriteUpdate(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read update]
+
+		final Consumer<Map<String, Object>> beforeDriverReadUpdateConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadUpdateExtension.class, e -> e.beforeDriverReadUpdate(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
 		// [update]
 
 		if (! extensionStatus.skipDriver()) {
@@ -146,6 +194,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing update with request " + updateRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteUpdateConsumer(beforeDriverWriteUpdateConsumer);
+				httpDriver.setBeforeReadUpdateConsumer(beforeDriverReadUpdateConsumer);
+			}
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			if (driverUpdateState != null) {
@@ -204,6 +257,26 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		this.executeExtensions(Extension.BeforeDeactivateExtension.class, extensionStatus, e -> e.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this), deactivateRequest, deactivateState, executionState);
 
+		// [before driver write deactivate]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteDeactivateConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteDeactivateExtension.class, e -> e.beforeDriverWriteDeactivate(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read deactivate]
+
+		final Consumer<Map<String, Object>> beforeDriverReadDeactivateConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadDeactivateExtension.class, e -> e.beforeDriverReadDeactivate(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
 		// [deactivate]
 
 		if (! extensionStatus.skipDriver()) {
@@ -211,6 +284,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing deactivate with request " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteDeactivateConsumer(beforeDriverWriteDeactivateConsumer);
+				httpDriver.setBeforeReadDeactivateConsumer(beforeDriverReadDeactivateConsumer);
+			}
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			if (driverDeactivateState != null) {
