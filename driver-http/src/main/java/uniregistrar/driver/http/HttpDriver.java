@@ -30,12 +30,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class HttpDriver implements Driver {
 
@@ -165,7 +162,7 @@ public class HttpDriver implements Driver {
 
 		// prepare HTTP request
 
-		String uriString = this.getCreateUri().toString();
+		String uriString = this.getUpdateUri().toString();
 
 		Map<String, Object> requestMap = objectMapper.convertValue(updateRequest, Map.class);
 
@@ -249,7 +246,7 @@ public class HttpDriver implements Driver {
 
 		// prepare HTTP request
 
-		String uriString = this.getCreateUri().toString();
+		String uriString = this.getDeactivateUri().toString();
 
 		Map<String, Object> requestMap = objectMapper.convertValue(deactivateRequest, Map.class);
 
