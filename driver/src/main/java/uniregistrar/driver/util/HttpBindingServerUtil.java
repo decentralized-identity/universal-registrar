@@ -1,6 +1,5 @@
 package uniregistrar.driver.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +8,7 @@ import uniregistrar.openapi.model.CreateState;
 import uniregistrar.openapi.model.DidStateFailed;
 import uniregistrar.openapi.model.DidStateFinished;
 import uniregistrar.openapi.model.RegistrarState;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
 import java.util.Map;
@@ -17,10 +17,8 @@ public class HttpBindingServerUtil {
 
     private static final Logger log = LoggerFactory.getLogger(HttpBindingServerUtil.class);
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
-
     public static String toHttpBodyStreamState(Map<String, Object> stateMap) throws IOException {
-        String jsonString = objectMapper.writeValueAsString(stateMap);
+        String jsonString = HttpBindingUtil.toHttpBodyMap(stateMap);
         if (log.isDebugEnabled()) log.debug("HTTP body for stream result: " + jsonString);
         return jsonString;
     }

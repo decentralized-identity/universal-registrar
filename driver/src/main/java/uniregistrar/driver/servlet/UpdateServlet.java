@@ -1,12 +1,5 @@
 package uniregistrar.driver.servlet;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -15,27 +8,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationMediaTypes;
-import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.UpdateRequest;
 import uniregistrar.openapi.model.UpdateState;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
 
 public class UpdateServlet extends HttpServlet implements Servlet {
 
 	private static final Logger log = LoggerFactory.getLogger(UpdateServlet.class);
-
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
-			.serializationInclusion(JsonInclude.Include.NON_NULL)
-			.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-			.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			.enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
-			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-			.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-			.defaultDateFormat(new RFC3339DateFormat())
-			.addModule(new JavaTimeModule())
-			.build();
 
 	public UpdateServlet() {
 
@@ -50,7 +31,7 @@ public class UpdateServlet extends HttpServlet implements Servlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		UpdateRequest updateRequest = objectMapper.readValue(request.getReader(), UpdateRequest.class);
+		UpdateRequest updateRequest = HttpBindingUtil.fromHttpBodyRequest(request.getReader(), UpdateRequest.class);
 
 		if (log.isInfoEnabled()) log.info("Driver: Incoming update request: " + updateRequest);
 
@@ -68,7 +49,7 @@ public class UpdateServlet extends HttpServlet implements Servlet {
 		try {
 
 			updateState = InitServlet.getDriver().update(updateRequest);
-			updateStateString = updateState == null ? null : objectMapper.writeValueAsString(updateState);
+			updateStateString = updateState == null ? null : HttpBindingUtil.toHttpBodyState(updateState);
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver: Update problem for " + updateRequest + ": " + ex.getMessage(), ex);

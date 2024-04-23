@@ -11,6 +11,7 @@ import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
 import uniregistrar.openapi.model.*;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -331,7 +332,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			ExtensionStatus returnedExtensionStatus = extensionFunction.apply(extension);
 			extensionStatus.or(returnedExtensionStatus);
 			if (returnedExtensionStatus == null) { inapplicableExtensions.add(extension); continue; }
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + request + "\n-->STATE: " + state + "\n-->EXECUTION STATE: " + executionState);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + HttpBindingUtil.toHttpBodyRequest(request) + "\n-->STATE: " + HttpBindingUtil.toHttpBodyState(state) + "\n-->EXECUTION STATE: " + executionState);
 			ExecutionStateUtil.addExtensionStage(executionState, extensionClass, extension);
 		}
 

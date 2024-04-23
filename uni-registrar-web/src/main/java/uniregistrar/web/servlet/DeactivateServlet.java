@@ -22,6 +22,7 @@ import uniregistrar.local.extensions.Extension;
 import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.DeactivateRequest;
 import uniregistrar.openapi.model.RegistrarState;
+import uniregistrar.util.HttpBindingUtil;
 import uniregistrar.web.WebUniRegistrar;
 
 import java.io.IOException;
@@ -30,18 +31,6 @@ import java.util.Map;
 public class DeactivateServlet extends WebUniRegistrar {
 
 	protected static final Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
-
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
-			.serializationInclusion(JsonInclude.Include.NON_NULL)
-			.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-			.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			.enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
-			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-			.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-			.defaultDateFormat(new RFC3339DateFormat())
-			.addModule(new JavaTimeModule())
-			.build();
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -54,7 +43,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		Map<String, Object> requestMap;
 
 		try {
-			requestMap = objectMapper.readValue(request.getReader(), Map.class);
+			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (JSON): " + ex.getMessage(), ex);
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
@@ -105,7 +94,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 		DeactivateRequest deactivateRequest;
 
 		try {
-			deactivateRequest = objectMapper.convertValue(requestMap, DeactivateRequest.class);
+			deactivateRequest = HttpBindingUtil.fromMapRequest(requestMap, DeactivateRequest.class);
 		} catch (Exception ex) {
 			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (object): " + ex.getMessage(), ex);
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
@@ -136,7 +125,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
 			state = ((RegistrationException) ex).toFailedState();
 		} finally {
-			stateMap = state == null ? null : objectMapper.convertValue(state, Map.class);
+			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}
 
 		if (log.isInfoEnabled()) log.info("DEACTIVATE state for " + deactivateRequest + ": " + state);

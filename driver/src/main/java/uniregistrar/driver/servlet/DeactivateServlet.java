@@ -18,24 +18,13 @@ import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.DeactivateRequest;
 import uniregistrar.openapi.model.DeactivateState;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
 
 public class DeactivateServlet extends HttpServlet implements Servlet {
 
 	private static final Logger log = LoggerFactory.getLogger(DeactivateServlet.class);
-
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
-			.serializationInclusion(JsonInclude.Include.NON_NULL)
-			.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-			.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			.enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
-			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-			.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-			.defaultDateFormat(new RFC3339DateFormat())
-			.addModule(new JavaTimeModule())
-			.build();
 
 	public DeactivateServlet() {
 
@@ -50,7 +39,7 @@ public class DeactivateServlet extends HttpServlet implements Servlet {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		DeactivateRequest deactivateRequest = objectMapper.readValue(request.getReader(), DeactivateRequest.class);
+		DeactivateRequest deactivateRequest = HttpBindingUtil.fromHttpBodyRequest(request.getReader(), DeactivateRequest.class);
 
 		if (log.isInfoEnabled()) log.info("Driver: Incoming deactivate request: " + deactivateRequest);
 
@@ -68,7 +57,7 @@ public class DeactivateServlet extends HttpServlet implements Servlet {
 		try {
 
 			deactivateState = InitServlet.getDriver().deactivate(deactivateRequest);
-			deactivateStateString = deactivateState == null ? null : objectMapper.writeValueAsString(deactivateState);
+			deactivateStateString = deactivateState == null ? null : HttpBindingUtil.toHttpBodyState(deactivateState);
 		} catch (Exception ex) {
 
 			if (log.isWarnEnabled()) log.warn("Driver: Deactivate problem for " + deactivateRequest + ": " + ex.getMessage(), ex);

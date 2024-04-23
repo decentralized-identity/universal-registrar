@@ -1,13 +1,6 @@
 package uniregistrar.driver.http;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -23,8 +16,8 @@ import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
 import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.Driver;
-import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.*;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -37,18 +30,6 @@ import java.util.function.Consumer;
 public class HttpDriver implements Driver {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpDriver.class);
-
-	private static final ObjectMapper objectMapper = JsonMapper.builder()
-			.serializationInclusion(JsonInclude.Include.NON_NULL)
-			.disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
-			.enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-			.enable(DeserializationFeature.FAIL_ON_INVALID_SUBTYPE)
-			.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-			.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING)
-			.enable(DeserializationFeature.READ_ENUMS_USING_TO_STRING)
-			.defaultDateFormat(new RFC3339DateFormat())
-			.addModule(new JavaTimeModule())
-			.build();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
 	public static final URI DEFAULT_CREATE_URI = null;
@@ -80,14 +61,14 @@ public class HttpDriver implements Driver {
 
 		String uriString = this.getCreateUri().toString();
 
-		Map<String, Object> requestMap = objectMapper.convertValue(createRequest, Map.class);
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(createRequest);
 
 		this.getBeforeWriteCreateConsumer().accept(requestMap);
 
 		String httpRequestBodyString;
 
 		try {
-			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
+			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
@@ -125,12 +106,12 @@ public class HttpDriver implements Driver {
 
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+			Map<String, Object> stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 
 			this.getBeforeReadCreateConsumer().accept(stateMap);
 
 			if (isStateHttpContent(stateMap)) {
-				createState = objectMapper.convertValue(stateMap, CreateState.class);
+				createState = HttpBindingUtil.fromMapState(stateMap, CreateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createState == null) {
@@ -143,7 +124,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (createState == null) {
-				createState = objectMapper.convertValue(stateMap, CreateState.class);
+				createState = HttpBindingUtil.fromMapState(stateMap, CreateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -164,14 +145,14 @@ public class HttpDriver implements Driver {
 
 		String uriString = this.getUpdateUri().toString();
 
-		Map<String, Object> requestMap = objectMapper.convertValue(updateRequest, Map.class);
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(updateRequest);
 
 		this.getBeforeWriteUpdateConsumer().accept(requestMap);
 
 		String httpRequestBodyString;
 
 		try {
-			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
+			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
@@ -209,12 +190,12 @@ public class HttpDriver implements Driver {
 
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+			Map<String, Object> stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 
 			this.getBeforeReadUpdateConsumer().accept(stateMap);
 
 			if (isStateHttpContent(stateMap)) {
-				updateState = objectMapper.convertValue(stateMap, UpdateState.class);
+				updateState = HttpBindingUtil.fromMapState(stateMap, UpdateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateState == null) {
@@ -227,7 +208,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (updateState == null) {
-				updateState = objectMapper.convertValue(stateMap, UpdateState.class);
+				updateState = HttpBindingUtil.fromMapState(stateMap, UpdateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -248,14 +229,14 @@ public class HttpDriver implements Driver {
 
 		String uriString = this.getDeactivateUri().toString();
 
-		Map<String, Object> requestMap = objectMapper.convertValue(deactivateRequest, Map.class);
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(deactivateRequest);
 
 		this.getBeforeWriteDeactivateConsumer().accept(requestMap);
 
 		String httpRequestBodyString;
 
 		try {
-			httpRequestBodyString = objectMapper.writeValueAsString(requestMap);
+			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 		} catch (JsonProcessingException ex) {
 			throw new RegistrationException(ex.getMessage(), ex);
 		}
@@ -293,12 +274,12 @@ public class HttpDriver implements Driver {
 
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
 
-			Map<String, Object> stateMap = objectMapper.readValue(httpResponseBodyString, Map.class);
+			Map<String, Object> stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 
 			this.getBeforeReadDeactivateConsumer().accept(stateMap);
 
 			if (isStateHttpContent(stateMap)) {
-				deactivateState = objectMapper.convertValue(stateMap, DeactivateState.class);
+				deactivateState = HttpBindingUtil.fromMapState(stateMap, DeactivateState.class);
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateState == null) {
@@ -311,7 +292,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (deactivateState == null) {
-				deactivateState = objectMapper.convertValue(stateMap, DeactivateState.class);
+				deactivateState = HttpBindingUtil.fromMapState(stateMap, DeactivateState.class);
 			}
 		} catch (IOException ex) {
 
@@ -400,7 +381,7 @@ public class HttpDriver implements Driver {
 				throw new RegistrationException(httpBody);
 			}
 
-			properties = (Map<String, Object>) objectMapper.readValue(httpBody, Map.class);
+			properties = (Map<String, Object>) HttpBindingUtil.fromHttpBodyMap(httpBody);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve DRIVER PROPERTIES from " + uriString + ": " + ex.getMessage(), ex);
