@@ -1,6 +1,5 @@
 package uniregistrar.driver.http;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -65,13 +64,7 @@ public class HttpDriver implements Driver {
 
 		this.getBeforeWriteCreateConsumer().accept(requestMap);
 
-		String httpRequestBodyString;
-
-		try {
-			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
-		} catch (JsonProcessingException ex) {
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -149,13 +142,7 @@ public class HttpDriver implements Driver {
 
 		this.getBeforeWriteUpdateConsumer().accept(requestMap);
 
-		String httpRequestBodyString;
-
-		try {
-			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
-		} catch (JsonProcessingException ex) {
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -233,13 +220,7 @@ public class HttpDriver implements Driver {
 
 		this.getBeforeWriteDeactivateConsumer().accept(requestMap);
 
-		String httpRequestBodyString;
-
-		try {
-			httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
-		} catch (JsonProcessingException ex) {
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));

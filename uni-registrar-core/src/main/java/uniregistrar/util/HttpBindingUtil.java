@@ -50,10 +50,6 @@ public class HttpBindingUtil {
         return objectMapper.convertValue(state, Map.class);
     }
 
-    public static String toHttpBodyMap(Map<String, Object> map) throws JsonProcessingException {
-        return objectMapper.writeValueAsString(map);
-    }
-
     public static Map<String, Object> fromHttpBodyMap(String httpBody) throws JsonProcessingException {
         return objectMapper.readValue(httpBody, Map.class);
     }
@@ -76,6 +72,14 @@ public class HttpBindingUtil {
 
     public static <T extends RegistrarState> T fromHttpBodyState(Reader httpBody, Class<T> cl) throws IOException {
         return objectMapper.readValue(httpBody, cl);
+    }
+
+    public static String toHttpBodyMap(Map<String, Object> map) {
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
+        }
     }
 
     public static String toHttpBodyRequest(RegistrarRequest registrarRequest) {

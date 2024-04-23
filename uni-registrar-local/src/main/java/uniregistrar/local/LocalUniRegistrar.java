@@ -351,7 +351,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		for (E extension : extensions) {
 			extensionFunction.apply(extension);
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + " with map " + map);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->MAP: " + HttpBindingUtil.toHttpBodyMap(map));
 		}
 	}
 
