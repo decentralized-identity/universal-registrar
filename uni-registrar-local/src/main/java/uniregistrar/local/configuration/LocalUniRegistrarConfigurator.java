@@ -38,6 +38,7 @@ public class LocalUniRegistrarConfigurator {
                 String method = jsonObjectDriver.has("method") ? jsonObjectDriver.get("method").getAsString() : null;
                 String url = jsonObjectDriver.has("url") ? jsonObjectDriver.get("url").getAsString() : null;
                 String propertiesEndpoint = jsonObjectDriver.has("propertiesEndpoint") ? jsonObjectDriver.get("propertiesEndpoint").getAsString() : null;
+                String includeMethodParameter = jsonObjectDriver.has("includeMethodParameter") ? jsonObjectDriver.get("includeMethodParameter").getAsString() : null;
 
                 if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
                 if (url == null) throw new IllegalArgumentException("Missing 'url' entry in driver configuration.");
@@ -45,18 +46,19 @@ public class LocalUniRegistrarConfigurator {
                 // construct HTTP driver
 
                 HttpDriver driver = new HttpDriver();
+                driver.setMethod(method);
 
                 if (! url.endsWith("/")) url = url + "/";
-
                 driver.setCreateUri(url + "1.0/create");
                 driver.setUpdateUri(url + "1.0/update");
                 driver.setDeactivateUri(url + "1.0/deactivate");
                 if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(url + "1.0/properties");
+                if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
 
                 // done
 
                 drivers.put(method, driver);
-                if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+                if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
             }
         }
 

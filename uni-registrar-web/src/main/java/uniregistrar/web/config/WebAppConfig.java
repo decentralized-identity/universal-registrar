@@ -104,6 +104,7 @@ public class WebAppConfig {
 			String method = dc.getMethod();
 			String url = dc.getUrl();
 			String propertiesEndpoint = dc.getPropertiesEndpoint();
+            String includeMethodParameter = dc.getIncludeMethodParameter();
 
 			if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
 			if (url == null) throw new IllegalArgumentException("Missing 'url' entry in driver configuration.");
@@ -111,17 +112,19 @@ public class WebAppConfig {
 			// construct HTTP driver
 
 			HttpDriver driver = new HttpDriver();
+            driver.setMethod(method);
 
 			if (! url.endsWith("/")) url = url + "/";
 			driver.setCreateUri(normalizeUri((url + servletMappings.getCreate()), false));
 			driver.setUpdateUri(normalizeUri((url + servletMappings.getUpdate()), false));
 			driver.setDeactivateUri(normalizeUri((url + servletMappings.getDeactivate()), false));
 			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + servletMappings.getProperties()), false));
+            if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
 
 			// done
 
 			drivers.put(method, driver);
-			if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")");
+			if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
 		}
 
 		uniRegistrar.setDrivers(drivers);

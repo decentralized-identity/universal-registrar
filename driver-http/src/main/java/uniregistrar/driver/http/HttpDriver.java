@@ -37,12 +37,16 @@ public class HttpDriver implements Driver {
 	public static final URI DEFAULT_UPDATE_URI = null;
 	public static final URI DEFAULT_DEACTIVATE_URI = null;
 	public static final URI DEFAULT_PROPERTIES_URI = null;
+	public static final Boolean DEFAULT_INCLUDE_METHOD_PARAMETER = false;
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
+	private Boolean includeMethodParameter = DEFAULT_INCLUDE_METHOD_PARAMETER;
+
+	private String method;
 
 	private Consumer<Map<String, Object>> beforeWriteCreateConsumer;
 	private Consumer<Map<String, Object>> beforeReadCreateConsumer;
@@ -61,6 +65,7 @@ public class HttpDriver implements Driver {
 		// prepare HTTP request
 
 		String uriString = this.getCreateUri().toString();
+		if (Boolean.TRUE == this.getIncludeMethodParameter()) uriString += "?method=" + this.getMethod();
 
 		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(createRequest);
 		this.getBeforeWriteCreateConsumer().accept(requestMap);
@@ -332,6 +337,7 @@ public class HttpDriver implements Driver {
 		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
 		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
+		if (this.getIncludeMethodParameter() != null) httpProperties.put("propertiesUri", Boolean.toString(this.getIncludeMethodParameter()));
 		return httpProperties;
 	}
 
@@ -398,6 +404,14 @@ public class HttpDriver implements Driver {
 	 * Getters and setters
 	 */
 
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
+	}
+
 	public HttpClient getHttpClient() {
 		return this.httpClient;
 	}
@@ -453,6 +467,14 @@ public class HttpDriver implements Driver {
 
 	public void setPropertiesUri(String propertiesUri) {
 		this.propertiesUri = URI.create(propertiesUri);
+	}
+
+	public Boolean getIncludeMethodParameter() {
+		return includeMethodParameter;
+	}
+
+	public void setIncludeMethodParameter(Boolean includeMethodParameter) {
+		this.includeMethodParameter = includeMethodParameter;
 	}
 
 	public Consumer<Map<String, Object>> getBeforeWriteCreateConsumer() {

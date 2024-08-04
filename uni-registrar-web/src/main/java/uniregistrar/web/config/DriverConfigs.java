@@ -25,6 +25,7 @@ public class DriverConfigs {
 		private String method;
 		private String url;
 		private String propertiesEndpoint;
+		private String includeMethodParameter;
 
 		public String getMethod() {
 			return method;
@@ -50,12 +51,21 @@ public class DriverConfigs {
 			this.propertiesEndpoint = value;
 		}
 
+		public String getIncludeMethodParameter() {
+			return includeMethodParameter;
+		}
+
+		public void setIncludeMethodParameter(String includeMethodParameter) {
+			this.includeMethodParameter = includeMethodParameter;
+		}
+
 		@Override
 		public String toString() {
 			return new StringJoiner(", ", DriverConfig.class.getSimpleName() + "[", "]")
 					.add("method='" + method + "'")
 					.add("url='" + url + "'")
 					.add("propertiesEndpoint='" + propertiesEndpoint + "'")
+					.add("includeMethodParameter='" + includeMethodParameter + "'")
 					.toString();
 		}
 	}
