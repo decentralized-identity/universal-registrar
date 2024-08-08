@@ -52,13 +52,14 @@ public class LocalUniRegistrarConfigurator {
                 driver.setCreateUri(url + "1.0/create");
                 driver.setUpdateUri(url + "1.0/update");
                 driver.setDeactivateUri(url + "1.0/deactivate");
+                driver.setExecuteUri(url + "1.0/execute");
                 if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(url + "1.0/properties");
                 if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
 
                 // done
 
                 drivers.put(method, driver);
-                if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
+                if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " and " + driver.getExecuteUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
             }
         }
 

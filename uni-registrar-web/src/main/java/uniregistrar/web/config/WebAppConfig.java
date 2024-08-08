@@ -60,6 +60,16 @@ public class WebAppConfig {
         return new ServletRegistrationBean<>(deactivateServlet(), fixWildcardPattern(servletMappings.getDeactivate()));
     }
 
+    @Bean(name = "ExecuteServlet")
+    public ExecuteServlet executeServlet(){
+        return new ExecuteServlet();
+    }
+
+    @Bean
+    public ServletRegistrationBean<ExecuteServlet> executeServletRegistrationBean() {
+        return new ServletRegistrationBean<>(executeServlet(), fixWildcardPattern(servletMappings.getExecute()));
+    }
+
     @Bean(name = "PropertiesServlet")
     public PropertiesServlet propertiesServlet(){
         return new PropertiesServlet();
@@ -118,13 +128,14 @@ public class WebAppConfig {
 			driver.setCreateUri(normalizeUri((url + servletMappings.getCreate()), false));
 			driver.setUpdateUri(normalizeUri((url + servletMappings.getUpdate()), false));
 			driver.setDeactivateUri(normalizeUri((url + servletMappings.getDeactivate()), false));
+            driver.setExecuteUri(normalizeUri(url + servletMappings.getExecute(), false));
 			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + servletMappings.getProperties()), false));
             if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
 
 			// done
 
 			drivers.put(method, driver);
-			if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
+			if (log.isInfoEnabled()) log.info("Added driver for method '" + method + "' at " + driver.getCreateUri() + " and " + driver.getUpdateUri() + " and " + driver.getDeactivateUri() + " and " + driver.getExecuteUri() + " (" + driver.getPropertiesUri() + ")" + " (" + driver.getIncludeMethodParameter() + ")");
 		}
 
 		uniRegistrar.setDrivers(drivers);

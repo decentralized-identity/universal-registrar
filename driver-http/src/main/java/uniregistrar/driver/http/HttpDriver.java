@@ -1,6 +1,5 @@
 package uniregistrar.driver.http;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -36,6 +35,7 @@ public class HttpDriver implements Driver {
 	public static final URI DEFAULT_CREATE_URI = null;
 	public static final URI DEFAULT_UPDATE_URI = null;
 	public static final URI DEFAULT_DEACTIVATE_URI = null;
+	public static final URI DEFAULT_EXECUTE_URI = null;
 	public static final URI DEFAULT_PROPERTIES_URI = null;
 	public static final Boolean DEFAULT_INCLUDE_METHOD_PARAMETER = false;
 
@@ -43,6 +43,7 @@ public class HttpDriver implements Driver {
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
+	private URI executeUri = DEFAULT_EXECUTE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 	private Boolean includeMethodParameter = DEFAULT_INCLUDE_METHOD_PARAMETER;
 
@@ -54,6 +55,8 @@ public class HttpDriver implements Driver {
 	private Consumer<Map<String, Object>> beforeReadUpdateConsumer;
 	private Consumer<Map<String, Object>> beforeWriteDeactivateConsumer;
 	private Consumer<Map<String, Object>> beforeReadDeactivateConsumer;
+	private Consumer<Map<String, Object>> beforeWriteExecuteConsumer;
+	private Consumer<Map<String, Object>> beforeReadExecuteConsumer;
 
 	public HttpDriver() {
 
@@ -304,6 +307,87 @@ public class HttpDriver implements Driver {
 	}
 
 	@Override
+	public ExecuteState execute(ExecuteRequest executeRequest) throws RegistrationException {
+
+		// prepare HTTP request
+
+		String uriString = this.getExecuteUri().toString();
+
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(executeRequest);
+		this.getBeforeWriteExecuteConsumer().accept(requestMap);
+
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request and read response
+
+		ExecuteState executeState = null;
+
+		if (log.isDebugEnabled()) log.debug("Driver request for EXECUTE REQUEST " + httpRequestBodyString + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			// execute HTTP request
+
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
+
+			if (httpResponseStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
+
+			Map<String, Object> stateMap;
+			try {
+				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
+				this.getBeforeReadExecuteConsumer().accept(stateMap);
+			} catch (JsonProcessingException ex) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (isStateHttpContent(stateMap)) {
+				executeState = HttpBindingUtil.fromMapState(stateMap, ExecuteState.class);
+			}
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && executeState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (executeState != null && executeState.getDidState() instanceof DidStateFailed didStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
+				throw new RegistrationException(executeState);
+			}
+
+			if (executeState == null) {
+				executeState = HttpBindingUtil.fromMapState(stateMap, ExecuteState.class);
+			}
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve EXECUTE STATE for execute request " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved EXECUTE STATE for execute request " + executeRequest + " (" + uriString + "): " + executeState);
+
+		// done
+
+		return executeState;
+	}
+
+	@Override
 	public Map<String, Object> properties() throws RegistrationException {
 
 		// prepare properties
@@ -336,6 +420,7 @@ public class HttpDriver implements Driver {
 		if (this.getCreateUri() != null) httpProperties.put("createUri", this.getCreateUri().toString());
 		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
 		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
+		if (this.getExecuteUri() != null) httpProperties.put("executeUri", this.getExecuteUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
 		if (this.getIncludeMethodParameter() != null) httpProperties.put("propertiesUri", Boolean.toString(this.getIncludeMethodParameter()));
 		return httpProperties;
@@ -457,6 +542,19 @@ public class HttpDriver implements Driver {
 		this.deactivateUri = URI.create(deactivateUri);
 	}
 
+	public URI getExecuteUri() {
+		return this.executeUri;
+	}
+
+	public void setExecuteUri(URI executeUri) {
+		this.executeUri = executeUri;
+	}
+
+	public void setExecuteUri(String executeUri) {
+
+		this.executeUri = URI.create(executeUri);
+	}
+
 	public URI getPropertiesUri() {
 		return this.propertiesUri;
 	}
@@ -523,5 +621,21 @@ public class HttpDriver implements Driver {
 
 	public void setBeforeReadDeactivateConsumer(Consumer<Map<String, Object>> beforeReadDeactivateConsumer) {
 		this.beforeReadDeactivateConsumer = beforeReadDeactivateConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteExecuteConsumer() {
+		return beforeWriteExecuteConsumer;
+	}
+
+	public void setBeforeWriteExecuteConsumer(Consumer<Map<String, Object>> beforeWriteExecuteConsumer) {
+		this.beforeWriteExecuteConsumer = beforeWriteExecuteConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadExecuteConsumer() {
+		return beforeReadExecuteConsumer;
+	}
+
+	public void setBeforeReadExecuteConsumer(Consumer<Map<String, Object>> beforeReadExecuteConsumer) {
+		this.beforeReadExecuteConsumer = beforeReadExecuteConsumer;
 	}
 }

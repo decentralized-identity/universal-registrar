@@ -147,6 +147,47 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/DeactivateState"
+  "/execute":
+    post:
+      summary: Execute an operation
+      description: <p>This endpoint executes an operation that uses the DID but is not related to the standard create/update/deactivate operations. As input it takes the existing
+        DID, an operation, operation data, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to execute the operation. The output is a state object that represents the current
+        state of the execution process, and an operation result.</p> <p>See the <a href="https://identity.foundation/did-registration/#execute">DID
+        Registration</a> specification for additional details.</p>
+      operationId: execute
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExecuteRequest"
+      responses:
+        "200":
+          description: The request was successful, and the operation may or may not be fully
+            executed yet, as indicated by the "didState.state" and "jobId" output fields.
+            Additional state information plus metadata are available in the response
+            body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteState"
+        "400":
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteState"
+        "500":
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteState"
   "/properties":
     get:
       summary: Return a map of configuration properties
@@ -273,6 +314,34 @@ components:
                 DID deactivation operation.
               type: string
               example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+    ExecuteRequest:
+      description: Input fields for a DID execute operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarRequest"
+        - type: object
+          required:
+            - did
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID execute operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+            operation:
+              description: This input field indicates which operation should be
+                executed. See <a href="https://identity.foundation/did-registration/#operation">https://identity.foundation/did-registration/#operation</a>.
+              type: array
+              items:
+                type: string
+              example:
+                - executeMyOperation
+            operationData:
+              description: This input field contains additional data. See <a href="https://identity.foundation/did-registration/#operationdata">https://identity.foundation/did-registration/#operationdata</a>.
+              type: array
+              items:
+                type: object
+              example:
+                - myOperationData: myOperationValue
     DidDocument:
       type: object
       properties:
@@ -333,6 +402,19 @@ components:
       allOf:
         - $ref: "#/components/schemas/RegistrarState"
         - type: object
+    ExecuteState:
+      description: The state after an execute operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarState"
+        - type: object
+          properties:
+            operationResult:
+              description: This output field contains the result of the operation. See <a href="https://identity.foundation/did-registration/#operationdata">https://identity.foundation/did-registration/#operationdata</a>.
+              type: array
+              items:
+                type: object
+                example:
+                  myOperationData: myOperationValue
     DidState:
       description: The current state of a DID.
       type: object

@@ -61,6 +61,11 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
+	public ExecuteState execute(String method, ExecuteRequest executeRequest) throws RegistrationException {
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().execute(method, executeRequest);
+	}
+
+	@Override
 	public Map<String, Map<String, Object>> properties() throws RegistrationException {
 		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().properties();
 	}
@@ -75,12 +80,10 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	 */
 
 	public UniRegistrar getUniRegistrar() {
-
 		return this.uniRegistrar;
 	}
 
 	public void setUniRegistrar(UniRegistrar uniRegistrar) {
-
 		this.uniRegistrar = uniRegistrar;
 	}
 }

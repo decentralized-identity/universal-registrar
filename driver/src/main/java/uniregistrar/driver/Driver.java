@@ -13,6 +13,7 @@ public interface Driver {
 	public CreateState create(CreateRequest createRequest) throws RegistrationException;
 	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException;
 	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException;
+	public ExecuteState execute(ExecuteRequest executeRequest) throws RegistrationException;
 
 	default public Map<String, Object> properties() throws RegistrationException {
 

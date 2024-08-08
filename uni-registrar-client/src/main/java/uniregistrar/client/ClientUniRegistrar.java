@@ -36,6 +36,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 	public static final URI DEFAULT_CREATE_URI = URI.create("http://localhost:8080/1.0/create");
 	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:8080/1.0/update");
 	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:8080/1.0/deactivate");
+	public static final URI DEFAULT_EXECUTE_URI = URI.create("http://localhost:8080/1.0/execute");
 	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:8080/1.0/properties");
 	public static final URI DEFAULT_METHODS_URI = URI.create("http://localhost:8080/1.0/methods");
 
@@ -43,6 +44,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
+	private URI executeUri = DEFAULT_EXECUTE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 	private URI methodsUri = DEFAULT_METHODS_URI;
 
@@ -58,6 +60,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		clientUniRegistrar.setCreateUri(URI.create(baseUri + "create"));
 		clientUniRegistrar.setUpdateUri(URI.create(baseUri + "update"));
 		clientUniRegistrar.setDeactivateUri(URI.create(baseUri + "deactivate"));
+		clientUniRegistrar.setExecuteUri(URI.create(baseUri + "execute"));
 		clientUniRegistrar.setPropertiesUri(URI.create(baseUri + "properties"));
 		clientUniRegistrar.setMethodsUri(URI.create(baseUri + "methods"));
 
@@ -257,6 +260,70 @@ public class ClientUniRegistrar implements UniRegistrar {
 	}
 
 	@Override
+	public ExecuteState execute(String method, ExecuteRequest executeRequest) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (executeRequest == null) throw new NullPointerException();
+
+		// prepare HTTP request
+
+		String uriString = this.getExecuteUri().toString() + "?method=" + method;
+
+		String body;
+
+		try {
+
+			body = objectMapper.writeValueAsString(executeRequest);
+		} catch (JsonProcessingException ex) {
+
+			throw new RegistrationException(ex.getMessage(), ex);
+		}
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request
+
+		ExecuteState executeState;
+
+		if (log.isDebugEnabled()) log.debug("Request for execute request " + body + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (statusCode == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve EXECUTE STATE for execute request " + executeRequest + " from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			executeState = objectMapper.readValue(httpBody, ExecuteState.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve EXECUTE STATE for execute request " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved EXECUTE STATE for execute request " + executeRequest + " (" + uriString + "): " + executeState);
+
+		// done
+
+		return executeState;
+	}
+
+	@Override
 	public Map<String, Map<String, Object>> properties() throws RegistrationException {
 
 		// prepare HTTP request
@@ -402,6 +469,18 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public void setDeactivateUri(String deactivateUri) {
 		this.deactivateUri = URI.create(deactivateUri);
+	}
+
+	public URI getExecuteUri() {
+		return this.executeUri;
+	}
+
+	public void setExecuteUri(URI executeUri) {
+		this.executeUri = executeUri;
+	}
+
+	public void setExecuteUri(String executeUri) {
+		this.executeUri = URI.create(executeUri);
 	}
 
 	public URI getPropertiesUri() {

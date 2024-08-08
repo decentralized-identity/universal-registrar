@@ -7,9 +7,9 @@ import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
 import uniregistrar.driver.http.HttpDriver;
 import uniregistrar.local.configuration.LocalUniRegistrarConfigurator;
-import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.local.extensions.Extension;
 import uniregistrar.local.extensions.ExtensionStatus;
+import uniregistrar.local.extensions.util.ExecutionStateUtil;
 import uniregistrar.openapi.model.*;
 import uniregistrar.util.HttpBindingUtil;
 
@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class LocalUniRegistrar implements UniRegistrar {
 
@@ -315,6 +314,63 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// done
 
 		return deactivateState;
+	}
+
+	@Override
+	public ExecuteState execute(String method, ExecuteRequest executeRequest) throws RegistrationException {
+
+		return this.execute(method, executeRequest, null);
+	}
+
+	public ExecuteState execute(String method, ExecuteRequest executeRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (executeRequest == null) throw new NullPointerException();
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		// start time
+
+		long start = System.currentTimeMillis();
+
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
+
+		// prepare execute state
+
+		ExecuteState executeState = new ExecuteState();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
+
+		// [execute]
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (log.isInfoEnabled()) log.info("Executing execute with request " + executeRequest + " with driver " + driver.getClass().getSimpleName());
+
+			ExecuteState driverExecuteState = driver.execute(executeRequest);
+			if (driverExecuteState != null) {
+				executeState.setJobId(driverExecuteState.getJobId());
+				executeState.setDidState(driverExecuteState.getDidState());
+				if (driverExecuteState.getDidRegistrationMetadata() != null) executeState.getDidRegistrationMetadata().putAll(driverExecuteState.getDidRegistrationMetadata());
+				if (driverExecuteState.getDidDocumentMetadata() != null) executeState.getDidDocumentMetadata().putAll(driverExecuteState.getDidDocumentMetadata());
+			}
+
+			if (log.isInfoEnabled()) log.info("Executed execute with state " + executeState + " with driver " + driver.getClass().getSimpleName());
+		}
+
+		// additional metadata
+
+		long stop = System.currentTimeMillis();
+		executeState.getDidRegistrationMetadata().put("duration", stop - start);
+		executeState.getDidRegistrationMetadata().put("method", method);
+
+		// done
+
+		return executeState;
 	}
 
 	public <E extends Extension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, Extension.ExtensionFunction<E> extensionFunction, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState) throws RegistrationException {

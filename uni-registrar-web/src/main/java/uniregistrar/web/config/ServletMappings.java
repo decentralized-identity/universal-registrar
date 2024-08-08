@@ -11,6 +11,7 @@ public class ServletMappings {
 	private String create;
 	private String update;
 	private String deactivate;
+	private String execute;
 	private String methods;
 
 	public String getProperties() {
@@ -27,6 +28,10 @@ public class ServletMappings {
 
 	public String getDeactivate() {
 		return deactivate;
+	}
+
+	public String getExecute() {
+		return execute;
 	}
 
 	public String getMethods() {
@@ -47,6 +52,10 @@ public class ServletMappings {
 
 	public void setDeactivate(String deactivate) {
 		this.deactivate = deactivate;
+	}
+
+	public void setExecute(String execute) {
+		this.execute = execute;
 	}
 
 	public void setMethods(String methods) {

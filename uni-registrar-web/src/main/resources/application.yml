@@ -6,6 +6,7 @@ server:
       create: "/1.0/create"
       update: "/1.0/update"
       deactivate: "/1.0/deactivate"
+      execute: "/1.0/execute"
       methods: "/1.0/methods"
   port: '9080'
 spring:
