@@ -3,12 +3,13 @@ package uniregistrar.driver.http;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
@@ -31,23 +32,16 @@ public class HttpDriver implements Driver {
 
 	private static final Logger log = LoggerFactory.getLogger(HttpDriver.class);
 
-	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
-	public static final URI DEFAULT_CREATE_URI = null;
-	public static final URI DEFAULT_UPDATE_URI = null;
-	public static final URI DEFAULT_DEACTIVATE_URI = null;
-	public static final URI DEFAULT_EXECUTE_URI = null;
-	public static final URI DEFAULT_PROPERTIES_URI = null;
-	public static final Boolean DEFAULT_INCLUDE_METHOD_PARAMETER = false;
+	private static final int HTTP_CLIENT_TIMEOUT = 60;
 
-	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
-	private URI createUri = DEFAULT_CREATE_URI;
-	private URI updateUri = DEFAULT_UPDATE_URI;
-	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
-	private URI executeUri = DEFAULT_EXECUTE_URI;
-	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
-	private Boolean includeMethodParameter = DEFAULT_INCLUDE_METHOD_PARAMETER;
-
+	private HttpClient httpClient;
 	private String method;
+	private URI createUri = null;
+	private URI updateUri = null;
+	private URI deactivateUri = null;
+	private URI executeUri = null;
+	private URI propertiesUri = null;
+	private Boolean includeMethodParameter = false;
 
 	private Consumer<Map<String, Object>> beforeWriteCreateConsumer;
 	private Consumer<Map<String, Object>> beforeReadCreateConsumer;
@@ -59,7 +53,16 @@ public class HttpDriver implements Driver {
 	private Consumer<Map<String, Object>> beforeReadExecuteConsumer;
 
 	public HttpDriver() {
+		this.httpClient = buildDefaultHttpClient();
+	}
 
+	private static HttpClient buildDefaultHttpClient() {
+		RequestConfig requestConfig = RequestConfig.custom()
+				.setConnectTimeout(HTTP_CLIENT_TIMEOUT * 1000)
+				.setConnectionRequestTimeout(HTTP_CLIENT_TIMEOUT * 1000)
+				.setSocketTimeout(HTTP_CLIENT_TIMEOUT * 1000)
+				.build();
+		return HttpClientBuilder.create().setDefaultRequestConfig(requestConfig).build();
 	}
 
 	@Override
@@ -489,20 +492,20 @@ public class HttpDriver implements Driver {
 	 * Getters and setters
 	 */
 
-	public String getMethod() {
-		return method;
-	}
-
-	public void setMethod(String method) {
-		this.method = method;
-	}
-
 	public HttpClient getHttpClient() {
 		return this.httpClient;
 	}
 
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
+	}
+
+	public String getMethod() {
+		return method;
+	}
+
+	public void setMethod(String method) {
+		this.method = method;
 	}
 
 	public URI getCreateUri() {
@@ -526,7 +529,6 @@ public class HttpDriver implements Driver {
 	}
 
 	public void setUpdateUri(String updateUri) {
-
 		this.updateUri = URI.create(updateUri);
 	}
 
@@ -551,7 +553,6 @@ public class HttpDriver implements Driver {
 	}
 
 	public void setExecuteUri(String executeUri) {
-
 		this.executeUri = URI.create(executeUri);
 	}
 
