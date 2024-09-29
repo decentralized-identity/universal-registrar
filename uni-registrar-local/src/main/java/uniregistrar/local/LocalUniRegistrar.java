@@ -343,6 +343,30 @@ public class LocalUniRegistrar implements UniRegistrar {
 		ExecuteState executeState = new ExecuteState();
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
+		// [before execute]
+
+		this.executeExtensions(Extension.BeforeExecuteExtension.class, extensionStatus, e -> e.beforeExecute(method, executeRequest, executeState, executionState, this), executeRequest, executeState, executionState);
+
+		// [before driver write execute]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteExecuteConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteExecuteExtension.class, e -> e.beforeDriverWriteExecute(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read execute]
+
+		final Consumer<Map<String, Object>> beforeDriverReadExecuteConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadExecuteExtension.class, e -> e.beforeDriverReadExecute(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
 		// [execute]
 
 		if (! extensionStatus.skipDriver()) {
@@ -350,6 +374,11 @@ public class LocalUniRegistrar implements UniRegistrar {
 			Driver driver = this.getDrivers().get(method);
 			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing execute with request " + executeRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteDeactivateConsumer(beforeDriverWriteExecuteConsumer);
+				httpDriver.setBeforeReadDeactivateConsumer(beforeDriverReadExecuteConsumer);
+			}
 
 			ExecuteState driverExecuteState = driver.execute(executeRequest);
 			if (driverExecuteState != null) {
@@ -361,6 +390,10 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 			if (log.isInfoEnabled()) log.info("Executed execute with state " + executeState + " with driver " + driver.getClass().getSimpleName());
 		}
+
+		// [after execute]
+
+		this.executeExtensions(Extension.AfterExecuteExtension.class, extensionStatus, e -> e.afterExecute(method, executeRequest, executeState, executionState, this), executeRequest, executeState, executionState);
 
 		// additional metadata
 
