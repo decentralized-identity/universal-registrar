@@ -376,8 +376,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 			if (log.isInfoEnabled()) log.info("Executing execute with request " + executeRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
-				httpDriver.setBeforeWriteDeactivateConsumer(beforeDriverWriteExecuteConsumer);
-				httpDriver.setBeforeReadDeactivateConsumer(beforeDriverReadExecuteConsumer);
+				httpDriver.setBeforeWriteExecuteConsumer(beforeDriverWriteExecuteConsumer);
+				httpDriver.setBeforeReadExecuteConsumer(beforeDriverReadExecuteConsumer);
 			}
 
 			ExecuteState driverExecuteState = driver.execute(executeRequest);
