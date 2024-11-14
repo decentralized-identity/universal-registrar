@@ -188,6 +188,136 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ExecuteState"
+  "/createResource":
+    post:
+      summary: Create a DID URL and associated resource
+      description: <p>This endpoint creates a DID URL and associated resource. As input it takes an existing DID,
+        a relative DID URL, a resource, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to create the DID URL. The output is a state object that represents the current
+        state of the DID URL creation process.</p> <p>See the <a href="https://identity.foundation/did-registration/#createResource">DID
+        Registration</a> specification for additional details.</p>
+      operationId: createResource
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResourceRequest"
+      responses:
+        "200":
+          description: The request was successful, but the DID URL may not be fully created
+            yet, as indicated by the "didState.state" and "jobId" output fields. Additional
+            state information plus metadata are available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResourceState"
+        "201":
+          description: The DID URL has been successfully created, as indicated by the
+            "didState.state" output field. Additional state information (including
+            the created DID URL) plus metadata are available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResourceState"
+        "400":
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResourceState"
+        "500":
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreateResourceState"
+  "/updateResource":
+    post:
+      summary: Update a DID URL and associated resource
+      description: <p>This endpoint updates a DID URL and associated resource. As input it takes an existing DID,
+        a relative DID URL, a resource, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to update the DID URL. The output is a state object that represents the current
+        state of the DID URL update process.</p> <p>See the <a href="https://identity.foundation/did-registration/#updateResource">DID
+        Registration</a> specification for additional details.</p>
+      operationId: updateResource
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateResourceRequest"
+      responses:
+        "200":
+          description: The request was successful, and the DID URL may or may not be fully
+            updated yet, as indicated by the "didState.state" and "jobId" output fields.
+            Additional state information plus metadata are available in the response
+            body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResourceState"
+        "400":
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResourceState"
+        "500":
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResourceState"
+  "/deactivateResource":
+    post:
+      summary: Deactivate a DID URL and associated resource
+      description: <p>This endpoint deactivates a DID URL and associated resource. As input it takes an existing DID,
+        a relative DID URL, a resource, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
+        and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
+        needed to deactivate the DID URL. The output is a state object that represents the current
+        state of the DID URL deactivation process.</p> <p>See the <a href="https://identity.foundation/did-registration/#deactivateResource">DID
+        Registration</a> specification for additional details.</p>
+      operationId: deactivateResource
+      tags:
+        - Universal Registrar
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeactivateResourceRequest"
+      responses:
+        "200":
+          description: The request was successful, and the DID URL may or may not be fully
+            deactivated yet, as indicated by the "didState.state" and "jobId" output
+            fields. Additional state information plus metadata are available in the
+            response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeactivateResourceState"
+        "400":
+          description: A problem with the input fields has occurred. Additional state
+            information plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeactivateResourceState"
+        "500":
+          description: An internal error has occurred. Additional state information
+            plus metadata may be available in the response body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeactivateResourceState"
   "/properties":
     get:
       summary: Return a map of configuration properties
@@ -288,7 +418,7 @@ components:
               type: string
               example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
             didDocumentOperation:
-              description: This input field indicates which update operation should be
+              description: This input field indicates which update operation(s) should be
                 applied to a DID’s associated DID document. See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#diddocumentoperation</a>.
               type: array
               items:
@@ -342,6 +472,81 @@ components:
                 type: object
               example:
                 - myOperationData: myOperationValue
+    CreateResourceRequest:
+      description: Input fields for a DID URL create operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarRequest"
+        - type: object
+          required:
+            - did
+            - relativeDidUrl
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID URL create operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+            relativeDidUrl:
+              description: This input field indicates a relative DID URL that is the target of the
+                DID URL create operation.
+              type: string
+              example: /resources/123
+            data:
+              description: This input field contains Base64-encoded data that is the content of the
+                resource associated with the DID URL.
+              type: string
+    UpdateResourceRequest:
+      description: Input fields for a DID URL update operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarRequest"
+        - type: object
+          required:
+            - did
+            - relativeDidUrl
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID URL update operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+            relativeDidUrl:
+              description: This input field indicates a relative DID URL that is the target of the
+                DID URL update operation.
+              type: string
+              example: /resources/123
+            resourceOperation:
+              description: This input field indicates which update operation(s) should be
+                applied to a DID URL’s associated resource. See <a href="https://identity.foundation/did-registration/#diddocumentoperation">https://identity.foundation/did-registration/#resourceoperation</a>.
+              type: array
+              items:
+                type: string
+              example:
+                - setResource
+            data:
+              description: This input field contains Base64-encoded data that is the content of the
+                resource associated with the DID URL.
+              type: array
+              items:
+                type: string
+    DeactivateResourceRequest:
+      description: Input fields for a DID URL deactivate operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarRequest"
+        - type: object
+          required:
+            - did
+            - relativeDidUrl
+          properties:
+            did:
+              description: This input field indicates the DID that is the target of the
+                DID URL deactivate operation.
+              type: string
+              example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+            relativeDidUrl:
+              description: This input field indicates a relative DID URL that is the target of the
+                DID URL deactivate operation.
+              type: string
+              example: /resources/123
     DidDocument:
       type: object
       properties:
@@ -387,23 +592,40 @@ components:
         didDocumentMetadata:
           type: object
           additionalProperties: { }
+    RegistrarResourceState:
+      description: The state after a DID URL operation.
+      type: object
+      required:
+        - didState
+      properties:
+        jobId:
+          type: string
+          example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
+        didState:
+          $ref: "#/components/schemas/DidState"
+        didRegistrationMetadata:
+          type: object
+          additionalProperties: { }
+        resourceMetadata:
+          type: object
+          additionalProperties: { }
     CreateState:
       description: The state after a DID create operation.
       allOf:
         - $ref: "#/components/schemas/RegistrarState"
         - type: object
     UpdateState:
-      description: The state after an update operation.
+      description: The state after a DID update operation.
       allOf:
         - $ref: "#/components/schemas/RegistrarState"
         - type: object
     DeactivateState:
-      description: The state after a deactivate operation.
+      description: The state after a DID deactivate operation.
       allOf:
         - $ref: "#/components/schemas/RegistrarState"
         - type: object
     ExecuteState:
-      description: The state after an execute operation.
+      description: The state after a DID execute operation.
       allOf:
         - $ref: "#/components/schemas/RegistrarState"
         - type: object
@@ -415,6 +637,21 @@ components:
                 type: object
                 example:
                   myOperationData: myOperationValue
+    CreateResourceState:
+      description: The state after a DID URL create operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarResourceState"
+        - type: object
+    UpdateResourceState:
+      description: The state after a DID URL update operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarResourceState"
+        - type: object
+    DeactivateResourceState:
+      description: The state after a DID URL deactivate operation.
+      allOf:
+        - $ref: "#/components/schemas/RegistrarResourceState"
+        - type: object
     DidState:
       description: The current state of a DID.
       type: object
