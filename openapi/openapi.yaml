@@ -149,7 +149,7 @@ paths:
                 $ref: "#/components/schemas/DeactivateState"
   "/execute":
     post:
-      summary: Execute an operation
+      summary: Execute a DID operation
       description: <p>This endpoint executes an operation that uses the DID but is not related to the standard create/update/deactivate operations. As input it takes the existing
         DID, an operation, operation data, plus optional DID registration <a href="https://identity.foundation/did-registration/#options">options</a>
         and <a href="https://identity.foundation/did-registration/#secret">secrets</a>
