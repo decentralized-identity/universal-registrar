@@ -386,6 +386,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 				executeState.setDidState(driverExecuteState.getDidState());
 				if (driverExecuteState.getDidRegistrationMetadata() != null) executeState.getDidRegistrationMetadata().putAll(driverExecuteState.getDidRegistrationMetadata());
 				if (driverExecuteState.getDidDocumentMetadata() != null) executeState.getDidDocumentMetadata().putAll(driverExecuteState.getDidDocumentMetadata());
+				executeState.setOperationResult(driverExecuteState.getOperationResult());
 			}
 
 			if (log.isInfoEnabled()) log.info("Executed execute with state " + executeState + " with driver " + driver.getClass().getSimpleName());
