@@ -3,6 +3,8 @@ package uniregistrar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.openapi.model.DidStateFailed;
+import uniregistrar.openapi.model.DidUrlStateFailed;
+import uniregistrar.openapi.model.RegistrarResourceState;
 import uniregistrar.openapi.model.RegistrarState;
 
 import java.util.Map;
@@ -18,20 +20,28 @@ public class RegistrationException extends Exception {
 	private final String error;
 	private final Map<String, Object> didRegistrationMetadata;
 
-	private final RegistrarState state;
+	private final Object state;
 
-	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
+	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Object state, Throwable ex) {
 		super(message, ex);
+		this.error = error;
+		this.didRegistrationMetadata = didRegistrationMetadata;
+		this.state = state;
+	}
+
+	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Object state) {
+		super(message);
 		this.error = error;
 		this.didRegistrationMetadata = didRegistrationMetadata;
 		this.state = null;
 	}
 
+	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
+
+	}
+
 	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata) {
-		super(message);
-		this.error = error;
-		this.didRegistrationMetadata = didRegistrationMetadata;
-		this.state = null;
+
 	}
 
 	public RegistrationException(String error, String message, Throwable ex) {
@@ -54,9 +64,24 @@ public class RegistrationException extends Exception {
 		this(ex.getMessage(), ex);
 	}
 
+	public static RegistrationException fromRegistrarState(RegistrarState state) {
+		if (state.getDidState() instanceof DidStateFailed didStateFailed) {
+			return new RegistrationException(didStateFailed.getReason(), didStateFailed.getError(), state.getDidRegistrationMetadata(), state);
+		} else {
+			return new RegistrationException("Invalid DID state exception: " + state.getDidState());
+		}
+	}
+
 	public RegistrationException(RegistrarState state) {
 		super(((DidStateFailed) state.getDidState()).getReason());
 		this.error = ((DidStateFailed) state.getDidState()).getError();
+		this.didRegistrationMetadata = state.getDidRegistrationMetadata();
+		this.state = state;
+	}
+
+	public RegistrationException(RegistrarResourceState state) {
+		super(((DidUrlStateFailed) state.getDidUrlState()).getReason());
+		this.error = ((DidUrlStateFailed) state.getDidUrlState()).getError();
 		this.didRegistrationMetadata = state.getDidRegistrationMetadata();
 		this.state = state;
 	}
@@ -93,7 +118,7 @@ public class RegistrationException extends Exception {
 		return didRegistrationMetadata;
 	}
 
-	public RegistrarState getState() {
+	public Object getState() {
 		return state;
 	}
 }

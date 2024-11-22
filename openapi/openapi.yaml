@@ -491,7 +491,7 @@ components:
                 DID URL create operation.
               type: string
               example: /resources/123
-            data:
+            content:
               description: This input field contains Base64-encoded data that is the content of the
                 resource associated with the DID URL.
               type: string
@@ -522,7 +522,7 @@ components:
                 type: string
               example:
                 - setResource
-            data:
+            content:
               description: This input field contains Base64-encoded data that is the content of the
                 resource associated with the DID URL.
               type: array
@@ -596,17 +596,17 @@ components:
       description: The state after a DID URL operation.
       type: object
       required:
-        - didState
+        - didUrlState
       properties:
         jobId:
           type: string
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
-        didState:
-          $ref: "#/components/schemas/DidState"
+        didUrlState:
+          $ref: "#/components/schemas/DidUrlState"
         didRegistrationMetadata:
           type: object
           additionalProperties: { }
-        resourceMetadata:
+        contentMetadata:
           type: object
           additionalProperties: { }
     CreateState:
@@ -676,32 +676,85 @@ components:
         didDocument:
           $ref: "#/components/schemas/DidDocument"
       additionalProperties: { }
+    DidUrlState:
+      description: The current state of a DID URL and associated resource.
+      type: object
+      required:
+        - state
+      discriminator:
+        propertyName: state
+        mapping:
+          finished: "#/components/schemas/DidUrlStateFinished"
+          failed: "#/components/schemas/DidUrlStateFailed"
+          action: "#/components/schemas/DidUrlStateAction"
+          wait: "#/components/schemas/DidUrlStateWait"
+      properties:
+        state:
+          $ref: "#/components/schemas/String"
+          example: finished
+        didUrl:
+          $ref: "#/components/schemas/String"
+          example: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw
+        secret:
+          $ref: "#/components/schemas/DidStateSecret"
+        content:
+          $ref: "#/components/schemas/String"
+      additionalProperties: { }
     DidStateFinished:
+      allOf:
+        - $ref: "#/components/schemas/DidState"
+        - $ref: "#/components/schemas/StateFinished"
+    DidStateFailed:
+      allOf:
+        - $ref: "#/components/schemas/DidState"
+        - $ref: "#/components/schemas/StateFailed"
+    DidStateAction:
+      allOf:
+        - $ref: "#/components/schemas/DidState"
+        - $ref: "#/components/schemas/StateAction"
+    DidStateWait:
+      allOf:
+        - $ref: "#/components/schemas/DidState"
+        - $ref: "#/components/schemas/StateWait"
+    DidUrlStateFinished:
+      allOf:
+        - $ref: "#/components/schemas/DidUrlState"
+        - $ref: "#/components/schemas/StateFinished"
+    DidUrlStateFailed:
+      allOf:
+        - $ref: "#/components/schemas/DidUrlState"
+        - $ref: "#/components/schemas/StateFailed"
+    DidUrlStateAction:
+      allOf:
+        - $ref: "#/components/schemas/DidUrlState"
+        - $ref: "#/components/schemas/StateAction"
+    DidUrlStateWait:
+      allOf:
+        - $ref: "#/components/schemas/DidUrlState"
+        - $ref: "#/components/schemas/StateWait"
+    StateFinished:
       description: This state indicates that the DID operation has been completed. See
         https://identity.foundation/did-registration/#didstatestatefinished.
       allOf:
-        - $ref: "#/components/schemas/DidState"
         - type: object
-    DidStateFailed:
+    StateFailed:
       description: This state indicates that the DID operation has failed. See
         https://identity.foundation/did-registration/#didstatestatefailed.
       allOf:
-        - $ref: "#/components/schemas/DidState"
         - type: object
           properties:
             error:
-              type: string
+              $ref: "#/components/schemas/String"
             reason:
-              type: string
-    DidStateAction:
+              $ref: "#/components/schemas/String"
+    StateAction:
       description: This state indicates that the client needs to perform an action, before the DID operation can be continued. See
         https://identity.foundation/did-registration/#didstatestateaction.
       allOf:
-        - $ref: "#/components/schemas/DidState"
         - type: object
           properties:
             action:
-              type: string
+              $ref: "#/components/schemas/String"
             verificationMethodTemplate:
               type: array
               items:
@@ -714,17 +767,16 @@ components:
               type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/DecryptionRequest"
-    DidStateWait:
+    StateWait:
       description: This state indicates that the client needs to wait, before the DID operation can be continued.
         See https://identity.foundation/did-registration/#didstatestatewait.
       allOf:
-        - $ref: "#/components/schemas/DidState"
         - type: object
           properties:
             wait:
-              type: string
+              $ref: "#/components/schemas/String"
             waittime:
-              type: string
+              $ref: "#/components/schemas/String"
     Secret:
       description: Secrets in requests and states.
       type: object
@@ -751,7 +803,7 @@ components:
     SecretVerificationMethodVerificationMethodTemplate:
       type: array
       items:
-         $ref: "#/components/schemas/VerificationMethodTemplate"
+        $ref: "#/components/schemas/VerificationMethodTemplate"
     RequestSecret:
       description: This input field contains an object with DID controller keys
         and other secrets needed for performing the DID operation. See

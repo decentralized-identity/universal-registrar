@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.openapi.RFC3339DateFormat;
 import uniregistrar.openapi.model.RegistrarRequest;
+import uniregistrar.openapi.model.RegistrarResourceState;
 import uniregistrar.openapi.model.RegistrarState;
 
 import java.io.IOException;
@@ -46,7 +47,15 @@ public class HttpBindingUtil {
         return objectMapper.convertValue(map, cl);
     }
 
+    public static <T extends RegistrarResourceState> T fromMapResourceState(Map<String, Object> map, Class<T> cl) {
+        return objectMapper.convertValue(map, cl);
+    }
+
     public static Map<String, Object> toMapState(RegistrarState state) {
+        return objectMapper.convertValue(state, Map.class);
+    }
+
+    public static Map<String, Object> toMapState(RegistrarResourceState state) {
         return objectMapper.convertValue(state, Map.class);
     }
 
@@ -93,6 +102,14 @@ public class HttpBindingUtil {
     public static String toHttpBodyState(RegistrarState registrarState) {
         try {
             return objectMapper.writeValueAsString(registrarState);
+        } catch (JsonProcessingException ex) {
+            throw new RuntimeException(ex.getMessage(), ex);
+        }
+    }
+
+    public static String toHttpBodyResourceState(RegistrarResourceState registrarResourceState) {
+        try {
+            return objectMapper.writeValueAsString(registrarResourceState);
         } catch (JsonProcessingException ex) {
             throw new RuntimeException(ex.getMessage(), ex);
         }
