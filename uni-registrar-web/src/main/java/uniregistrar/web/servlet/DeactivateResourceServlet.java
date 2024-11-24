@@ -32,7 +32,7 @@ public class DeactivateResourceServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		Map<String, Object> requestMap;
+		final Map<String, Object> requestMap;
 
 		try {
 			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
@@ -115,7 +115,7 @@ public class DeactivateResourceServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("DEACTIVATE RESOURCE problem for " + deactivateResourceRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE RESOURCE problem for " + deactivateResourceRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).getRegistrarResourceState();
+			state = ((RegistrationException) ex).toErrorRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

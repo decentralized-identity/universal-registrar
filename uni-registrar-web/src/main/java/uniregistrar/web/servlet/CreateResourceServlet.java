@@ -96,7 +96,7 @@ public class CreateResourceServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("CREATE RESOURCE problem for " + createResourceRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("CREATE RESOURCE problem for " + createResourceRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).getRegistrarResourceState();
+			state = ((RegistrationException) ex).toErrorRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

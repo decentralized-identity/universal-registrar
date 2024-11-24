@@ -822,6 +822,10 @@ public class HttpDriver implements Driver {
 		this.createResourceUri = createResourceUri;
 	}
 
+	public void setCreateResourceUri(String createResourceUri) {
+		this.createResourceUri = URI.create(createResourceUri);
+	}
+
 	public URI getUpdateResourceUri() {
 		return updateResourceUri;
 	}
@@ -830,12 +834,20 @@ public class HttpDriver implements Driver {
 		this.updateResourceUri = updateResourceUri;
 	}
 
+	public void setUpdateResourceUri(String updateResourceUri) {
+		this.updateResourceUri = URI.create(updateResourceUri);
+	}
+
 	public URI getDeactivateResourceUri() {
 		return deactivateResourceUri;
 	}
 
 	public void setDeactivateResourceUri(URI deactivateResourceUri) {
 		this.deactivateResourceUri = deactivateResourceUri;
+	}
+
+	public void setDeactivateResourceUri(String deactivateResourceUri) {
+		this.deactivateResourceUri = URI.create(deactivateResourceUri);
 	}
 
 	public URI getPropertiesUri() {

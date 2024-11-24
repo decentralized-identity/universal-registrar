@@ -61,7 +61,7 @@ public class UpdateResourceServlet extends WebUniRegistrar {
 			}
 		}
 		if (method == null) {
-			if (log.isWarnEnabled()) log.warn("Missing DID method in UPDATE request.");
+			if (log.isWarnEnabled()) log.warn("Missing DID method in UPDATE RESOURCE request.");
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in UPDATE RESOURCE request.");
 			return;
 		}
@@ -115,12 +115,12 @@ public class UpdateResourceServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("UPDATE RESOURCE problem for " + updateResourceRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("UPDATE RESOURCE problem for " + updateResourceRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).getRegistrarResourceState();
+			state = ((RegistrationException) ex).toErrorRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}
 
-		if (log.isInfoEnabled()) log.info("State for " + updateResourceRequest + ": " + state);
+		if (log.isInfoEnabled()) log.info("UPDATE RESOURCE tate for " + updateResourceRequest + ": " + state);
 
 		// [before write]
 
