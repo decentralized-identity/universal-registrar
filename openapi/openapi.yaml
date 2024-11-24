@@ -756,9 +756,7 @@ components:
             action:
               $ref: "#/components/schemas/String"
             verificationMethodTemplate:
-              type: array
-              items:
-                $ref: "#/components/schemas/VerificationMethodTemplate"
+              $ref: "#/components/schemas/StateActionVerificationMethodTemplate"
             signingRequest:
               type: [object, null]
               additionalProperties:
@@ -767,6 +765,10 @@ components:
               type: [object, null]
               additionalProperties:
                 $ref: "#/components/schemas/DecryptionRequest"
+    StateActionVerificationMethodTemplate:
+      type: array
+      items:
+        $ref: "#/components/schemas/VerificationMethodTemplate"
     StateWait:
       description: This state indicates that the client needs to wait, before the DID operation can be continued.
         See https://identity.foundation/did-registration/#didstatestatewait.
