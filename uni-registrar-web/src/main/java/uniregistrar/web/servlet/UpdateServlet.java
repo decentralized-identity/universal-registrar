@@ -115,7 +115,7 @@ public class UpdateServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("UPDATE problem for " + updateRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("UPDATE problem for " + updateRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			state = ((RegistrationException) ex).toErrorRegistrarState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

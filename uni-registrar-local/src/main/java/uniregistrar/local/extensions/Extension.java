@@ -57,6 +57,24 @@ public interface Extension {
 		}
 	}
 
+	@ExtensionStage("beforeReadCreateResource")
+	interface BeforeReadCreateResourceExtension extends Extension {
+		default void beforeReadCreateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeReadUpdateResource")
+	interface BeforeReadUpdateResourceExtension extends Extension {
+		default void beforeReadUpdateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeReadDeactivateResource")
+	interface BeforeReadDeactivateResourceExtension extends Extension {
+		default void beforeReadDeactivateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
 	/*
 	 * before
 	 */
@@ -89,6 +107,27 @@ public interface Extension {
 		}
 	}
 
+	@ExtensionStage("beforeCreateResource")
+	interface BeforeCreateResourceExtension extends Extension {
+		default ExtensionStatus beforeCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
+	@ExtensionStage("beforeUpdateResource")
+	interface BeforeUpdateResourceExtension extends Extension {
+		default ExtensionStatus beforeUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
+	@ExtensionStage("beforeDeactivateResource")
+	interface BeforeDeactivateResourceExtension extends Extension {
+		default ExtensionStatus beforeDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
 	/*
 	 * beforeDriverWrite
 	 */
@@ -117,6 +156,24 @@ public interface Extension {
 		}
 	}
 
+	@ExtensionStage("beforeDriverWriteCreateResource")
+	interface BeforeDriverWriteCreateResourceExtension extends Extension {
+		default void beforeDriverWriteCreateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverWriteUpdateResource")
+	interface BeforeDriverWriteUpdateResourceExtension extends Extension {
+		default void beforeDriverWriteUpdateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverWriteDeactivateResource")
+	interface BeforeDriverWriteDeactivateResourceExtension extends Extension {
+		default void beforeDriverWriteDeactivateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
 	/*
 	 * beforeDriverRead
 	 */
@@ -142,6 +199,24 @@ public interface Extension {
 	@ExtensionStage("beforeDriverReadExecute")
 	interface BeforeDriverReadExecuteExtension extends Extension {
 		default void beforeDriverReadExecute(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverReadCreateResource")
+	interface BeforeDriverReadCreateResourceExtension extends Extension {
+		default void beforeDriverReadCreateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverReadUpdateResource")
+	interface BeforeDriverReadUpdateResourceExtension extends Extension {
+		default void beforeDriverReadUpdateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeDriverReadDeactivateResource")
+	interface BeforeDriverReadDeactivateResourceExtension extends Extension {
+		default void beforeDriverReadDeactivateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
 		}
 	}
 
@@ -177,6 +252,27 @@ public interface Extension {
 		}
 	}
 
+	@ExtensionStage("afterCreateResource")
+	interface AfterCreateResourceExtension extends Extension {
+		default ExtensionStatus afterCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
+	@ExtensionStage("afterUpdateResource")
+	interface AfterUpdateResourceExtension extends Extension {
+		default ExtensionStatus afterUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
+	@ExtensionStage("afterDeactivateResource")
+	interface AfterDeactivateResourceExtension extends Extension {
+		default ExtensionStatus afterDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return null;
+		}
+	}
+
 	/*
 	 * beforeWrite
 	 */
@@ -205,11 +301,32 @@ public interface Extension {
 		}
 	}
 
+	@ExtensionStage("beforeWriteCreateResource")
+	interface BeforeWriteCreateResourceExtension extends Extension {
+		default void beforeWriteCreateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeWriteUpdateResource")
+	interface BeforeWriteUpdateResourceExtension extends Extension {
+		default void beforeWriteUpdateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
+	@ExtensionStage("beforeWriteDeactivateResource")
+	interface BeforeWriteDeactivateResourceExtension extends Extension {
+		default void beforeWriteDeactivateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+		}
+	}
+
 	/*
 	 * Helper classes
 	 */
 
-	abstract class AbstractExtension implements BeforeReadCreateExtension, BeforeReadUpdateExtension, BeforeReadDeactivateExtension, BeforeCreateExtension, BeforeUpdateExtension, BeforeDeactivateExtension, BeforeDriverWriteCreateExtension, BeforeDriverWriteUpdateExtension, BeforeDriverWriteDeactivateExtension, BeforeDriverReadCreateExtension, BeforeDriverReadUpdateExtension, BeforeDriverReadDeactivateExtension, AfterCreateExtension, AfterUpdateExtension, AfterDeactivateExtension, BeforeWriteCreateExtension, BeforeWriteUpdateExtension, BeforeWriteDeactivateExtension {
+	abstract class AbstractExtension implements BeforeReadCreateExtension, BeforeReadUpdateExtension, BeforeReadDeactivateExtension, BeforeReadExecuteExtension, BeforeCreateExtension, BeforeUpdateExtension, BeforeDeactivateExtension, BeforeExecuteExtension, BeforeDriverWriteCreateExtension, BeforeDriverWriteUpdateExtension, BeforeDriverWriteDeactivateExtension, BeforeDriverWriteExecuteExtension, BeforeDriverReadCreateExtension, BeforeDriverReadUpdateExtension, BeforeDriverReadDeactivateExtension, BeforeDriverReadExecuteExtension, AfterCreateExtension, AfterUpdateExtension, AfterDeactivateExtension, AfterExecuteExtension, BeforeWriteCreateExtension, BeforeWriteUpdateExtension, BeforeWriteDeactivateExtension, BeforeWriteExecuteExtension {
+	}
+
+	abstract class AbstractResourceExtension implements BeforeReadCreateResourceExtension, BeforeReadUpdateResourceExtension, BeforeReadDeactivateResourceExtension, BeforeCreateResourceExtension, BeforeUpdateResourceExtension, BeforeDeactivateResourceExtension, BeforeDriverWriteCreateResourceExtension, BeforeDriverWriteUpdateResourceExtension, BeforeDriverWriteDeactivateResourceExtension, BeforeDriverReadCreateResourceExtension, BeforeDriverReadUpdateResourceExtension, BeforeDriverReadDeactivateResourceExtension, AfterCreateResourceExtension, AfterUpdateResourceExtension, AfterDeactivateResourceExtension, BeforeWriteCreateResourceExtension, BeforeWriteUpdateResourceExtension, BeforeWriteDeactivateResourceExtension {
 	}
 
 	abstract class AbstractBeforeReadExtension implements Extension.BeforeReadCreateExtension, Extension.BeforeReadUpdateExtension, Extension.BeforeReadDeactivateExtension, Extension.BeforeReadExecuteExtension {
@@ -237,6 +354,26 @@ public interface Extension {
 		abstract public void beforeRead(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
+	abstract class AbstractBeforeReadResourceExtension implements Extension.BeforeReadCreateResourceExtension, Extension.BeforeReadUpdateResourceExtension, Extension.BeforeReadDeactivateResourceExtension {
+
+		@Override
+		public final void beforeReadCreateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeReadResource(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeReadUpdateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeReadResource(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeReadDeactivateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeReadResource(method, requestMap, localUniRegistrar);
+		}
+
+		abstract public void beforeReadResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
 	abstract class AbstractBeforeRequestExtension implements Extension.BeforeCreateExtension, Extension.BeforeUpdateExtension, Extension.BeforeDeactivateExtension, Extension.BeforeExecuteExtension {
 
 		@Override
@@ -260,6 +397,26 @@ public interface Extension {
 		}
 
 		abstract public ExtensionStatus beforeRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractBeforeRequestResourceExtension implements Extension.BeforeCreateResourceExtension, Extension.BeforeUpdateResourceExtension, Extension.BeforeDeactivateResourceExtension {
+
+		@Override
+		public final ExtensionStatus beforeCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, createResourceRequest, createResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus beforeUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, updateResourceRequest, updateResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus beforeDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, deactivateResourceRequest, deactivateResourceState, executionState, localUniRegistrar);
+		}
+
+		abstract public ExtensionStatus beforeRequestResource(String method, RegistrarRequest request, RegistrarResourceState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	abstract class AbstractBeforeDriverWriteExtension implements Extension.BeforeDriverWriteCreateExtension, Extension.BeforeDriverWriteUpdateExtension, Extension.BeforeDriverWriteDeactivateExtension, Extension.BeforeDriverWriteExecuteExtension {
@@ -287,6 +444,26 @@ public interface Extension {
 		abstract public void beforeDriverWrite(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
+	abstract class AbstractBeforeDriverWriteResourceExtension implements Extension.BeforeDriverWriteCreateResourceExtension, Extension.BeforeDriverWriteUpdateResourceExtension, Extension.BeforeDriverWriteDeactivateResourceExtension {
+
+		@Override
+		public final void beforeDriverWriteCreateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWriteResource(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverWriteUpdateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWriteResource(method, requestMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverWriteDeactivateResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverWriteResource(method, requestMap, localUniRegistrar);
+		}
+
+		abstract public void beforeDriverWriteResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
 	abstract class AbstractBeforeDriverReadExtension implements Extension.BeforeDriverReadCreateExtension, Extension.BeforeDriverReadUpdateExtension, Extension.BeforeDriverReadDeactivateExtension, Extension.BeforeDriverReadExecuteExtension {
 
 		@Override
@@ -310,6 +487,26 @@ public interface Extension {
 		}
 
 		abstract public void beforeDriverRead(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractBeforeDriverReadResourceExtension implements Extension.BeforeDriverReadCreateResourceExtension, Extension.BeforeDriverReadUpdateResourceExtension, Extension.BeforeDriverReadDeactivateResourceExtension {
+
+		@Override
+		public final void beforeDriverReadCreateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverReadResource(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverReadUpdateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverReadResource(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeDriverReadDeactivateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeDriverReadResource(method, stateMap, localUniRegistrar);
+		}
+
+		abstract public void beforeDriverReadResource(String method, Map<String, Object> requestMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	abstract class AbstractAfterRequestExtension implements Extension.AfterCreateExtension, Extension.AfterUpdateExtension, Extension.AfterDeactivateExtension, Extension.AfterExecuteExtension {
@@ -337,6 +534,26 @@ public interface Extension {
 		abstract public ExtensionStatus afterRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
+	abstract class AbstractAfterRequestResourceExtension implements Extension.AfterCreateResourceExtension, Extension.AfterUpdateResourceExtension, Extension.AfterDeactivateResourceExtension {
+
+		@Override
+		public final ExtensionStatus afterCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, createResourceRequest, createResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus afterUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, updateResourceRequest, updateResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus afterDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, deactivateResourceRequest, deactivateResourceState, executionState, localUniRegistrar);
+		}
+
+		abstract public ExtensionStatus afterRequestResource(String method, RegistrarRequest request, RegistrarResourceState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
 	abstract class AbstractBeforeWriteExtension implements Extension.BeforeWriteCreateExtension, Extension.BeforeWriteUpdateExtension, Extension.BeforeWriteDeactivateExtension, Extension.BeforeWriteExecuteExtension {
 
 		@Override
@@ -362,7 +579,27 @@ public interface Extension {
 		abstract public void beforeWrite(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
-	abstract class AbstractRequestExtension implements Extension.BeforeCreateExtension, Extension.BeforeUpdateExtension, Extension.BeforeDeactivateExtension, Extension.BeforeExecuteExtension, Extension.AfterCreateExtension, Extension.AfterUpdateExtension, Extension.AfterDeactivateExtension, Extension.AfterExecuteExtension {
+	abstract class AbstractBeforeWriteResourceExtension implements Extension.BeforeWriteCreateResourceExtension, Extension.BeforeWriteUpdateResourceExtension, Extension.BeforeWriteDeactivateResourceExtension {
+
+		@Override
+		public final void beforeWriteCreateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeWriteResource(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeWriteUpdateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeWriteResource(method, stateMap, localUniRegistrar);
+		}
+
+		@Override
+		public final void beforeWriteDeactivateResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			this.beforeWriteResource(method, stateMap, localUniRegistrar);
+		}
+
+		abstract public void beforeWriteResource(String method, Map<String, Object> stateMap, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractRequestExtension implements Extension.BeforeCreateExtension, Extension.BeforeUpdateExtension, Extension.BeforeDeactivateExtension, Extension.BeforeExecuteExtension, Extension.BeforeCreateResourceExtension, Extension.BeforeUpdateResourceExtension, Extension.BeforeDeactivateResourceExtension, Extension.AfterCreateExtension, Extension.AfterUpdateExtension, Extension.AfterDeactivateExtension, Extension.AfterExecuteExtension, Extension.AfterCreateResourceExtension, Extension.AfterUpdateResourceExtension, Extension.AfterDeactivateResourceExtension {
 
 		@Override
 		public final ExtensionStatus beforeCreate(String method, CreateRequest createRequest, CreateState createState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
@@ -407,6 +644,43 @@ public interface Extension {
 		abstract public ExtensionStatus beforeRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 
 		abstract public ExtensionStatus afterRequest(String method, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+	}
+
+	abstract class AbstractRequestResourceExtension implements Extension.BeforeCreateResourceExtension, Extension.BeforeUpdateResourceExtension, Extension.BeforeDeactivateResourceExtension, Extension.AfterCreateResourceExtension, Extension.AfterUpdateResourceExtension, Extension.AfterDeactivateResourceExtension {
+
+		@Override
+		public final ExtensionStatus beforeCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, createResourceRequest, createResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus beforeUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, updateResourceRequest, updateResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus beforeDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.beforeRequestResource(method, deactivateResourceRequest, deactivateResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus afterCreateResource(String method, CreateResourceRequest createResourceRequest, CreateResourceState createResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, createResourceRequest, createResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus afterUpdateResource(String method, UpdateResourceRequest updateResourceRequest, UpdateResourceState updateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, updateResourceRequest, updateResourceState, executionState, localUniRegistrar);
+		}
+
+		@Override
+		public final ExtensionStatus afterDeactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, DeactivateResourceState deactivateResourceState, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException {
+			return this.afterRequestResource(method, deactivateResourceRequest, deactivateResourceState, executionState, localUniRegistrar);
+		}
+
+		abstract public ExtensionStatus beforeRequestResource(String method, RegistrarRequest request, RegistrarResourceState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
+
+		abstract public ExtensionStatus afterRequestResource(String method, RegistrarRequest request, RegistrarResourceState state, Map<String, Object> executionState, LocalUniRegistrar localUniRegistrar) throws RegistrationException;
 	}
 
 	static List<String> extensionClassNames(List<? extends Extension> extensions) {

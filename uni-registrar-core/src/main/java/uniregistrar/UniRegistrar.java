@@ -14,6 +14,9 @@ public interface UniRegistrar {
 	public UpdateState update(String method, UpdateRequest updateRequest) throws RegistrationException;
 	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest) throws RegistrationException;
 	public ExecuteState execute(String method, ExecuteRequest executeRequest) throws RegistrationException;
+	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest) throws RegistrationException;
+	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest) throws RegistrationException;
+	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException;
 	public Map<String, Map<String, Object>> properties() throws RegistrationException;
 	public Set<String> methods() throws RegistrationException;
 }

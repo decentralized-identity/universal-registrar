@@ -7,6 +7,9 @@ server:
       update: "/1.0/update"
       deactivate: "/1.0/deactivate"
       execute: "/1.0/execute"
+      createResource: "/1.0/createResource"
+      updateResource: "/1.0/updateResource"
+      deactivateResource: "/1.0/deactivateResource"
       methods: "/1.0/methods"
   port: '9080'
 spring:

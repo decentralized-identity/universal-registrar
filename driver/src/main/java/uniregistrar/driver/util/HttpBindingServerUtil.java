@@ -4,10 +4,7 @@ import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
-import uniregistrar.openapi.model.CreateState;
-import uniregistrar.openapi.model.DidStateFailed;
-import uniregistrar.openapi.model.DidStateFinished;
-import uniregistrar.openapi.model.RegistrarState;
+import uniregistrar.openapi.model.*;
 import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
@@ -33,6 +30,25 @@ public class HttpBindingServerUtil {
                 return HttpStatus.SC_INTERNAL_SERVER_ERROR;
         } else if (state.getDidState() instanceof DidStateFinished) {
             if (state instanceof CreateState) {
+                return HttpStatus.SC_CREATED;
+            } else {
+                return HttpStatus.SC_OK;
+            }
+        } else {
+            return HttpStatus.SC_OK;
+        }
+    }
+
+    public static int httpStatusCodeForState(RegistrarResourceState state) {
+        if (state.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
+            if (RegistrationException.ERROR_NOTFOUND.equals(didUrlStateFailed.getError()))
+                return HttpStatus.SC_NOT_FOUND;
+            else if (RegistrationException.ERROR_BADREQUEST.equals(didUrlStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else
+                return HttpStatus.SC_INTERNAL_SERVER_ERROR;
+        } else if (state.getDidUrlState() instanceof DidUrlStateFinished) {
+            if (state instanceof CreateResourceState) {
                 return HttpStatus.SC_CREATED;
             } else {
                 return HttpStatus.SC_OK;

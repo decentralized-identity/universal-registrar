@@ -66,6 +66,21 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 	}
 
 	@Override
+	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest) throws RegistrationException {
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().createResource(method, createResourceRequest);
+	}
+
+	@Override
+	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest) throws RegistrationException {
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().updateResource(method, updateResourceRequest);
+	}
+
+	@Override
+	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException {
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().deactivateResource(method, deactivateResourceRequest);
+	}
+
+	@Override
 	public Map<String, Map<String, Object>> properties() throws RegistrationException {
 		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().properties();
 	}

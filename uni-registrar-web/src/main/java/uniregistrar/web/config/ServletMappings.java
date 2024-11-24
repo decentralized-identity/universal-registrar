@@ -12,6 +12,9 @@ public class ServletMappings {
 	private String update;
 	private String deactivate;
 	private String execute;
+	private String createResource;
+	private String updateResource;
+	private String deactivateResource;
 	private String methods;
 
 	public String getProperties() {
@@ -32,6 +35,18 @@ public class ServletMappings {
 
 	public String getExecute() {
 		return execute;
+	}
+
+	public String getCreateResource() {
+		return createResource;
+	}
+
+	public String getUpdateResource() {
+		return updateResource;
+	}
+
+	public String getDeactivateResource() {
+		return deactivateResource;
 	}
 
 	public String getMethods() {
@@ -56,6 +71,18 @@ public class ServletMappings {
 
 	public void setExecute(String execute) {
 		this.execute = execute;
+	}
+
+	public void setCreateResource(String createResource) {
+		this.createResource = createResource;
+	}
+
+	public void setUpdateResource(String updateResource) {
+		this.updateResource = updateResource;
+	}
+
+	public void setDeactivateResource(String deactivateResource) {
+		this.deactivateResource = deactivateResource;
 	}
 
 	public void setMethods(String methods) {

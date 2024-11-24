@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class LocalUniRegistrar implements UniRegistrar {
 
@@ -75,7 +76,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before create]
 
-		this.executeExtensions(Extension.BeforeCreateExtension.class, extensionStatus, e -> e.beforeCreate(method, createRequest, createState, executionState, this), createRequest, createState, executionState);
+		this.executeExtensions(Extension.BeforeCreateExtension.class, extensionStatus, e -> e.beforeCreate(method, createRequest, createState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(createRequest), () -> HttpBindingUtil.toHttpBodyState(createState), executionState);
 
 		// [before driver write create]
 
@@ -123,7 +124,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after create]
 
-		this.executeExtensions(Extension.AfterCreateExtension.class, extensionStatus, e -> e.afterCreate(method, createRequest, createState, executionState, this), createRequest, createState, executionState);
+		this.executeExtensions(Extension.AfterCreateExtension.class, extensionStatus, e -> e.afterCreate(method, createRequest, createState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(createRequest), () -> HttpBindingUtil.toHttpBodyState(createState), executionState);
 
 		// additional metadata
 
@@ -165,7 +166,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before update]
 
-		this.executeExtensions(Extension.BeforeUpdateExtension.class, extensionStatus, e -> e.beforeUpdate(method, updateRequest, updateState, executionState, this), updateRequest, updateState, executionState);
+		this.executeExtensions(Extension.BeforeUpdateExtension.class, extensionStatus, e -> e.beforeUpdate(method, updateRequest, updateState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(updateRequest), () -> HttpBindingUtil.toHttpBodyState(updateState), executionState);
 
 		// [before driver write update]
 
@@ -213,7 +214,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after update]
 
-		this.executeExtensions(Extension.AfterUpdateExtension.class, extensionStatus, e -> e.afterUpdate(method, updateRequest, updateState, executionState, this), updateRequest, updateState, executionState);
+		this.executeExtensions(Extension.AfterUpdateExtension.class, extensionStatus, e -> e.afterUpdate(method, updateRequest, updateState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(updateRequest), () -> HttpBindingUtil.toHttpBodyState(updateState), executionState);
 
 		// additional metadata
 
@@ -255,7 +256,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before deactivate]
 
-		this.executeExtensions(Extension.BeforeDeactivateExtension.class, extensionStatus, e -> e.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this), deactivateRequest, deactivateState, executionState);
+		this.executeExtensions(Extension.BeforeDeactivateExtension.class, extensionStatus, e -> e.beforeDeactivate(method, deactivateRequest, deactivateState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(deactivateRequest), () -> HttpBindingUtil.toHttpBodyState(deactivateState), executionState);
 
 		// [before driver write deactivate]
 
@@ -303,7 +304,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after deactivate]
 
-		this.executeExtensions(Extension.AfterDeactivateExtension.class, extensionStatus, e -> e.afterDeactivate(method, deactivateRequest, deactivateState, executionState, this), deactivateRequest, deactivateState, executionState);
+		this.executeExtensions(Extension.AfterDeactivateExtension.class, extensionStatus, e -> e.afterDeactivate(method, deactivateRequest, deactivateState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(deactivateRequest), () -> HttpBindingUtil.toHttpBodyState(deactivateState), executionState);
 
 		// additional metadata
 
@@ -345,7 +346,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [before execute]
 
-		this.executeExtensions(Extension.BeforeExecuteExtension.class, extensionStatus, e -> e.beforeExecute(method, executeRequest, executeState, executionState, this), executeRequest, executeState, executionState);
+		this.executeExtensions(Extension.BeforeExecuteExtension.class, extensionStatus, e -> e.beforeExecute(method, executeRequest, executeState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(executeRequest), () -> HttpBindingUtil.toHttpBodyState(executeState), executionState);
 
 		// [before driver write execute]
 
@@ -394,7 +395,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 
 		// [after execute]
 
-		this.executeExtensions(Extension.AfterExecuteExtension.class, extensionStatus, e -> e.afterExecute(method, executeRequest, executeState, executionState, this), executeRequest, executeState, executionState);
+		this.executeExtensions(Extension.AfterExecuteExtension.class, extensionStatus, e -> e.afterExecute(method, executeRequest, executeState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(executeRequest), () -> HttpBindingUtil.toHttpBodyState(executeState), executionState);
 
 		// additional metadata
 
@@ -407,7 +408,277 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return executeState;
 	}
 
-	public <E extends Extension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, Extension.ExtensionFunction<E> extensionFunction, RegistrarRequest request, RegistrarState state, Map<String, Object> executionState) throws RegistrationException {
+	@Override
+	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest) throws RegistrationException {
+
+		return this.createResource(method, createResourceRequest, null);
+	}
+
+	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (createResourceRequest == null) throw new NullPointerException();
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		// start time
+
+		long start = System.currentTimeMillis();
+
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
+
+		// prepare createResource state
+
+		CreateResourceState createResourceState = new CreateResourceState();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
+
+		// [before createResource]
+
+		this.executeExtensions(Extension.BeforeCreateResourceExtension.class, extensionStatus, e -> e.beforeCreateResource(method, createResourceRequest, createResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(createResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(createResourceState), executionState);
+
+		// [before driver write createResource]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteCreateResourceConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteCreateResourceExtension.class, e -> e.beforeDriverWriteCreateResource(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read createResource]
+
+		final Consumer<Map<String, Object>> beforeDriverReadCreateResourceConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadCreateResourceExtension.class, e -> e.beforeDriverReadCreateResource(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [createResource]
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (log.isInfoEnabled()) log.info("Executing createResource with request " + createResourceRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteCreateResourceConsumer(beforeDriverWriteCreateResourceConsumer);
+				httpDriver.setBeforeReadCreateResourceConsumer(beforeDriverReadCreateResourceConsumer);
+			}
+
+			CreateResourceState driverCreateResourceState = driver.createResource(createResourceRequest);
+			if (driverCreateResourceState != null) {
+				createResourceState.setJobId(driverCreateResourceState.getJobId());
+				createResourceState.setDidUrlState(driverCreateResourceState.getDidUrlState());
+				if (driverCreateResourceState.getDidRegistrationMetadata() != null) createResourceState.getDidRegistrationMetadata().putAll(driverCreateResourceState.getDidRegistrationMetadata());
+				if (driverCreateResourceState.getContentMetadata() != null) createResourceState.getContentMetadata().putAll(driverCreateResourceState.getContentMetadata());
+			}
+
+			if (log.isInfoEnabled()) log.info("Executed createResource resource with state " + createResourceState + " with driver " + driver.getClass().getSimpleName());
+		}
+
+		// [after createResource]
+
+		this.executeExtensions(Extension.AfterCreateResourceExtension.class, extensionStatus, e -> e.afterCreateResource(method, createResourceRequest, createResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(createResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(createResourceState), executionState);
+
+		// additional metadata
+
+		long stop = System.currentTimeMillis();
+		createResourceState.getDidRegistrationMetadata().put("duration", stop - start);
+		createResourceState.getDidRegistrationMetadata().put("method", method);
+
+		// done
+
+		return createResourceState;
+	}
+
+	@Override
+	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest) throws RegistrationException {
+
+		return this.updateResource(method, updateResourceRequest, null);
+	}
+
+	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (updateResourceRequest == null) throw new NullPointerException();
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		// start time
+
+		long start = System.currentTimeMillis();
+
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
+
+		// prepare updateResource state
+
+		UpdateResourceState updateResourceState = new UpdateResourceState();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
+
+		// [before updateResource]
+
+		this.executeExtensions(Extension.BeforeUpdateResourceExtension.class, extensionStatus, e -> e.beforeUpdateResource(method, updateResourceRequest, updateResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(updateResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(updateResourceState), executionState);
+
+		// [before driver write updateResource]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteUpdateResourceConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteUpdateResourceExtension.class, e -> e.beforeDriverWriteUpdateResource(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read updateResource]
+
+		final Consumer<Map<String, Object>> beforeDriverReadUpdateResourceConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadUpdateResourceExtension.class, e -> e.beforeDriverReadUpdateResource(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [updateResource]
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (log.isInfoEnabled()) log.info("Executing updateResource with request " + updateResourceRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteUpdateResourceConsumer(beforeDriverWriteUpdateResourceConsumer);
+				httpDriver.setBeforeReadUpdateResourceConsumer(beforeDriverReadUpdateResourceConsumer);
+			}
+
+			UpdateResourceState driverUpdateResourceState = driver.updateResource(updateResourceRequest);
+			if (driverUpdateResourceState != null) {
+				updateResourceState.setJobId(driverUpdateResourceState.getJobId());
+				updateResourceState.setDidUrlState(driverUpdateResourceState.getDidUrlState());
+				if (driverUpdateResourceState.getDidRegistrationMetadata() != null) updateResourceState.getDidRegistrationMetadata().putAll(driverUpdateResourceState.getDidRegistrationMetadata());
+				if (driverUpdateResourceState.getContentMetadata() != null) updateResourceState.getContentMetadata().putAll(driverUpdateResourceState.getContentMetadata());
+			}
+
+			if (log.isInfoEnabled()) log.info("Executed updateResource with state " + updateResourceState + " with driver " + driver.getClass().getSimpleName());
+		}
+
+		// [after updateResource]
+
+		this.executeExtensions(Extension.AfterUpdateResourceExtension.class, extensionStatus, e -> e.afterUpdateResource(method, updateResourceRequest, updateResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(updateResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(updateResourceState), executionState);
+
+		// additional metadata
+
+		long stop = System.currentTimeMillis();
+		updateResourceState.getDidRegistrationMetadata().put("duration", stop - start);
+		updateResourceState.getDidRegistrationMetadata().put("method", method);
+
+		// done
+
+		return updateResourceState;
+	}
+
+	@Override
+	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException {
+
+		return this.deactivateResource(method, deactivateResourceRequest, null);
+	}
+
+	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (deactivateResourceRequest == null) throw new NullPointerException();
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		// start time
+
+		long start = System.currentTimeMillis();
+
+		// prepare execution state
+
+		Map<String, Object> executionState = new HashMap<>();
+		if (initialExecutionState != null) executionState.putAll(initialExecutionState);
+
+		// prepare deactivateResource state
+
+		DeactivateResourceState deactivateResourceState = new DeactivateResourceState();
+		ExtensionStatus extensionStatus = new ExtensionStatus();
+
+		// [before deactivateResource]
+
+		this.executeExtensions(Extension.BeforeDeactivateResourceExtension.class, extensionStatus, e -> e.beforeDeactivateResource(method, deactivateResourceRequest, deactivateResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(deactivateResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(deactivateResourceState), executionState);
+
+		// [before driver write deactivateResource]
+
+		final Consumer<Map<String, Object>> beforeDriverWriteDeactivateResourceConsumer = requestMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverWriteDeactivateExtension.class, e -> e.beforeDriverWriteDeactivate(method, requestMap, LocalUniRegistrar.this), requestMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [before driver read deactivateResource]
+
+		final Consumer<Map<String, Object>> beforeDriverReadDeactivateResourceConsumer = stateMap -> {
+			try {
+				LocalUniRegistrar.this.executeExtensions(Extension.BeforeDriverReadDeactivateExtension.class, e -> e.beforeDriverReadDeactivate(method, stateMap, LocalUniRegistrar.this), stateMap);
+			} catch (RegistrationException ex) {
+				throw new RuntimeException(ex.getMessage(), ex);
+			}
+		};
+
+		// [deactivateResource]
+
+		if (! extensionStatus.skipDriver()) {
+
+			Driver driver = this.getDrivers().get(method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (log.isInfoEnabled()) log.info("Executing deactivateResource with request " + deactivateResourceRequest + " with driver " + driver.getClass().getSimpleName());
+
+			if (driver instanceof HttpDriver httpDriver) {
+				httpDriver.setBeforeWriteDeactivateConsumer(beforeDriverWriteDeactivateResourceConsumer);
+				httpDriver.setBeforeReadDeactivateConsumer(beforeDriverReadDeactivateResourceConsumer);
+			}
+
+			DeactivateResourceState driverDeactivateState = driver.deactivateResource(deactivateResourceRequest);
+			if (driverDeactivateState != null) {
+				deactivateResourceState.setJobId(driverDeactivateState.getJobId());
+				deactivateResourceState.setDidUrlState(driverDeactivateState.getDidUrlState());
+				if (driverDeactivateState.getDidRegistrationMetadata() != null) deactivateResourceState.getDidRegistrationMetadata().putAll(driverDeactivateState.getDidRegistrationMetadata());
+				if (driverDeactivateState.getContentMetadata() != null) deactivateResourceState.getContentMetadata().putAll(driverDeactivateState.getContentMetadata());
+			}
+
+			if (log.isInfoEnabled()) log.info("Executed deactivateResource with state " + deactivateResourceState + " with driver " + driver.getClass().getSimpleName());
+		}
+
+		// [after deactivateResource]
+
+		this.executeExtensions(Extension.AfterDeactivateResourceExtension.class, extensionStatus, e -> e.afterDeactivateResource(method, deactivateResourceRequest, deactivateResourceState, executionState, this), () -> HttpBindingUtil.toHttpBodyRequest(deactivateResourceRequest), () -> HttpBindingUtil.toHttpBodyResourceState(deactivateResourceState), executionState);
+
+		// additional metadata
+
+		long stop = System.currentTimeMillis();
+		deactivateResourceState.getDidRegistrationMetadata().put("duration", stop - start);
+		deactivateResourceState.getDidRegistrationMetadata().put("method", method);
+
+		// done
+
+		return deactivateResourceState;
+	}
+
+	public <E extends Extension> void executeExtensions(Class<E> extensionClass, ExtensionStatus extensionStatus, Extension.ExtensionFunction<E> extensionFunction, Supplier<String> requestSupplier, Supplier<String> stateSupplier, Map<String, Object> executionState) throws RegistrationException {
 
 		String extensionStage = extensionClass.getAnnotation(Extension.ExtensionStage.class).value();
 
@@ -422,7 +693,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 			ExtensionStatus returnedExtensionStatus = extensionFunction.apply(extension);
 			extensionStatus.or(returnedExtensionStatus);
 			if (returnedExtensionStatus == null) { inapplicableExtensions.add(extension); continue; }
-			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + HttpBindingUtil.toHttpBodyRequest(request) + "\n-->STATE: " + HttpBindingUtil.toHttpBodyState(state) + "\n-->EXECUTION STATE: " + executionState);
+			if (log.isDebugEnabled()) log.debug("Executed extension (" + extensionStage + ") " + extension.getClass().getSimpleName() + "\n-->REQUEST: " + requestSupplier.get() + "\n-->STATE: " + stateSupplier.get() + "\n-->EXECUTION STATE: " + executionState);
 			ExecutionStateUtil.addExtensionStage(executionState, extensionClass, extension);
 		}
 

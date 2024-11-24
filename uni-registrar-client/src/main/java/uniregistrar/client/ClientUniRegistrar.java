@@ -37,6 +37,9 @@ public class ClientUniRegistrar implements UniRegistrar {
 	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:8080/1.0/update");
 	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:8080/1.0/deactivate");
 	public static final URI DEFAULT_EXECUTE_URI = URI.create("http://localhost:8080/1.0/execute");
+	public static final URI DEFAULT_CREATERESOURCE_URI = URI.create("http://localhost:8080/1.0/createResource");
+	public static final URI DEFAULT_UPDATERESOURCE_URI = URI.create("http://localhost:8080/1.0/updateResource");
+	public static final URI DEFAULT_DEACTIVATERESOURCE_URI = URI.create("http://localhost:8080/1.0/deactivateResource");
 	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:8080/1.0/properties");
 	public static final URI DEFAULT_METHODS_URI = URI.create("http://localhost:8080/1.0/methods");
 
@@ -45,6 +48,9 @@ public class ClientUniRegistrar implements UniRegistrar {
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI executeUri = DEFAULT_EXECUTE_URI;
+	private URI createResourceUri = DEFAULT_CREATERESOURCE_URI;
+	private URI updateResourceUri = DEFAULT_UPDATERESOURCE_URI;
+	private URI deactivateResourceUri = DEFAULT_DEACTIVATERESOURCE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 	private URI methodsUri = DEFAULT_METHODS_URI;
 
@@ -61,6 +67,9 @@ public class ClientUniRegistrar implements UniRegistrar {
 		clientUniRegistrar.setUpdateUri(URI.create(baseUri + "update"));
 		clientUniRegistrar.setDeactivateUri(URI.create(baseUri + "deactivate"));
 		clientUniRegistrar.setExecuteUri(URI.create(baseUri + "execute"));
+		clientUniRegistrar.setCreateResourceUri(URI.create(baseUri + "createResource"));
+		clientUniRegistrar.setUpdateResourceUri(URI.create(baseUri + "updateResource"));
+		clientUniRegistrar.setDeactivateResourceUri(URI.create(baseUri + "deactivateResource"));
 		clientUniRegistrar.setPropertiesUri(URI.create(baseUri + "properties"));
 		clientUniRegistrar.setMethodsUri(URI.create(baseUri + "methods"));
 
@@ -95,7 +104,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		CreateState createState;
 
-		if (log.isDebugEnabled()) log.debug("Request for create request " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for CREATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -114,17 +123,17 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for CREATE REQUEST " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			createState = objectMapper.readValue(httpBody, CreateState.class);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve CREATE STATE for create request " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve CREATE STATE for CREATE REQUEST " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved CREATE STATE for create request " + createRequest + " (" + uriString + "): " + createState);
+		if (log.isDebugEnabled()) log.debug("Retrieved CREATE STATE for CREATE REQUEST " + createRequest + " (" + uriString + "): " + createState);
 
 		// done
 
@@ -159,7 +168,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		UpdateState updateState;
 
-		if (log.isDebugEnabled()) log.debug("Request for update request " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for UPDATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -178,17 +187,17 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE STATE for UPDATE REQUEST " + updateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			updateState = objectMapper.readValue(httpBody, UpdateState.class);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve UPDATE STATE for update request " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve UPDATE STATE for UPDATE REQUEST " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved UPDATE STATE for update request " + updateRequest + " (" + uriString + "): " + updateState);
+		if (log.isDebugEnabled()) log.debug("Retrieved UPDATE STATE for UPDATE REQUEST " + updateRequest + " (" + uriString + "): " + updateState);
 
 		// done
 
@@ -223,7 +232,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		DeactivateState deactivateState;
 
-		if (log.isDebugEnabled()) log.debug("Request for deactivate request " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for DEACTIVATE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -242,17 +251,17 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			deactivateState = objectMapper.readValue(httpBody, DeactivateState.class);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for deactivate request " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved DEACTIVATE STATE for deactivate request " + deactivateRequest + " (" + uriString + "): " + deactivateState);
+		if (log.isDebugEnabled()) log.debug("Retrieved DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " (" + uriString + "): " + deactivateState);
 
 		// done
 
@@ -287,7 +296,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		ExecuteState executeState;
 
-		if (log.isDebugEnabled()) log.debug("Request for execute request " + body + " to: " + uriString);
+		if (log.isDebugEnabled()) log.debug("Request for EXECUTE REQUEST " + body + " to: " + uriString);
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
@@ -306,21 +315,213 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
 
-				if (log.isWarnEnabled()) log.warn("Cannot retrieve EXECUTE STATE for execute request " + executeRequest + " from " + uriString + ": " + httpBody);
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			executeState = objectMapper.readValue(httpBody, ExecuteState.class);
 		} catch (IOException ex) {
 
-			throw new RegistrationException("Cannot retrieve EXECUTE STATE for execute request " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+			throw new RegistrationException("Cannot retrieve EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
 
-		if (log.isDebugEnabled()) log.debug("Retrieved EXECUTE STATE for execute request " + executeRequest + " (" + uriString + "): " + executeState);
+		if (log.isDebugEnabled()) log.debug("Retrieved EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " (" + uriString + "): " + executeState);
 
 		// done
 
 		return executeState;
+	}
+
+	@Override
+	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (createResourceRequest == null) throw new NullPointerException();
+
+		// prepare HTTP request
+
+		String uriString = this.getCreateResourceUri().toString() + "?method=" + method;
+
+		String body;
+
+		try {
+
+			body = objectMapper.writeValueAsString(createResourceRequest);
+		} catch (JsonProcessingException ex) {
+
+			throw new RegistrationException(ex.getMessage(), ex);
+		}
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request
+
+		CreateResourceState createResourceState;
+
+		if (log.isDebugEnabled()) log.debug("Request for CREATE RESOURCE REQUEST " + body + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (statusCode == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			createResourceState = objectMapper.readValue(httpBody, CreateResourceState.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " (" + uriString + "): " + createResourceState);
+
+		// done
+
+		return createResourceState;
+	}
+
+	@Override
+	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (updateResourceRequest == null) throw new NullPointerException();
+
+		// prepare HTTP request
+
+		String uriString = this.getUpdateResourceUri().toString() + "?method=" + method;
+
+		String body;
+
+		try {
+
+			body = objectMapper.writeValueAsString(updateResourceRequest);
+		} catch (JsonProcessingException ex) {
+
+			throw new RegistrationException(ex.getMessage(), ex);
+		}
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request
+
+		UpdateResourceState updateResourceState;
+
+		if (log.isDebugEnabled()) log.debug("Request for UPDATE RESOURCE REQUEST " + body + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (statusCode == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			updateResourceState = objectMapper.readValue(httpBody, UpdateResourceState.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " (" + uriString + "): " + updateResourceState);
+
+		// done
+
+		return updateResourceState;
+	}
+
+	@Override
+	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException {
+
+		if (method == null) throw new NullPointerException();
+		if (deactivateResourceRequest == null) throw new NullPointerException();
+
+		// prepare HTTP request
+
+		String uriString = this.getDeactivateResourceUri().toString() + "?method=" + method;
+
+		String body;
+
+		try {
+
+			body = objectMapper.writeValueAsString(deactivateResourceRequest);
+		} catch (JsonProcessingException ex) {
+
+			throw new RegistrationException(ex.getMessage(), ex);
+		}
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request
+
+		DeactivateResourceState deactivateResourceState;
+
+		if (log.isDebugEnabled()) log.debug("Request for DEACTIVATE RESOURCE REQUEST " + body + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (statusCode == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			deactivateResourceState = objectMapper.readValue(httpBody, DeactivateResourceState.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " (" + uriString + "): " + deactivateResourceState);
+
+		// done
+
+		return deactivateResourceState;
 	}
 
 	@Override
@@ -481,6 +682,30 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public void setExecuteUri(String executeUri) {
 		this.executeUri = URI.create(executeUri);
+	}
+
+	public URI getCreateResourceUri() {
+		return createResourceUri;
+	}
+
+	public void setCreateResourceUri(URI createResourceUri) {
+		this.createResourceUri = createResourceUri;
+	}
+
+	public URI getUpdateResourceUri() {
+		return updateResourceUri;
+	}
+
+	public void setUpdateResourceUri(URI updateResourceUri) {
+		this.updateResourceUri = updateResourceUri;
+	}
+
+	public URI getDeactivateResourceUri() {
+		return deactivateResourceUri;
+	}
+
+	public void setDeactivateResourceUri(URI deactivateResourceUri) {
+		this.deactivateResourceUri = deactivateResourceUri;
 	}
 
 	public URI getPropertiesUri() {

@@ -100,7 +100,7 @@ public class ExecuteServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("EXECUTE problem for " + executeRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("EXECUTE problem for " + executeRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			state = ((RegistrationException) ex).toErrorRegistrarState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

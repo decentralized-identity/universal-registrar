@@ -40,6 +40,9 @@ public class HttpDriver implements Driver {
 	private URI updateUri = null;
 	private URI deactivateUri = null;
 	private URI executeUri = null;
+	private URI createResourceUri = null;
+	private URI updateResourceUri = null;
+	private URI deactivateResourceUri = null;
 	private URI propertiesUri = null;
 	private Boolean includeMethodParameter = false;
 
@@ -51,6 +54,14 @@ public class HttpDriver implements Driver {
 	private Consumer<Map<String, Object>> beforeReadDeactivateConsumer;
 	private Consumer<Map<String, Object>> beforeWriteExecuteConsumer;
 	private Consumer<Map<String, Object>> beforeReadExecuteConsumer;
+	private Consumer<Map<String, Object>> beforeWriteCreateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeReadCreateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeWriteUpdateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeReadUpdateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeWriteDeactivateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeReadDeactivateResourceConsumer;
+	private Consumer<Map<String, Object>> beforeWriteExecuteResourceConsumer;
+	private Consumer<Map<String, Object>> beforeReadExecuteResourceConsumer;
 
 	public HttpDriver() {
 		this.httpClient = buildDefaultHttpClient();
@@ -129,7 +140,7 @@ public class HttpDriver implements Driver {
 
 			if (createState != null && createState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(createState);
+				throw RegistrationException.fromRegistrarState(createState);
 			}
 
 			if (createState == null) {
@@ -210,7 +221,7 @@ public class HttpDriver implements Driver {
 
 			if (updateState != null && updateState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(updateState);
+				throw RegistrationException.fromRegistrarState(updateState);
 			}
 
 			if (updateState == null) {
@@ -291,7 +302,7 @@ public class HttpDriver implements Driver {
 
 			if (deactivateState != null && deactivateState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(deactivateState);
+				throw RegistrationException.fromRegistrarState(deactivateState);
 			}
 
 			if (deactivateState == null) {
@@ -372,7 +383,7 @@ public class HttpDriver implements Driver {
 
 			if (executeState != null && executeState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(executeState);
+				throw RegistrationException.fromRegistrarState(executeState);
 			}
 
 			if (executeState == null) {
@@ -388,6 +399,250 @@ public class HttpDriver implements Driver {
 		// done
 
 		return executeState;
+	}
+
+	@Override
+	public CreateResourceState createResource(CreateResourceRequest createResourceRequest) throws RegistrationException {
+
+		// prepare HTTP request
+
+		String uriString = this.getCreateResourceUri().toString();
+		if (Boolean.TRUE == this.getIncludeMethodParameter()) uriString += "?method=" + this.getMethod();
+
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(createResourceRequest);
+		this.getBeforeWriteCreateResourceConsumer().accept(requestMap);
+
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request and read response
+
+		CreateResourceState createResourceState = null;
+
+		if (log.isDebugEnabled()) log.debug("Driver request for CREATE RESOURCE REQUEST " + httpRequestBodyString + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			// execute HTTP request
+
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
+
+			if (httpResponseStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
+
+			Map<String, Object> stateMap;
+			try {
+				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
+				this.getBeforeReadCreateResourceConsumer().accept(stateMap);
+			} catch (JsonProcessingException ex) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (isStateHttpContent(stateMap)) {
+				createResourceState = HttpBindingUtil.fromMapResourceState(stateMap, CreateResourceState.class);
+			}
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createResourceState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (createResourceState != null && createResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
+				throw RegistrationException.fromRegistrarResourceState(createResourceState);
+			}
+
+			if (createResourceState == null) {
+				createResourceState = HttpBindingUtil.fromMapResourceState(stateMap, CreateResourceState.class);
+			}
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " (" + uriString + "): " + createResourceState);
+
+		// done
+
+		return createResourceState;
+	}
+
+	@Override
+	public UpdateResourceState updateResource(UpdateResourceRequest updateResourceRequest) throws RegistrationException {
+
+		// prepare HTTP request
+
+		String uriString = this.getUpdateResourceUri().toString();
+
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(updateResourceRequest);
+		this.getBeforeWriteUpdateResourceConsumer().accept(requestMap);
+
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request and read response
+
+		UpdateResourceState updateResourceState = null;
+
+		if (log.isDebugEnabled()) log.debug("Driver request for UPDATE RESOURCE REQUEST " + httpRequestBodyString + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			// execute HTTP request
+
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
+
+			if (httpResponseStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
+
+			Map<String, Object> stateMap;
+			try {
+				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
+				this.getBeforeReadUpdateResourceConsumer().accept(stateMap);
+			} catch (JsonProcessingException ex) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (isStateHttpContent(stateMap)) {
+				updateResourceState = HttpBindingUtil.fromMapResourceState(stateMap, UpdateResourceState.class);
+			}
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateResourceState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (updateResourceState != null && updateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
+				throw RegistrationException.fromRegistrarResourceState(updateResourceState);
+			}
+
+			if (updateResourceState == null) {
+				updateResourceState = HttpBindingUtil.fromMapResourceState(stateMap, UpdateResourceState.class);
+			}
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " (" + uriString + "): " + updateResourceState);
+
+		// done
+
+		return updateResourceState;
+	}
+
+	@Override
+	public DeactivateResourceState deactivateResource(DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException {
+
+		// prepare HTTP request
+
+		String uriString = this.getDeactivateResourceUri().toString();
+
+		Map<String, Object> requestMap = HttpBindingUtil.toMapRequest(deactivateResourceRequest);
+		this.getBeforeWriteDeactivateResourceConsumer().accept(requestMap);
+
+		String httpRequestBodyString = HttpBindingUtil.toHttpBodyMap(requestMap);
+
+		HttpPost httpPost = new HttpPost(URI.create(uriString));
+		httpPost.setEntity(new StringEntity(httpRequestBodyString, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
+		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+
+		// execute HTTP request and read response
+
+		DeactivateResourceState deactivateResourceState = null;
+
+		if (log.isDebugEnabled()) log.debug("Driver request for DEACTIVATE RESOURCE REQUEST " + httpRequestBodyString + " to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
+
+			// execute HTTP request
+
+			HttpEntity httpResponseEntity = httpResponse.getEntity();
+			int httpResponseStatusCode = httpResponse.getStatusLine().getStatusCode();
+			String httpResponseStatusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			ContentType httpResponseContentType = ContentType.get(httpResponse.getEntity());
+			Charset httpResponseCharset = (httpResponseContentType != null && httpResponseContentType.getCharset() != null) ? httpResponseContentType.getCharset() : HTTP.DEF_CONTENT_CHARSET;
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
+
+			if (httpResponseStatusCode == 404) return null;
+
+			// read result
+
+			byte[] httpResponseBodyBytes = EntityUtils.toByteArray(httpResponseEntity);
+			String httpResponseBodyString = new String(httpResponseBodyBytes, httpResponseCharset);
+			EntityUtils.consume(httpResponseEntity);
+
+			if (log.isDebugEnabled()) log.debug("Driver response HTTP body from " + uriString + ": " + httpResponseBodyString);
+
+			Map<String, Object> stateMap;
+			try {
+				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
+				this.getBeforeReadDeactivateResourceConsumer().accept(stateMap);
+			} catch (JsonProcessingException ex) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (isStateHttpContent(stateMap)) {
+				deactivateResourceState = HttpBindingUtil.fromMapResourceState(stateMap, DeactivateResourceState.class);
+			}
+
+			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateResourceState == null) {
+				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+			}
+
+			if (deactivateResourceState != null && deactivateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
+				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
+				throw RegistrationException.fromRegistrarResourceState(deactivateResourceState);
+			}
+
+			if (deactivateResourceState == null) {
+				deactivateResourceState = HttpBindingUtil.fromMapResourceState(stateMap, DeactivateResourceState.class);
+			}
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved DEACTIVATE RESOURCE STATE for DEACTIVATE REQUEST " + deactivateResourceRequest + " (" + uriString + "): " + deactivateResourceState);
+
+		// done
+
+		return deactivateResourceState;
 	}
 
 	@Override
@@ -424,6 +679,9 @@ public class HttpDriver implements Driver {
 		if (this.getUpdateUri() != null) httpProperties.put("updateUri", this.getUpdateUri().toString());
 		if (this.getDeactivateUri() != null) httpProperties.put("deactivateUri", this.getDeactivateUri().toString());
 		if (this.getExecuteUri() != null) httpProperties.put("executeUri", this.getExecuteUri().toString());
+		if (this.getCreateResourceUri() != null) httpProperties.put("createResourceUri", this.getCreateResourceUri().toString());
+		if (this.getUpdateResourceUri() != null) httpProperties.put("updateResourceUri", this.getUpdateResourceUri().toString());
+		if (this.getDeactivateResourceUri() != null) httpProperties.put("deactivateResourceUri", this.getDeactivateResourceUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
 		if (this.getIncludeMethodParameter() != null) httpProperties.put("propertiesUri", Boolean.toString(this.getIncludeMethodParameter()));
 		return httpProperties;
@@ -556,6 +814,42 @@ public class HttpDriver implements Driver {
 		this.executeUri = URI.create(executeUri);
 	}
 
+	public URI getCreateResourceUri() {
+		return createResourceUri;
+	}
+
+	public void setCreateResourceUri(URI createResourceUri) {
+		this.createResourceUri = createResourceUri;
+	}
+
+	public void setCreateResourceUri(String createResourceUri) {
+		this.createResourceUri = URI.create(createResourceUri);
+	}
+
+	public URI getUpdateResourceUri() {
+		return updateResourceUri;
+	}
+
+	public void setUpdateResourceUri(URI updateResourceUri) {
+		this.updateResourceUri = updateResourceUri;
+	}
+
+	public void setUpdateResourceUri(String updateResourceUri) {
+		this.updateResourceUri = URI.create(updateResourceUri);
+	}
+
+	public URI getDeactivateResourceUri() {
+		return deactivateResourceUri;
+	}
+
+	public void setDeactivateResourceUri(URI deactivateResourceUri) {
+		this.deactivateResourceUri = deactivateResourceUri;
+	}
+
+	public void setDeactivateResourceUri(String deactivateResourceUri) {
+		this.deactivateResourceUri = URI.create(deactivateResourceUri);
+	}
+
 	public URI getPropertiesUri() {
 		return this.propertiesUri;
 	}
@@ -638,5 +932,69 @@ public class HttpDriver implements Driver {
 
 	public void setBeforeReadExecuteConsumer(Consumer<Map<String, Object>> beforeReadExecuteConsumer) {
 		this.beforeReadExecuteConsumer = beforeReadExecuteConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteCreateResourceConsumer() {
+		return beforeWriteCreateResourceConsumer;
+	}
+
+	public void setBeforeWriteCreateResourceConsumer(Consumer<Map<String, Object>> beforeWriteCreateResourceConsumer) {
+		this.beforeWriteCreateResourceConsumer = beforeWriteCreateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadCreateResourceConsumer() {
+		return beforeReadCreateResourceConsumer;
+	}
+
+	public void setBeforeReadCreateResourceConsumer(Consumer<Map<String, Object>> beforeReadCreateResourceConsumer) {
+		this.beforeReadCreateResourceConsumer = beforeReadCreateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteUpdateResourceConsumer() {
+		return beforeWriteUpdateResourceConsumer;
+	}
+
+	public void setBeforeWriteUpdateResourceConsumer(Consumer<Map<String, Object>> beforeWriteUpdateResourceConsumer) {
+		this.beforeWriteUpdateResourceConsumer = beforeWriteUpdateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadUpdateResourceConsumer() {
+		return beforeReadUpdateResourceConsumer;
+	}
+
+	public void setBeforeReadUpdateResourceConsumer(Consumer<Map<String, Object>> beforeReadUpdateResourceConsumer) {
+		this.beforeReadUpdateResourceConsumer = beforeReadUpdateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteDeactivateResourceConsumer() {
+		return beforeWriteDeactivateResourceConsumer;
+	}
+
+	public void setBeforeWriteDeactivateResourceConsumer(Consumer<Map<String, Object>> beforeWriteDeactivateResourceConsumer) {
+		this.beforeWriteDeactivateResourceConsumer = beforeWriteDeactivateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadDeactivateResourceConsumer() {
+		return beforeReadDeactivateResourceConsumer;
+	}
+
+	public void setBeforeReadDeactivateResourceConsumer(Consumer<Map<String, Object>> beforeReadDeactivateResourceConsumer) {
+		this.beforeReadDeactivateResourceConsumer = beforeReadDeactivateResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeWriteExecuteResourceConsumer() {
+		return beforeWriteExecuteResourceConsumer;
+	}
+
+	public void setBeforeWriteExecuteResourceConsumer(Consumer<Map<String, Object>> beforeWriteExecuteResourceConsumer) {
+		this.beforeWriteExecuteResourceConsumer = beforeWriteExecuteResourceConsumer;
+	}
+
+	public Consumer<Map<String, Object>> getBeforeReadExecuteResourceConsumer() {
+		return beforeReadExecuteResourceConsumer;
+	}
+
+	public void setBeforeReadExecuteResourceConsumer(Consumer<Map<String, Object>> beforeReadExecuteResourceConsumer) {
+		this.beforeReadExecuteResourceConsumer = beforeReadExecuteResourceConsumer;
 	}
 }

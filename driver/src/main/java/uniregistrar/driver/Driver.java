@@ -14,6 +14,9 @@ public interface Driver {
 	public UpdateState update(UpdateRequest updateRequest) throws RegistrationException;
 	public DeactivateState deactivate(DeactivateRequest deactivateRequest) throws RegistrationException;
 	public ExecuteState execute(ExecuteRequest executeRequest) throws RegistrationException;
+	public CreateResourceState createResource(CreateResourceRequest createResourceRequest) throws RegistrationException;
+	public UpdateResourceState updateResource(UpdateResourceRequest updateResourceRequest) throws RegistrationException;
+	public DeactivateResourceState deactivateResource(DeactivateResourceRequest deactivateResourceRequest) throws RegistrationException;
 
 	default public Map<String, Object> properties() throws RegistrationException {
 

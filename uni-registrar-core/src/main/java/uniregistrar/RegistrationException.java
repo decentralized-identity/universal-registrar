@@ -3,6 +3,8 @@ package uniregistrar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.openapi.model.DidStateFailed;
+import uniregistrar.openapi.model.DidUrlStateFailed;
+import uniregistrar.openapi.model.RegistrarResourceState;
 import uniregistrar.openapi.model.RegistrarState;
 
 import java.util.Map;
@@ -18,28 +20,27 @@ public class RegistrationException extends Exception {
 	private final String error;
 	private final Map<String, Object> didRegistrationMetadata;
 
-	private final RegistrarState state;
+	private RegistrarState registrarState;
+	private RegistrarResourceState registrarResourceState;
 
-	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
+	private RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
 		super(message, ex);
 		this.error = error;
 		this.didRegistrationMetadata = didRegistrationMetadata;
-		this.state = null;
 	}
 
-	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata) {
+	private RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata) {
 		super(message);
 		this.error = error;
 		this.didRegistrationMetadata = didRegistrationMetadata;
-		this.state = null;
 	}
 
 	public RegistrationException(String error, String message, Throwable ex) {
-		this(error, message, null, ex);
+		this(error, message, (Map<String, Object>) null, ex);
 	}
 
 	public RegistrationException(String error, String message) {
-		this(error, message, null, null);
+		this(error, message, (Map<String, Object>) null);
 	}
 
 	public RegistrationException(String message, Throwable ex) {
@@ -54,31 +55,52 @@ public class RegistrationException extends Exception {
 		this(ex.getMessage(), ex);
 	}
 
-	public RegistrationException(RegistrarState state) {
-		super(((DidStateFailed) state.getDidState()).getReason());
-		this.error = ((DidStateFailed) state.getDidState()).getError();
-		this.didRegistrationMetadata = state.getDidRegistrationMetadata();
-		this.state = state;
+	public static RegistrationException fromRegistrarState(RegistrarState registrarState) {
+		if (registrarState != null && registrarState.getDidState() instanceof DidStateFailed didStateFailed) {
+			RegistrationException registrationException = new RegistrationException(didStateFailed.getError(), didStateFailed.getReason(), registrarState.getDidRegistrationMetadata());
+			registrationException.registrarState = registrarState;
+			return registrationException;
+		} else {
+			throw new IllegalArgumentException("No failed state: " + (registrarState == null ? null : registrarState.getDidState()));
+		}
+	}
+
+	public static RegistrationException fromRegistrarResourceState(RegistrarResourceState registrarResourceState) {
+		if (registrarResourceState != null && registrarResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
+			RegistrationException registrationException = new RegistrationException(didUrlStateFailed.getError(), didUrlStateFailed.getReason(), registrarResourceState.getDidRegistrationMetadata());
+			registrationException.registrarResourceState = registrarResourceState;
+			return registrationException;
+		} else {
+			throw new IllegalArgumentException("No failed state: " + (registrarResourceState == null ? null : registrarResourceState.getDidUrlState()));
+		}
 	}
 
 	/*
 	 * Error methods
 	 */
 
-	public RegistrarState toFailedState() {
-		if (this.getState() != null) {
-			return this.getState();
-		} else {
-			RegistrarState state = new RegistrarState();
-			DidStateFailed didStateFailed = new DidStateFailed();
-			didStateFailed.setError(this.getError());
-			didStateFailed.setReason(this.getMessage());
-			state.setDidState(didStateFailed);
-			if (this.getDidRegistrationMetadata() != null) state.setDidRegistrationMetadata(this.getDidRegistrationMetadata());
-			state.setJobId(null);
-			if (log.isDebugEnabled()) log.debug("Created failed state: " + state);
-			return state;
-		}
+	public RegistrarState toErrorRegistrarState() {
+		if (this.registrarState != null) return this.registrarState;
+		RegistrarState registrarState = new RegistrarState();
+		DidStateFailed didStateFailed = new DidStateFailed();
+		if (this.getError() != null) didStateFailed.setError(this.getError());
+		if (this.getMessage() != null) didStateFailed.setReason(this.getMessage());
+		registrarState.setDidState(didStateFailed);
+		if (this.getDidRegistrationMetadata() != null) registrarState.getDidRegistrationMetadata().putAll(this.getDidRegistrationMetadata());
+		if (log.isDebugEnabled()) log.debug("Created failed registrar state: " + registrarState);
+		return registrarState;
+	}
+
+	public RegistrarResourceState toErrorRegistrarResourceState() {
+		if (this.registrarResourceState != null) return this.registrarResourceState;
+		RegistrarResourceState registrarResourceState = new RegistrarResourceState();
+		DidUrlStateFailed didUrlStateFailed = new DidUrlStateFailed();
+		if (this.getError() != null) didUrlStateFailed.setError(this.getError());
+		if (this.getMessage() != null) didUrlStateFailed.setReason(this.getMessage());
+		registrarResourceState.setDidUrlState(didUrlStateFailed);
+		if (this.getDidRegistrationMetadata() != null) registrarResourceState.getDidRegistrationMetadata().putAll(this.getDidRegistrationMetadata());
+		if (log.isDebugEnabled()) log.debug("Created failed registrar resource state: " + registrarResourceState);
+		return registrarResourceState;
 	}
 
 	/*
@@ -91,9 +113,5 @@ public class RegistrationException extends Exception {
 
 	public Map<String, Object> getDidRegistrationMetadata() {
 		return didRegistrationMetadata;
-	}
-
-	public RegistrarState getState() {
-		return state;
 	}
 }
