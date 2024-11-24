@@ -21,47 +21,98 @@ uniregistrar:
     - method: btcr
       url: http://driver-did-btcr:9080/
       propertiesEndpoint: 'true'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
     - method: sov
       url: http://driver-did-sov:9080/
       propertiesEndpoint: 'true'
       traits:
+        updatable: true
         deactivatable: true
         enumerable: true
         historyAvailable: true
-        humanReadbale: false
+        humanReadable: false
     - method: v1
       url: http://driver-did-v1:9080/
       propertiesEndpoint: 'true'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: false
+        historyAvailable: false
+        humanReadable: false
     - method: key
       url: http://driver-did-key:9080/
       traits:
+        updatable: false
         deactivatable: false
         enumerable: false
         historyAvailable: false
-        humanReadbale: false
+        humanReadable: false
     - method: ion
       url: http://driver-did-ion:9080/
       propertiesEndpoint: 'true'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
     - method: web
       url: http://driver-did-web:9080/
       propertiesEndpoint: 'true'
       traits:
+        updatable: true
         deactivatable: true
         enumerable: false
         historyAvailable: false
-        humanReadbale: true
+        humanReadable: true
     - method: ebsi
       url: http://driver-did-ebsi:9080/
       propertiesEndpoint: 'false'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
     - method: oyd
       url: http://driver-did-oyd:3000/
       propertiesEndpoint: 'false'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
     - method: cheqd
       url: http://driver-did-cheqd:3000/
       propertiesEndpoint: 'false'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
     - method: ethr
       url: http://driver-did-ethr:9080/ethr/
       propertiesEndpoint: 'false'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: false
+        historyAvailable: true
+        humanReadable: false
     - method: dyne
       url: http://driver-did-dyne:3000/
       propertiesEndpoint: 'false'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false
