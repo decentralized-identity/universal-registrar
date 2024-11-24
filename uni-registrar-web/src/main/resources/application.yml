@@ -11,6 +11,7 @@ server:
       updateResource: "/1.0/updateResource"
       deactivateResource: "/1.0/deactivateResource"
       methods: "/1.0/methods"
+      traits: "/1.0/traits"
   port: '9080'
 spring:
   profiles:

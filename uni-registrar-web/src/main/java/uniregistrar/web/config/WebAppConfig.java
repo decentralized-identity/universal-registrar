@@ -79,13 +79,25 @@ public class WebAppConfig {
     public ServletRegistrationBean<PropertiesServlet> propertiesServletRegistrationBean() {
         return new ServletRegistrationBean<>(propertiesServlet(), fixWildcardPattern(servletMappings.getProperties()));
     }
+
     @Bean(name = "MethodsServlet")
     public MethodsServlet methodsServlet() {
         return new MethodsServlet();
     }
+
     @Bean
     public ServletRegistrationBean<MethodsServlet> methodServletRegistrationBean() {
         return new ServletRegistrationBean<>(methodsServlet(), fixWildcardPattern(servletMappings.getMethods()));
+    }
+
+    @Bean(name = "TraitsServlet")
+    public TraitsServlet traitsServlet() {
+        return new TraitsServlet();
+    }
+
+    @Bean
+    public ServletRegistrationBean<TraitsServlet> traitsServletRegistrationBean() {
+        return new ServletRegistrationBean<>(traitsServlet(), servletMappings.getTraits());
     }
 
     public static String fixWildcardPattern(String s) {

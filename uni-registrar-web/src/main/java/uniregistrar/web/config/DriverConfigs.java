@@ -4,6 +4,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
 
 @Configuration
@@ -26,6 +27,7 @@ public class DriverConfigs {
 		private String url;
 		private String propertiesEndpoint;
 		private String includeMethodParameter;
+		private Map<String, Object> traits;
 
 		public String getMethod() {
 			return method;
@@ -59,14 +61,23 @@ public class DriverConfigs {
 			this.includeMethodParameter = includeMethodParameter;
 		}
 
+		public Map<String,Object> getTraits() {
+			return traits;
+		}
+
+		public void setTraits(Map<String,Object> traits) {
+			this.traits = traits;
+		}
+
 		@Override
 		public String toString() {
-			return new StringJoiner(", ", DriverConfig.class.getSimpleName() + "[", "]")
-					.add("method='" + method + "'")
-					.add("url='" + url + "'")
-					.add("propertiesEndpoint='" + propertiesEndpoint + "'")
-					.add("includeMethodParameter='" + includeMethodParameter + "'")
-					.toString();
+			return "DriverConfig{" +
+					"method='" + method + '\'' +
+					", url='" + url + '\'' +
+					", propertiesEndpoint='" + propertiesEndpoint + '\'' +
+					", includeMethodParameter='" + includeMethodParameter + '\'' +
+					", traits=" + traits +
+					'}';
 		}
 	}
 }

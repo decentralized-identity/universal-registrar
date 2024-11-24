@@ -33,26 +33,28 @@ public class ClientUniRegistrar implements UniRegistrar {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
-	public static final URI DEFAULT_CREATE_URI = URI.create("http://localhost:8080/1.0/create");
-	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:8080/1.0/update");
-	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:8080/1.0/deactivate");
-	public static final URI DEFAULT_EXECUTE_URI = URI.create("http://localhost:8080/1.0/execute");
-	public static final URI DEFAULT_CREATERESOURCE_URI = URI.create("http://localhost:8080/1.0/createResource");
-	public static final URI DEFAULT_UPDATERESOURCE_URI = URI.create("http://localhost:8080/1.0/updateResource");
-	public static final URI DEFAULT_DEACTIVATERESOURCE_URI = URI.create("http://localhost:8080/1.0/deactivateResource");
-	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:8080/1.0/properties");
-	public static final URI DEFAULT_METHODS_URI = URI.create("http://localhost:8080/1.0/methods");
+	public static final URI DEFAULT_CREATE_URI = URI.create("http://localhost:9080/1.0/create");
+	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:9080/1.0/update");
+	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:9080/1.0/deactivate");
+	public static final URI DEFAULT_EXECUTE_URI = URI.create("http://localhost:9080/1.0/execute");
+	public static final URI DEFAULT_CREATE_RESOURCE_URI = URI.create("http://localhost:9080/1.0/createResource");
+	public static final URI DEFAULT_UPDATE_RESOURCE_URI = URI.create("http://localhost:9080/1.0/updateResource");
+	public static final URI DEFAULT_DEACTIVATE_RESOURCE_URI = URI.create("http://localhost:9080/1.0/deactivateResource");
+	public static final URI DEFAULT_PROPERTIES_URI = URI.create("http://localhost:9080/1.0/properties");
+	public static final URI DEFAULT_METHODS_URI = URI.create("http://localhost:9080/1.0/methods");
+	public static final URI DEFAULT_TRAITS_URI = URI.create("http://localhost:9080/1.0/traits");
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
 	private URI executeUri = DEFAULT_EXECUTE_URI;
-	private URI createResourceUri = DEFAULT_CREATERESOURCE_URI;
-	private URI updateResourceUri = DEFAULT_UPDATERESOURCE_URI;
-	private URI deactivateResourceUri = DEFAULT_DEACTIVATERESOURCE_URI;
+	private URI createResourceUri = DEFAULT_CREATE_RESOURCE_URI;
+	private URI updateResourceUri = DEFAULT_UPDATE_RESOURCE_URI;
+	private URI deactivateResourceUri = DEFAULT_DEACTIVATE_RESOURCE_URI;
 	private URI propertiesUri = DEFAULT_PROPERTIES_URI;
 	private URI methodsUri = DEFAULT_METHODS_URI;
+	private URI traitsUri = DEFAULT_TRAITS_URI;
 
 	public ClientUniRegistrar() {
 
@@ -624,6 +626,56 @@ public class ClientUniRegistrar implements UniRegistrar {
 		return methods;
 	}
 
+	@Override
+	public Map<String, Map<String, Object>> traits() throws RegistrationException {
+
+		// prepare HTTP request
+
+		String uriString = this.getTraitsUri().toString();
+
+		HttpGet httpGet = new HttpGet(URI.create(uriString));
+		httpGet.addHeader("Accept", UniRegistrar.TRAITS_MIME_TYPE);
+
+		// execute HTTP request
+
+		Map<String, Map<String, Object>> traits;
+
+		if (log.isDebugEnabled()) log.debug("Request to: " + uriString);
+
+		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
+
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+
+			if (httpResponse.getStatusLine().getStatusCode() == 404) return null;
+
+			HttpEntity httpEntity = httpResponse.getEntity();
+			String httpBody = EntityUtils.toString(httpEntity);
+			EntityUtils.consume(httpEntity);
+
+			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
+
+			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+
+				if (log.isWarnEnabled()) log.warn("Cannot retrieve TRAITS from " + uriString + ": " + httpBody);
+				throw new RegistrationException(httpBody);
+			}
+
+			traits = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, LinkedHashMap.class);
+		} catch (IOException ex) {
+
+			throw new RegistrationException("Cannot retrieve TRAITS from " + uriString + ": " + ex.getMessage(), ex);
+		}
+
+		if (log.isDebugEnabled()) log.debug("Retrieved TRAITS (" + uriString + "): " + traits);
+
+		// done
+
+		return traits;
+	}
+
 	/*
 	 * Getters and setters
 	 */
@@ -726,5 +778,13 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public void setMethodsUri(URI methodsUri) {
 		this.methodsUri = methodsUri;
+	}
+
+	public URI getTraitsUri() {
+		return traitsUri;
+	}
+
+	public void setTraitsUri(URI traitsUri) {
+		this.traitsUri = traitsUri;
 	}
 }

@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -45,6 +46,7 @@ public class HttpDriver implements Driver {
 	private URI deactivateResourceUri = null;
 	private URI propertiesUri = null;
 	private Boolean includeMethodParameter = false;
+	private Map<String, Object> traits = Collections.emptyMap();
 
 	private Consumer<Map<String, Object>> beforeWriteCreateConsumer;
 	private Consumer<Map<String, Object>> beforeReadCreateConsumer;
@@ -683,7 +685,6 @@ public class HttpDriver implements Driver {
 		if (this.getUpdateResourceUri() != null) httpProperties.put("updateResourceUri", this.getUpdateResourceUri().toString());
 		if (this.getDeactivateResourceUri() != null) httpProperties.put("deactivateResourceUri", this.getDeactivateResourceUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
-		if (this.getIncludeMethodParameter() != null) httpProperties.put("includeMethodParameter", Boolean.toString(this.getIncludeMethodParameter()));
 		return httpProperties;
 	}
 
@@ -736,6 +737,11 @@ public class HttpDriver implements Driver {
 		// done
 
 		return properties;
+	}
+
+	@Override
+	public Map<String, Object> traits() {
+		return this.getTraits();
 	}
 
 	/*
@@ -868,6 +874,14 @@ public class HttpDriver implements Driver {
 
 	public void setIncludeMethodParameter(Boolean includeMethodParameter) {
 		this.includeMethodParameter = includeMethodParameter;
+	}
+
+	public Map<String, Object> getTraits() {
+		return traits;
+	}
+
+	public void setTraits(Map<String, Object> traits) {
+		this.traits = traits;
 	}
 
 	public Consumer<Map<String, Object>> getBeforeWriteCreateConsumer() {

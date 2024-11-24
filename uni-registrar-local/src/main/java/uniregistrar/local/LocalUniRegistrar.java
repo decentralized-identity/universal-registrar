@@ -752,6 +752,29 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return methods;
 	}
 
+	@Override
+	public Map<String, Map<String, Object>> traits() throws RegistrationException {
+
+		if (this.getDrivers() == null) throw new RegistrationException("No drivers configured.");
+
+		Map<String, Map<String, Object>> traits = new LinkedHashMap<>();
+
+		for (Entry<String, Driver> driver : this.getDrivers().entrySet()) {
+
+			if (log.isDebugEnabled()) log.debug("Loading traits for driver " + driver.getKey() + " (" + driver.getValue().getClass().getSimpleName() + ")");
+
+			Map<String, Object> driverTraits = driver.getValue().traits();
+			if (driverTraits == null) driverTraits = Collections.emptyMap();
+
+			traits.put(driver.getKey(), driverTraits);
+		}
+
+		// done
+
+		if (log.isDebugEnabled()) log.debug("Loaded traits: " + traits);
+		return traits;
+	}
+
 	/*
 	 * Getters and setters
 	 */

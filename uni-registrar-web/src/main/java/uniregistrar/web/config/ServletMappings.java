@@ -16,6 +16,7 @@ public class ServletMappings {
 	private String updateResource;
 	private String deactivateResource;
 	private String methods;
+	private String traits;
 
 	public String getProperties() {
 		return properties;
@@ -53,6 +54,10 @@ public class ServletMappings {
 		return methods;
 	}
 
+	public String getTraits() {
+		return traits;
+	}
+
 	public void setProperties(String properties) {
 		this.properties = properties;
 	}
@@ -87,5 +92,9 @@ public class ServletMappings {
 
 	public void setMethods(String methods) {
 		this.methods = methods;
+	}
+
+	public void setTraits(String traits) {
+		this.traits = traits;
 	}
 }

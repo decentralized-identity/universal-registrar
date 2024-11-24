@@ -36,10 +36,6 @@
 			<groupId>decentralized-identity</groupId>
 			<artifactId>uni-registrar-driver-http</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-		</dependency>
 	</dependencies>
 
 </project>

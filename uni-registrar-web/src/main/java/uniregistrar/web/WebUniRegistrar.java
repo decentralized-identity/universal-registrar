@@ -90,6 +90,11 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().methods();
 	}
 
+	@Override
+	public Map<String, Map<String, Object>> traits() throws RegistrationException {
+		return this.getUniRegistrar() == null ? null : this.getUniRegistrar().traits();
+	}
+
 	/*
 	 * Getters and setters
 	 */
