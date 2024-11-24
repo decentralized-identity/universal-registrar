@@ -96,7 +96,7 @@ public class CreateServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("CREATE problem for " + createRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("CREATE problem for " + createRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			state = ((RegistrationException) ex).getRegistrarState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

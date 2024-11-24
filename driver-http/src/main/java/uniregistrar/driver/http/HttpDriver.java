@@ -140,7 +140,7 @@ public class HttpDriver implements Driver {
 
 			if (createState != null && createState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(createState);
+				throw RegistrationException.fromRegistrarState(createState);
 			}
 
 			if (createState == null) {
@@ -221,7 +221,7 @@ public class HttpDriver implements Driver {
 
 			if (updateState != null && updateState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(updateState);
+				throw RegistrationException.fromRegistrarState(updateState);
 			}
 
 			if (updateState == null) {
@@ -302,7 +302,7 @@ public class HttpDriver implements Driver {
 
 			if (deactivateState != null && deactivateState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(deactivateState);
+				throw RegistrationException.fromRegistrarState(deactivateState);
 			}
 
 			if (deactivateState == null) {
@@ -383,7 +383,7 @@ public class HttpDriver implements Driver {
 
 			if (executeState != null && executeState.getDidState() instanceof DidStateFailed didStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didStateFailed.getError() + " -> " + didStateFailed.getReason());
-				throw new RegistrationException(executeState);
+				throw RegistrationException.fromRegistrarState(executeState);
 			}
 
 			if (executeState == null) {
@@ -465,7 +465,7 @@ public class HttpDriver implements Driver {
 
 			if (createResourceState != null && createResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
-				throw new RegistrationException(createResourceState);
+				throw RegistrationException.fromRegistrarResourceState(createResourceState);
 			}
 
 			if (createResourceState == null) {
@@ -546,7 +546,7 @@ public class HttpDriver implements Driver {
 
 			if (updateResourceState != null && updateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
-				throw new RegistrationException(updateResourceState);
+				throw RegistrationException.fromRegistrarResourceState(updateResourceState);
 			}
 
 			if (updateResourceState == null) {
@@ -627,7 +627,7 @@ public class HttpDriver implements Driver {
 
 			if (deactivateResourceState != null && deactivateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
 				if (log.isWarnEnabled()) log.warn(didUrlStateFailed.getError() + " -> " + didUrlStateFailed.getReason());
-				throw new RegistrationException(deactivateResourceState);
+				throw RegistrationException.fromRegistrarResourceState(deactivateResourceState);
 			}
 
 			if (deactivateResourceState == null) {

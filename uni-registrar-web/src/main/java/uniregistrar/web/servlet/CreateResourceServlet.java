@@ -10,10 +10,8 @@ import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
-import uniregistrar.openapi.model.CreateRequest;
 import uniregistrar.openapi.model.CreateResourceRequest;
 import uniregistrar.openapi.model.RegistrarResourceState;
-import uniregistrar.openapi.model.RegistrarState;
 import uniregistrar.util.HttpBindingUtil;
 import uniregistrar.web.WebUniRegistrar;
 
@@ -98,7 +96,7 @@ public class CreateResourceServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("CREATE RESOURCE problem for " + createResourceRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("CREATE RESOURCE problem for " + createResourceRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			state = ((RegistrationException) ex).getRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}
@@ -110,7 +108,7 @@ public class CreateResourceServlet extends WebUniRegistrar {
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			try {
 				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-				localUniRegistrar.executeExtensions(Extension.BeforeWriteCreateExtension.class, e -> e.beforeWriteCreate(method, stateMap, localUniRegistrar), stateMap);
+				localUniRegistrar.executeExtensions(Extension.BeforeWriteCreateResourceExtension.class, e -> e.beforeWriteCreateResource(method, stateMap, localUniRegistrar), stateMap);
 			} catch (Exception ex) {
 				if (log.isWarnEnabled()) log.warn("Cannot write CREATE RESOURCE state (extension): " + ex.getMessage(), ex);
 				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write CREATE RESOURCE state (extension): " + ex.getMessage());

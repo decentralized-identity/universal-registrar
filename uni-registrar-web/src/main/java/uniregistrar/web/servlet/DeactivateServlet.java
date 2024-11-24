@@ -123,7 +123,7 @@ public class DeactivateServlet extends WebUniRegistrar {
 			if (log.isWarnEnabled()) log.warn("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
 
 			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			state = ((RegistrationException) ex).getRegistrarState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}

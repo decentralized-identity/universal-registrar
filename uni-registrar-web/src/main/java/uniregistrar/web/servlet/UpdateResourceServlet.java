@@ -12,8 +12,8 @@ import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
-import uniregistrar.openapi.model.RegistrarState;
-import uniregistrar.openapi.model.UpdateRequest;
+import uniregistrar.openapi.model.RegistrarResourceState;
+import uniregistrar.openapi.model.UpdateResourceRequest;
 import uniregistrar.util.HttpBindingUtil;
 import uniregistrar.web.WebUniRegistrar;
 
@@ -37,8 +37,8 @@ public class UpdateResourceServlet extends WebUniRegistrar {
 		try {
 			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
 		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (JSON): " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE RESOURCE request (JSON): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE RESOURCE request (JSON): " + ex.getMessage());
 			return;
 		}
 
@@ -48,7 +48,7 @@ public class UpdateResourceServlet extends WebUniRegistrar {
 		} else {
 			Object didString = requestMap.get("did");
 			if (didString instanceof String) {
-				if (log.isInfoEnabled()) log.info("Found DID in UPDATE request: " + didString);
+				if (log.isInfoEnabled()) log.info("Found DID in UPDATE RESOURCE request: " + didString);
 				try {
 					DID did = DID.fromString((String) didString);
 					method = did.getMethodName();
@@ -62,75 +62,75 @@ public class UpdateResourceServlet extends WebUniRegistrar {
 		}
 		if (method == null) {
 			if (log.isWarnEnabled()) log.warn("Missing DID method in UPDATE request.");
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in UPDATE request.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in UPDATE RESOURCE request.");
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Incoming UPDATE request for method " + method + ": " + requestMap);
+		if (log.isInfoEnabled()) log.info("Incoming UPDATE RESOURCE request for method " + method + ": " + requestMap);
 
 		// [before read]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			try {
 				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-				localUniRegistrar.executeExtensions(Extension.BeforeReadUpdateExtension.class, e -> e.beforeReadUpdate(method, requestMap, localUniRegistrar), requestMap);
+				localUniRegistrar.executeExtensions(Extension.BeforeReadUpdateResourceExtension.class, e -> e.beforeReadUpdateResource(method, requestMap, localUniRegistrar), requestMap);
 			} catch (Exception ex) {
-				if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (extension): " + ex.getMessage(), ex);
-				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (extension): " + ex.getMessage());
+				if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE RESOURCE request (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE RESOURCE request (extension): " + ex.getMessage());
 				return;
 			}
 		}
 
 		// parse request
 
-		UpdateRequest updateRequest;
+		UpdateResourceRequest updateResourceRequest;
 
 		try {
-			updateRequest = HttpBindingUtil.fromMapRequest(requestMap, UpdateRequest.class);
+			updateResourceRequest = HttpBindingUtil.fromMapRequest(requestMap, UpdateResourceRequest.class);
 		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE request (object): " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Cannot parse UPDATE RESOURCE request (object): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse UPDATE RESOURCE request (object): " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Parsed UPDATE request for method " + method + ": " + updateRequest);
+		if (log.isInfoEnabled()) log.info("Parsed UPDATE RESOURCE request for method " + method + ": " + updateResourceRequest);
 
-		if (updateRequest == null) {
+		if (updateResourceRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid UPDATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid UPDATE RESOURCE request found.");
 			return;
 		}
 
 		// execute the request
 
-		RegistrarState state = null;
+		RegistrarResourceState state = null;
 		final Map<String, Object> stateMap;
 
 		try {
 
-			state = this.update(method, updateRequest);
+			state = this.updateResource(method, updateResourceRequest);
 			if (state == null) throw new RegistrationException("No state.");
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("UPDATE problem for " + updateRequest + ": " + ex.getMessage(), ex);
+			if (log.isWarnEnabled()) log.warn("UPDATE RESOURCE problem for " + updateResourceRequest + ": " + ex.getMessage(), ex);
 
-			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("UPDATE problem for " + updateRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("UPDATE RESOURCE problem for " + updateResourceRequest + ": " + ex.getMessage());
+			state = ((RegistrationException) ex).getRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}
 
-		if (log.isInfoEnabled()) log.info("State for " + updateRequest + ": " + state);
+		if (log.isInfoEnabled()) log.info("State for " + updateResourceRequest + ": " + state);
 
 		// [before write]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			try {
 				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-				localUniRegistrar.executeExtensions(Extension.BeforeWriteUpdateExtension.class, e -> e.beforeWriteUpdate(method, stateMap, localUniRegistrar), stateMap);
+				localUniRegistrar.executeExtensions(Extension.BeforeWriteUpdateResourceExtension.class, e -> e.beforeWriteUpdateResource(method, stateMap, localUniRegistrar), stateMap);
 			} catch (Exception ex) {
-				if (log.isWarnEnabled()) log.warn("Cannot write UPDATE state (extension): " + ex.getMessage(), ex);
-				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE state (extension): " + ex.getMessage());
+				if (log.isWarnEnabled()) log.warn("Cannot write UPDATE RESOURCE state (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write UPDATE RESOURCE state (extension): " + ex.getMessage());
 				return;
 			}
 		}

@@ -12,8 +12,8 @@ import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.driver.util.HttpBindingServerUtil;
 import uniregistrar.local.LocalUniRegistrar;
 import uniregistrar.local.extensions.Extension;
-import uniregistrar.openapi.model.DeactivateRequest;
-import uniregistrar.openapi.model.RegistrarState;
+import uniregistrar.openapi.model.DeactivateResourceRequest;
+import uniregistrar.openapi.model.RegistrarResourceState;
 import uniregistrar.util.HttpBindingUtil;
 import uniregistrar.web.WebUniRegistrar;
 
@@ -37,8 +37,8 @@ public class DeactivateResourceServlet extends WebUniRegistrar {
 		try {
 			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
 		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (JSON): " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE RESOURCE request (JSON): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE RESOURCE request (JSON): " + ex.getMessage());
 			return;
 		}
 
@@ -48,7 +48,7 @@ public class DeactivateResourceServlet extends WebUniRegistrar {
 		} else {
 			Object didString = requestMap.get("did");
 			if (didString instanceof String) {
-				if (log.isInfoEnabled()) log.info("Found DID in DEACTIVATE request: " + didString);
+				if (log.isInfoEnabled()) log.info("Found DID in DEACTIVATE RESOURCE request: " + didString);
 				try {
 					DID did = DID.fromString((String) didString);
 					method = did.getMethodName();
@@ -61,76 +61,76 @@ public class DeactivateResourceServlet extends WebUniRegistrar {
 			}
 		}
 		if (method == null) {
-			if (log.isWarnEnabled()) log.warn("Missing DID method in DEACTIVATE request.");
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in DEACTIVATE request.");
+			if (log.isWarnEnabled()) log.warn("Missing DID method in DEACTIVATE RESOURCE request.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in DEACTIVATE RESOURCE request.");
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Incoming DEACTIVATE request for method " + method + ": " + requestMap);
+		if (log.isInfoEnabled()) log.info("Incoming DEACTIVATE RESOURCE request for method " + method + ": " + requestMap);
 
 		// [before read]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			try {
 				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-				localUniRegistrar.executeExtensions(Extension.BeforeReadDeactivateExtension.class, e -> e.beforeReadDeactivate(method, requestMap, localUniRegistrar), requestMap);
+				localUniRegistrar.executeExtensions(Extension.BeforeReadDeactivateResourceExtension.class, e -> e.beforeReadDeactivateResource(method, requestMap, localUniRegistrar), requestMap);
 			} catch (Exception ex) {
-				if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (extension): " + ex.getMessage(), ex);
-				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (extension): " + ex.getMessage());
+				if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE RESOURCE request (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE RESOURCE request (extension): " + ex.getMessage());
 				return;
 			}
 		}
 
 		// parse request
 
-		DeactivateRequest deactivateRequest;
+		DeactivateResourceRequest deactivateResourceRequest;
 
 		try {
-			deactivateRequest = HttpBindingUtil.fromMapRequest(requestMap, DeactivateRequest.class);
+			deactivateResourceRequest = HttpBindingUtil.fromMapRequest(requestMap, DeactivateResourceRequest.class);
 		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE request (object): " + ex.getMessage());
+			if (log.isWarnEnabled()) log.warn("Cannot parse DEACTIVATE RESOURCE request (object): " + ex.getMessage(), ex);
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DEACTIVATE RESOURCE request (object): " + ex.getMessage());
 			return;
 		}
 
-		if (log.isInfoEnabled()) log.info("Parsed DEACTIVATE request for method " + method + ": " + deactivateRequest);
+		if (log.isInfoEnabled()) log.info("Parsed DEACTIVATE RESOURCE request for method " + method + ": " + deactivateResourceRequest);
 
-		if (deactivateRequest == null) {
+		if (deactivateResourceRequest == null) {
 
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid DEACTIVATE request found.");
+			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid DEACTIVATE RESOURCE request found.");
 			return;
 		}
 
 		// execute the request
 
-		RegistrarState state = null;
+		RegistrarResourceState state = null;
 		final Map<String, Object> stateMap;
 
 		try {
 
-			state = this.deactivate(method, deactivateRequest);
+			state = this.deactivateResource(method, deactivateResourceRequest);
 			if (state == null) throw new RegistrationException("No state.");
 		} catch (Exception ex) {
 
-			if (log.isWarnEnabled()) log.warn("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage(), ex);
+			if (log.isWarnEnabled()) log.warn("DEACTIVATE RESOURCE problem for " + deactivateResourceRequest + ": " + ex.getMessage(), ex);
 
-			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE problem for " + deactivateRequest + ": " + ex.getMessage());
-			state = ((RegistrationException) ex).toFailedState();
+			if (! (ex instanceof RegistrationException)) ex = new RegistrationException("DEACTIVATE RESOURCE problem for " + deactivateResourceRequest + ": " + ex.getMessage());
+			state = ((RegistrationException) ex).getRegistrarResourceState();
 		} finally {
 			stateMap = state == null ? null : HttpBindingUtil.toMapState(state);
 		}
 
-		if (log.isInfoEnabled()) log.info("DEACTIVATE state for " + deactivateRequest + ": " + state);
+		if (log.isInfoEnabled()) log.info("DEACTIVATE RESOURCE state for " + deactivateResourceRequest + ": " + state);
 
 		// [before write]
 
 		if (this.getUniRegistrar() instanceof LocalUniRegistrar) {
 			try {
 				LocalUniRegistrar localUniRegistrar = ((LocalUniRegistrar) this.getUniRegistrar());
-				localUniRegistrar.executeExtensions(Extension.BeforeWriteDeactivateExtension.class, e -> e.beforeWriteDeactivate(method, stateMap, localUniRegistrar), stateMap);
+				localUniRegistrar.executeExtensions(Extension.BeforeWriteDeactivateResourceExtension.class, e -> e.beforeWriteDeactivateResource(method, stateMap, localUniRegistrar), stateMap);
 			} catch (Exception ex) {
-				if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE state (extension): " + ex.getMessage(), ex);
-				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE state (extension): " + ex.getMessage());
+				if (log.isWarnEnabled()) log.warn("Cannot write DEACTIVATE RESOURCE state (extension): " + ex.getMessage(), ex);
+				ServletUtil.sendResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Cannot write DEACTIVATE RESOURCE state (extension): " + ex.getMessage());
 				return;
 			}
 		}
