@@ -121,12 +121,13 @@ public class WebAppConfig {
 
 		Map<String, Driver> drivers = new LinkedHashMap<>();
 
-		for (DriverConfigs.DriverConfig dc : driverConfigs.getDrivers()) {
+		for (DriverConfigs.DriverConfig driverConfig : driverConfigs.getDrivers()) {
 
-			String method = dc.getMethod();
-			String url = dc.getUrl();
-			String propertiesEndpoint = dc.getPropertiesEndpoint();
-            String includeMethodParameter = dc.getIncludeMethodParameter();
+			String method = driverConfig.getMethod();
+			String url = driverConfig.getUrl();
+			String propertiesEndpoint = driverConfig.getPropertiesEndpoint();
+            String includeMethodParameter = driverConfig.getIncludeMethodParameter();
+            Map<String, Object> traits = driverConfig.getTraits();
 
 			if (method == null) throw new IllegalArgumentException("Missing 'method' entry in driver configuration.");
 			if (url == null) throw new IllegalArgumentException("Missing 'url' entry in driver configuration.");
@@ -146,6 +147,7 @@ public class WebAppConfig {
             driver.setDeactivateResourceUri(normalizeUri((url + servletMappings.getDeactivateResource()), false));
 			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + servletMappings.getProperties()), false));
             if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
+            if (traits != null) driver.setTraits(traits);
 
 			// done
 
