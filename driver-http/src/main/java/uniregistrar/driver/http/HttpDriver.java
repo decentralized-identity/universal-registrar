@@ -683,7 +683,7 @@ public class HttpDriver implements Driver {
 		if (this.getUpdateResourceUri() != null) httpProperties.put("updateResourceUri", this.getUpdateResourceUri().toString());
 		if (this.getDeactivateResourceUri() != null) httpProperties.put("deactivateResourceUri", this.getDeactivateResourceUri().toString());
 		if (this.getPropertiesUri() != null) httpProperties.put("propertiesUri", this.getPropertiesUri().toString());
-		if (this.getIncludeMethodParameter() != null) httpProperties.put("propertiesUri", Boolean.toString(this.getIncludeMethodParameter()));
+		if (this.getIncludeMethodParameter() != null) httpProperties.put("includeMethodParameter", Boolean.toString(this.getIncludeMethodParameter()));
 		return httpProperties;
 	}
 
