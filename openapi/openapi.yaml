@@ -549,7 +549,7 @@ components:
               items:
                 type: string
               example:
-                - setResource
+                - setContent
             content:
               description: This input field contains Base64-encoded data that is the content of the
                 resource associated with the DID URL.
