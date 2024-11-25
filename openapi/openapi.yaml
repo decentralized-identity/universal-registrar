@@ -358,6 +358,22 @@ paths:
                   - ion
                   - cheqd
                   - key
+  "/traits":
+    get:
+      summary: Return a map of DID traits
+      description: <p>This endpoint returns a map of the DID traits of
+        the DID methods supported by the DID Registrar.</p>
+      operationId: universalRegistrarGetTraits
+      tags:
+        - Universal Registrar
+      responses:
+        "200":
+          description: Success.
+          content:
+            application/did+json:
+              schema:
+                type: object
+                description: A map of DID traits.
 components:
   schemas:
     RegistrarRequest:
