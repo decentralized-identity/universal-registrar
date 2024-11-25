@@ -334,6 +334,10 @@ paths:
               schema:
                 type: object
                 description: A map of properties.
+                example:
+                  indy:
+                    libIndyPath: "/lib"
+                    poolConfigs: "..."
   "/methods":
     get:
       summary: Return a list of supported DID methods
@@ -374,6 +378,13 @@ paths:
               schema:
                 type: object
                 description: A map of DID traits.
+                example:
+                  indy:
+                    updatable: true
+                    deactivatable: true
+                    enumerable: true
+                    historyAvailable: true
+                    humanReadable: false
 components:
   schemas:
     RegistrarRequest:
@@ -511,6 +522,7 @@ components:
               description: This input field contains Base64-encoded data that is the content of the
                 resource associated with the DID URL.
               type: string
+              example: SGVsbG8gV29ybGQ=
     UpdateResourceRequest:
       description: Input fields for a DID URL update operation.
       allOf:
@@ -544,6 +556,8 @@ components:
               type: array
               items:
                 type: string
+              example:
+                - SGVsbG8gV29ybGQ=
     DeactivateResourceRequest:
       description: Input fields for a DID URL deactivate operation.
       allOf:
