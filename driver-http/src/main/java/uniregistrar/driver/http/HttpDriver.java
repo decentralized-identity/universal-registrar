@@ -697,7 +697,7 @@ public class HttpDriver implements Driver {
 		String uriString = this.getPropertiesUri().toString();
 
 		HttpGet httpGet = new HttpGet(URI.create(uriString));
-		httpGet.addHeader("Accept", Driver.PROPERTIES_MIME_TYPE);
+		httpGet.addHeader("Accept", Driver.PROPERTIES_MEDIA_TYPE);
 
 		// execute HTTP request
 

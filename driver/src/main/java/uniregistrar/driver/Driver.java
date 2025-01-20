@@ -8,7 +8,8 @@ import java.util.Map;
 
 public interface Driver {
 
-	public static final String PROPERTIES_MIME_TYPE = "application/json";
+	public static final String PROPERTIES_MEDIA_TYPE = "application/json";
+	public static final String TRAITS_MEDIA_TYPE = "application/json";
 
 	default public CreateState create(CreateRequest createRequest) throws RegistrationException {
 		throw new RegistrationException("Driver does not support create");
