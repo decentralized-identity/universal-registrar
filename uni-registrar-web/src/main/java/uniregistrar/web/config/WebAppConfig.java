@@ -70,6 +70,36 @@ public class WebAppConfig {
         return new ServletRegistrationBean<>(executeServlet(), fixWildcardPattern(servletMappings.getExecute()));
     }
 
+    @Bean(name = "CreateResourceServlet")
+    public CreateResourceServlet createResourceServlet(){
+        return new CreateResourceServlet();
+    }
+
+    @Bean
+    public ServletRegistrationBean<CreateResourceServlet> createResourceServletRegistrationBean() {
+        return new ServletRegistrationBean<>(createResourceServlet(), fixWildcardPattern(servletMappings.getCreateResource()));
+    }
+
+    @Bean(name = "UpdateResourceServlet")
+    public UpdateResourceServlet updateResourceServlet(){
+        return new UpdateResourceServlet();
+    }
+
+    @Bean
+    public ServletRegistrationBean<UpdateResourceServlet> updateResourceServletRegistrationBean() {
+        return new ServletRegistrationBean<>(updateResourceServlet(), fixWildcardPattern(servletMappings.getUpdateResource()));
+    }
+
+    @Bean(name = "DeactivateResourceServlet")
+    public DeactivateResourceServlet deactivateResourceServlet(){
+        return new DeactivateResourceServlet();
+    }
+
+    @Bean
+    public ServletRegistrationBean<DeactivateResourceServlet> deactivateResourceServletRegistrationBean() {
+        return new ServletRegistrationBean<>(deactivateResourceServlet(), fixWildcardPattern(servletMappings.getDeactivateResource()));
+    }
+
     @Bean(name = "PropertiesServlet")
     public PropertiesServlet propertiesServlet(){
         return new PropertiesServlet();
