@@ -749,7 +749,7 @@ public class HttpDriver implements Driver {
 	 */
 
 	public static boolean isStateHttpContent(Map<String, Object> httpContentJson) {
-		return httpContentJson.containsKey("didState");
+		return httpContentJson.containsKey("didState") || httpContentJson.containsKey("didUrlState");
 	}
 
 	/*
