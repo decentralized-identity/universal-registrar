@@ -1,0 +1,95 @@
+name: Maven snapshot and Docker latest image
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'README.md'
+      - 'LICENSE'
+      - 'docs'
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  maven-snapshot:
+    uses: danubetech/workflows/.github/workflows/maven-snapshot.yml@main
+    with:
+      MAVEN_REPO_SERVER_ID: 'danubetech-maven-internal-snapshots'
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      CI_SECRET_READER_PERIODIC_TOKEN: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+      VAULTCA: ${{ secrets.VAULTCA }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  docker-latest:
+    needs: maven-snapshot
+    uses: danubetech/workflows/.github/workflows/docker-latest.yml@main
+    with:
+      GLOBAL_IMAGE_NAME: universalregistrar/uni-registrar-web
+      GLOBAL_REPO_NAME: docker.io
+      PATH_TO_DOCKERFILE: docker/Dockerfile
+    secrets:
+      VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
+      CI_SECRET_READER_PERIODIC_TOKEN: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
+      VAULTCA: ${{ secrets.VAULTCA }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  trigger-related-workflows:
+    needs: docker-latest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: danubetech/danubetech-uni-registrar-web
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-key
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-sov
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-btcr
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-v1
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-ebsi
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-ion
+          workflow: "Docker latest image" # Docker build
+
+      - name: Repository Dispatch
+        uses: benc-uk/workflow-dispatch@v1
+        with:
+          token: ${{ secrets.WORKFLOW_DISPATCH_TOKEN }}
+          repo: decentralized-identity/uni-registrar-driver-did-web
+          workflow: "Docker latest image" # Docker build
