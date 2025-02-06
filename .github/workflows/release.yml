@@ -17,7 +17,7 @@ jobs:
   maven-release:
     uses: danubetech/workflows/.github/workflows/maven-release.yml@main
     with:
-      MAVEN_REPO_SERVER_ID: 'danubetech-maven-internal-releases'
+      MAVEN_REPO_SERVER_ID: 'danubetech-maven-releases'
       RELEASE_TYPE: ${{ github.event.inputs.release_type }}
     secrets:
       VAULT_ADDR: ${{ secrets.VAULT_ADDR }}
