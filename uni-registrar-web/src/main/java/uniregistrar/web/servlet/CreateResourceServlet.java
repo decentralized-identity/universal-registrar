@@ -1,5 +1,7 @@
 package uniregistrar.web.servlet;
 
+import foundation.identity.did.DID;
+import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -40,7 +42,24 @@ public class CreateResourceServlet extends WebUniRegistrar {
 			return;
 		}
 
-		final String method = request.getParameter("method");
+		final String method;
+		if (request.getParameter("method") != null) {
+			method = request.getParameter("method");
+		} else {
+			Object didString = requestMap.get("did");
+			if (didString instanceof String) {
+				if (log.isInfoEnabled()) log.info("Found DID in CREATE RESOURCE request: " + didString);
+				try {
+					DID did = DID.fromString((String) didString);
+					method = did.getMethodName();
+				} catch (ParserException ex) {
+					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
+					return;
+				}
+			} else {
+				method = null;
+			}
+		}
 		if (method == null) {
 			if (log.isWarnEnabled()) log.warn("Missing DID method in CREATE RESOURCE request.");
 			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in CREATE RESOURCE request.");
