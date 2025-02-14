@@ -37,7 +37,9 @@ public class ExtensionStatus {
 		return switch (extensionStage) {
 			case "beforeReadCreate", "beforeReadUpdate", "beforeReadDeactivate", "beforeReadExecute" -> false;
 			case "beforeCreate", "beforeUpdate", "beforeDeactivate", "beforeExecute" -> this.skipExtensionsBefore;
+			case "beforeCreateResource", "beforeUpdateResource", "beforeDeactivateResource" -> this.skipExtensionsBefore;
 			case "afterCreate", "afterUpdate", "afterDeactivate", "afterExecute" -> this.skipExtensionsAfter;
+			case "afterCreateResource", "afterUpdateResource", "afterDeactivateResource" -> this.skipExtensionsAfter;
 			case "beforeWriteCreate", "beforeWriteUpdate", "beforeWriteDeactivate", "beforeWriteExecute" -> false;
 			default -> throw new IllegalStateException("Unexpected extension stage: " + extensionStage);
 		};
