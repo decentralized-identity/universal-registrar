@@ -979,8 +979,6 @@ components:
       allOf:
         - $ref: "#/components/schemas/VerificationMethodData"
         - type: object
-          required:
-            - privateKeyMultibase
           properties:
             privateKeyJwk:
               type: [object, null]
