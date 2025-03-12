@@ -101,7 +101,7 @@
 
 		<!-- Spring Versions -->
 
-		<springframework.version>6.2.2</springframework.version>
+		<springframework.version>6.2.3</springframework.version>
 		<fasterxml.jackson.version>2.18.3</fasterxml.jackson.version>
 
 		<!-- OpenAPI Versions -->
@@ -112,7 +112,7 @@
 
 		<!-- DIF Versions -->
 
-		<did-common-java.version>1.15.0</did-common-java.version>
+		<did-common-java.version>1.17.0</did-common-java.version>
 
 		<!-- Other Versions -->
 
