@@ -168,14 +168,15 @@ public class WebAppConfig {
             driver.setMethod(method);
 
 			if (! url.endsWith("/")) url = url + "/";
-			driver.setCreateUri(normalizeUri((url + servletMappings.getCreate()), false));
-			driver.setUpdateUri(normalizeUri((url + servletMappings.getUpdate()), false));
-			driver.setDeactivateUri(normalizeUri((url + servletMappings.getDeactivate()), false));
-            driver.setExecuteUri(normalizeUri(url + servletMappings.getExecute(), false));
-            driver.setCreateResourceUri(normalizeUri((url + servletMappings.getCreateResource()), false));
-            driver.setUpdateResourceUri(normalizeUri((url + servletMappings.getUpdateResource()), false));
-            driver.setDeactivateResourceUri(normalizeUri((url + servletMappings.getDeactivateResource()), false));
-			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + servletMappings.getProperties()), false));
+			driver.setCreateUri(normalizeUri((url + this.servletMappings.getCreate()), false));
+			driver.setUpdateUri(normalizeUri((url + this.servletMappings.getUpdate()), false));
+			driver.setDeactivateUri(normalizeUri((url + this.servletMappings.getDeactivate()), false));
+            driver.setExecuteUri(normalizeUri(url + this.servletMappings.getExecute(), false));
+            driver.setCreateResourceUri(normalizeUri((url + this.servletMappings.getCreateResource()), false));
+            driver.setUpdateResourceUri(normalizeUri((url + this.servletMappings.getUpdateResource()), false));
+            driver.setDeactivateResourceUri(normalizeUri((url + this.servletMappings.getDeactivateResource()), false));
+			if ("true".equals(propertiesEndpoint)) driver.setPropertiesUri(normalizeUri((url + this.servletMappings.getProperties()), false));
+
             if ("true".equals(includeMethodParameter)) driver.setIncludeMethodParameter(Boolean.valueOf(includeMethodParameter));
             if (traits != null) driver.setTraits(traits);
 
@@ -190,7 +191,7 @@ public class WebAppConfig {
 
 	@PostConstruct
 	private void initDrivers() {
-		if (driverConfigs.getDrivers() != null) configureLocalUniRegistrar(driverConfigs, localUniRegistrar);
+		if (this.driverConfigs.getDrivers() != null) configureLocalUniRegistrar(this.driverConfigs, this.localUniRegistrar);
 	}
 
 }
