@@ -1,6 +1,6 @@
 # Dockerfile for universalregistrar/uni-registrar-web
 
-FROM maven:3-eclipse-temurin-17-focal AS build
+FROM maven:3-eclipse-temurin-21 AS build
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 # install dependencies
@@ -22,7 +22,7 @@ RUN cd /opt/universal-registrar/uni-registrar-web && mvn clean package -N
 
 # build image
 
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:21-jre-alpine
 MAINTAINER Markus Sabadello <markus@danubetech.com>
 
 WORKDIR /opt/universal-registrar/uni-registrar-web/
