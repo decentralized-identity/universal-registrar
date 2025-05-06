@@ -63,8 +63,6 @@ jobs:
           token: ${{ secrets.CI_SECRET_READER_PERIODIC_TOKEN }}
           caCertificate: ${{ secrets.VAULTCA }}
           secrets: |
-            ci/data/gh-workflows/${{ inputs.GLOBAL_REPO_NAME }} username | DOCKER_USERNAME ;
-            ci/data/gh-workflows/${{ inputs.GLOBAL_REPO_NAME }} password | DOCKER_PASSWORD ;
             ci/data/gh-workflows/maven-danubetech-nexus username | MAVEN_USERNAME ;
             ci/data/gh-workflows/maven-danubetech-nexus password | MAVEN_PASSWORD
 
