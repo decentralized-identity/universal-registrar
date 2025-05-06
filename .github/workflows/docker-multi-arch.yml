@@ -75,7 +75,7 @@ jobs:
           version: latest
 
       - name: Docker Build and Cache
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ inputs.PATH_TO_DOCKERFILE }}
@@ -134,14 +134,14 @@ jobs:
             type=sha,prefix=${{ steps.get_version.outputs.version }},enable=${{ inputs.IS_RELEASE == 'true' }}
 
       - name: Login to Docker Registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ${{ inputs.GLOBAL_REPO_NAME }}
           username: ${{ env.DOCKER_USERNAME }}
           password: ${{ env.DOCKER_PASSWORD }}
 
       - name: Docker Push
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: ${{ inputs.PATH_TO_DOCKERFILE }}
