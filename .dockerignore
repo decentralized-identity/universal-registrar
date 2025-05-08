@@ -1,0 +1,24 @@
+## Recursively ignore everything
+**
+
+## Except the following
+!driver/
+!driver-http/
+!openapi/
+!uni-registrar-client/
+!uni-registrar-core/
+!uni-registrar-local/
+!uni-registrar-web/
+!src/
+!LICENSE
+!pom.xml
+!README.md
+
+## Explicitly ignore build artifacts and IDE files (based on .gitignore)
+**/target/
+**/bin/
+**/.settings/
+**/.classpath
+**/.project
+**/.idea/
+**/*.iml
