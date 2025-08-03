@@ -13,9 +13,11 @@ server:
       methods: "/1.0/methods"
       traits: "/1.0/traits"
   port: '9080'
+
 spring:
   profiles:
     active: ${uniregistrar_web_spring_profiles_active:default}
+
 uniregistrar:
   drivers:
     - method: btcr
