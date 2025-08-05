@@ -43,7 +43,7 @@ jobs:
     needs: docker-release
     uses: ./.github/workflows/docker-multi-arch.yml
     with:
-      GLOBAL_FRAMEWORK: triggered
+      GLOBAL_FRAMEWORK: maven
       GLOBAL_IMAGE_NAME: universalregistrar/uni-registrar-web
       GLOBAL_REPO_NAME: docker.io
       IS_RELEASE: true
