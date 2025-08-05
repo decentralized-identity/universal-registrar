@@ -1,19 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
+        <!-- JSON Structured (Elastic Common Schema (ECS) -
+        https://www.elastic.co/docs/reference/ecs/logging/intro) logging to Console -->
+        <Console name="json" target="SYSTEM_OUT">
+            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json" />
+        </Console>
 
+        <!-- Colored plaintext logging to Console -->
+        <Console name="plain" target="SYSTEM_OUT">
             <PatternLayout
-                    pattern="%style{%d{ISO8601}}{red} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable"/>
+                pattern="%style{%d{ISO8601}}{red} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable" />
         </Console>
     </Appenders>
 
     <Loggers>
-        <Root level="info">
-            <AppenderRef ref="Console"/>
+        <!-- Set Root Logging level with 'LOGGING_LEVEL_ROOT' environment variable -->
+        <!-- Valid log levels are: trace, debug, info, warn, error, fatal, off -->
+        <Root level="${env:LOGGING_LEVEL_ROOT:-info}">
+            <!-- Default to plain layout, switch to json if LOGGING_FORMAT=json -->
+            <AppenderRef ref="${env:LOGGING_FORMAT:-plain}" />
         </Root>
-        <Logger name="uniregistrar" level="debug" additivity="false">
-            <AppenderRef ref="Console"/>
+
+        <!-- Set Root Logging level with 'LOGGING_LEVEL_uniregistrar' environment variable -->
+        <!-- Valid log levels are: trace, debug, info, warn, error, fatal, off -->
+        <Logger name="uniregistrar" level="${env:LOGGING_LEVEL_uniregistrar:-debug}"
+            additivity="false">
+            <!-- Default to plain layout, switch to json if LOGGING_FORMAT=json -->
+            <AppenderRef ref="${env:LOGGING_FORMAT:-plain}" />
         </Logger>
     </Loggers>
 
