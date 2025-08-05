@@ -6,8 +6,8 @@ on:
       GLOBAL_FRAMEWORK:
         required: false
         type: string
-        default: triggered
-        description: Framework used for the build (e.g., triggered, spring-boot, etc.)
+        default: maven
+        description: Framework used for the build (e.g., maven, node, nodejs, etc.)
       GLOBAL_IMAGE_NAME:
         required: true
         type: string
