@@ -115,7 +115,7 @@ jobs:
           version: latest
 
       - name: Get version
-        if: inputs.IS_RELEASE == 'true'
+        if: inputs.IS_RELEASE
         id: get_version
         uses: danubetech/github-action-read-version@main
         with:
@@ -129,7 +129,7 @@ jobs:
           images: ${{ inputs.GLOBAL_REPO_NAME }}/${{ inputs.GLOBAL_IMAGE_NAME }}
           tags: |
             type=raw,value=${{ inputs.IMAGE_TAG }},enable=${{ inputs.IMAGE_TAG != '' }}
-            type=sha,prefix=${{ steps.get_version.outputs.version }},enable=${{ inputs.IS_RELEASE == 'true' }}
+            type=sha,prefix=${{ steps.get_version.outputs.version }},enable=${{ inputs.IS_RELEASE }}
 
       - name: Login to Docker Registry
         uses: docker/login-action@v3
