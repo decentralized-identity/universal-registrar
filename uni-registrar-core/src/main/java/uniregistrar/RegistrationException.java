@@ -11,9 +11,13 @@ import java.util.Map;
 
 public class RegistrationException extends Exception {
 
-	public static final String ERROR_BADREQUEST = "badRequest";
-	public static final String ERROR_NOTFOUND = "notFound";
-	public static final String ERROR_INTERNALERROR = "internalError";
+	public static final String ERROR_INVALID_DID = "invalidDid";
+	public static final String ERROR_INVALID_DID_DOCUMENT = "invalidDidDocument";
+	public static final String ERROR_INVALID_OPTIONS = "invalidOptions";
+	public static final String ERROR_NOT_FOUND = "notFound";
+	public static final String ERROR_METHOD_NOT_SUPPORTED = "methodNotSupported";
+	public static final String ERROR_REPRESENTATION_NOT_SUPPORTED = "representationNotSupported";
+	public static final String ERROR_INTERNAL_ERROR = "internalError";
 
 	private static final Logger log = LoggerFactory.getLogger(RegistrationException.class);
 
@@ -44,11 +48,11 @@ public class RegistrationException extends Exception {
 	}
 
 	public RegistrationException(String message, Throwable ex) {
-		this(ERROR_INTERNALERROR, message, ex);
+		this(ERROR_INTERNAL_ERROR, message, ex);
 	}
 
 	public RegistrationException(String message) {
-		this(ERROR_INTERNALERROR, message);
+		this(ERROR_INTERNAL_ERROR, message);
 	}
 
 	public RegistrationException(Throwable ex) {

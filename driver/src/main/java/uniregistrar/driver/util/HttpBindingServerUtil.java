@@ -22,9 +22,13 @@ public class HttpBindingServerUtil {
 
     public static int httpStatusCodeForState(RegistrarState state) {
         if (state.getDidState() instanceof DidStateFailed didStateFailed) {
-            if (RegistrationException.ERROR_NOTFOUND.equals(didStateFailed.getError()))
+            if (RegistrationException.ERROR_NOT_FOUND.equals(didStateFailed.getError()))
                 return HttpStatus.SC_NOT_FOUND;
-            else if (RegistrationException.ERROR_BADREQUEST.equals(didStateFailed.getError()))
+            else if (RegistrationException.ERROR_INVALID_DID.equals(didStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else if (RegistrationException.ERROR_INVALID_DID_DOCUMENT.equals(didStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else if (RegistrationException.ERROR_INVALID_OPTIONS.equals(didStateFailed.getError()))
                 return HttpStatus.SC_BAD_REQUEST;
             else
                 return HttpStatus.SC_INTERNAL_SERVER_ERROR;
@@ -41,9 +45,13 @@ public class HttpBindingServerUtil {
 
     public static int httpStatusCodeForState(RegistrarResourceState state) {
         if (state.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
-            if (RegistrationException.ERROR_NOTFOUND.equals(didUrlStateFailed.getError()))
+            if (RegistrationException.ERROR_NOT_FOUND.equals(didUrlStateFailed.getError()))
                 return HttpStatus.SC_NOT_FOUND;
-            else if (RegistrationException.ERROR_BADREQUEST.equals(didUrlStateFailed.getError()))
+            else if (RegistrationException.ERROR_INVALID_DID.equals(didUrlStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else if (RegistrationException.ERROR_INVALID_DID_DOCUMENT.equals(didUrlStateFailed.getError()))
+                return HttpStatus.SC_BAD_REQUEST;
+            else if (RegistrationException.ERROR_INVALID_OPTIONS.equals(didUrlStateFailed.getError()))
                 return HttpStatus.SC_BAD_REQUEST;
             else
                 return HttpStatus.SC_INTERNAL_SERVER_ERROR;

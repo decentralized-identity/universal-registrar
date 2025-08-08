@@ -129,7 +129,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadCreateConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -137,7 +137,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (createState != null && createState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -210,7 +210,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadUpdateConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -218,7 +218,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (updateState != null && updateState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -291,7 +291,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadDeactivateConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -299,7 +299,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (deactivateState != null && deactivateState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -372,7 +372,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadExecuteConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -380,7 +380,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && executeState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (executeState != null && executeState.getDidState() instanceof DidStateFailed didStateFailed) {
@@ -454,7 +454,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadCreateResourceConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -462,7 +462,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && createResourceState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (createResourceState != null && createResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
@@ -535,7 +535,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadUpdateResourceConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -543,7 +543,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && updateResourceState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (updateResourceState != null && updateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {
@@ -616,7 +616,7 @@ public class HttpDriver implements Driver {
 				stateMap = HttpBindingUtil.fromHttpBodyMap(httpResponseBodyString);
 				this.getBeforeReadDeactivateResourceConsumer().accept(stateMap);
 			} catch (JsonProcessingException ex) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (isStateHttpContent(stateMap)) {
@@ -624,7 +624,7 @@ public class HttpDriver implements Driver {
 			}
 
 			if (httpResponse.getStatusLine().getStatusCode() >= 300 && deactivateResourceState == null) {
-				throw new RegistrationException(RegistrationException.ERROR_INTERNALERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
+				throw new RegistrationException(RegistrationException.ERROR_INTERNAL_ERROR, "Driver cannot retrieve error state: " + httpResponseStatusCode + " " + httpResponseStatusMessage + " (" + httpResponseBodyString + ")");
 			}
 
 			if (deactivateResourceState != null && deactivateResourceState.getDidUrlState() instanceof DidUrlStateFailed didUrlStateFailed) {

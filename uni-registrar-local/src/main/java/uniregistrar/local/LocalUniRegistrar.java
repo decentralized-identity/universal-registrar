@@ -103,7 +103,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing create with request " + createRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -193,7 +193,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing update with request " + updateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -283,7 +283,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing deactivate with request " + deactivateRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -373,7 +373,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing execute with request " + executeRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -464,7 +464,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing createResource with request " + createResourceRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -554,7 +554,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing updateResource with request " + updateResourceRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
@@ -644,7 +644,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		if (! extensionStatus.skipDriver()) {
 
 			Driver driver = this.getDrivers().get(method);
-			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_BADREQUEST, "Unsupported method: " + method);
+			if (driver == null) throw new RegistrationException(RegistrationException.ERROR_METHOD_NOT_SUPPORTED, "Unsupported method: " + method);
 			if (log.isInfoEnabled()) log.info("Executing deactivateResource with request " + deactivateResourceRequest + " with driver " + driver.getClass().getSimpleName());
 
 			if (driver instanceof HttpDriver httpDriver) {
