@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Appenders>
-        <!-- JSON Structured (Elastic Common Schema (ECS) -
-        https://www.elastic.co/docs/reference/ecs/logging/intro) logging to Console -->
+        <!-- JSON structured logging to Console (defaults to Elastic Common Schema, ECS).
+             Override the event template via LOGGING_JSON_EVENT_TEMPLATE_URI.
+             ECS docs: https://www.elastic.co/docs/reference/ecs/logging/intro
+             Predefined Log4j event templates:
+        https://logging.apache.org/log4j/2.x/manual/json-template-layout.html#event-templates -->
         <Console name="json" target="SYSTEM_OUT">
-            <JsonTemplateLayout eventTemplateUri="classpath:EcsLayout.json" />
+            <JsonTemplateLayout
+                eventTemplateUri="${env:LOGGING_JSON_EVENT_TEMPLATE_URI:-classpath:EcsLayout.json}" />
         </Console>
 
         <!-- Colored plaintext logging to Console -->
