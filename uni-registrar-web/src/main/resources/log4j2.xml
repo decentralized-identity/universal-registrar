@@ -26,7 +26,7 @@
             <AppenderRef ref="${env:LOGGING_FORMAT:-plain}" />
         </Root>
 
-        <!-- Set Root Logging level with 'LOGGING_LEVEL_uniregistrar' environment variable -->
+        <!-- Set Uniregistrar Logging level with 'LOGGING_LEVEL_uniregistrar' environment variable -->
         <!-- Valid log levels are: trace, debug, info, warn, error, fatal, off -->
         <Logger name="uniregistrar" level="${env:LOGGING_LEVEL_uniregistrar:-debug}"
             additivity="false">
