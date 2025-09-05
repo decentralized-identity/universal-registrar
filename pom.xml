@@ -4,7 +4,7 @@
 	<groupId>decentralized-identity</groupId>
 	<artifactId>uni-registrar</artifactId>
 	<packaging>pom</packaging>
-	<version>0.36-SNAPSHOT</version>
+	<version>0.36.0</version>
 	<name>uni-registrar</name>
 	<description>A Universal Registrar for decentralized identity.</description>
 	<url>https://uniregistrar.io/</url>
@@ -37,7 +37,7 @@
 		<url>https://github.com/decentralized-identity/universal-registrar</url>
 		<connection>scm:git:https://github.com/decentralized-identity/universal-registrar.git</connection>
 		<developerConnection>scm:git:https://github.com/decentralized-identity/universal-registrar.git</developerConnection>
-	  <tag>HEAD</tag>
+	  <tag>0.36.0</tag>
   </scm>
 
 	<issueManagement>
