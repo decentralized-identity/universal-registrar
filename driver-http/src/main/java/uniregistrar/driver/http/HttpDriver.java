@@ -114,7 +114,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No CREATE STATE from driver received.");
+			}
 
 			// read result
 
@@ -195,7 +197,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No UPDATE STATE from driver received.");
+			}
 
 			// read result
 
@@ -276,7 +280,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No DEACTIVATE STATE from driver received.");
+			}
 
 			// read result
 
@@ -357,7 +363,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No EXECUTE STATE from driver received.");
+			}
 
 			// read result
 
@@ -439,7 +447,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No CREATE RESOURCE STATE from driver received.");
+			}
 
 			// read result
 
@@ -520,7 +530,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No UPDATE RESOURCE STATE from driver received.");
+			}
 
 			// read result
 
@@ -601,7 +613,9 @@ public class HttpDriver implements Driver {
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP status from " + uriString + ": " + httpResponseStatusCode + " " + httpResponseStatusMessage);
 			if (log.isDebugEnabled()) log.debug("Driver response HTTP content type from " + uriString + ": " + httpResponseContentType + " / " + httpResponseCharset);
 
-			if (httpResponseStatusCode == 404) return null;
+			if (httpResponseStatusCode == 404) {
+				throw new RegistrationException("No DEACTIVATE RESOURCE STATE from driver received.");
+			}
 
 			// read result
 
