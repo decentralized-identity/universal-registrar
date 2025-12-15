@@ -1,7 +1,5 @@
 package uniregistrar.web.servlet;
 
-import foundation.identity.did.DID;
-import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +18,7 @@ import java.util.Map;
 
 public class ExecuteServlet extends WebUniRegistrar {
 
-	protected static final Logger log = LoggerFactory.getLogger(ExecuteServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(ExecuteServlet.class);
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -30,61 +28,20 @@ public class ExecuteServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		final Map<String, Object> requestMap;
+		final Map<String, Object> requestMap = readRequestMap("EXECUTE", request, response);
+		if (requestMap == null) return;
 
-		try {
-			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse EXECUTE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse EXECUTE request (JSON): " + ex.getMessage());
-			return;
-		}
-
-		final String method;
-		if (request.getParameter("method") != null) {
-			method = request.getParameter("method");
-		} else {
-			Object didString = requestMap.get("did");
-			if (didString instanceof String) {
-				if (log.isInfoEnabled()) log.info("Found DID in EXECUTE request: " + didString);
-				try {
-					DID did = DID.fromString((String) didString);
-					method = did.getMethodName();
-				} catch (ParserException ex) {
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
-					return;
-				}
-			} else {
-				method = null;
-			}
-		}
-		if (method == null) {
-			if (log.isWarnEnabled()) log.warn("Missing DID method in EXECUTE request.");
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in EXECUTE request.");
-			return;
-		}
-
-		if (log.isInfoEnabled()) log.info("Incoming EXECUTE request for method " + method + ": " + requestMap);
+		final String method = readMethod("EXECUTE", requestMap, request, response);
+		if (method == null) return;
 
 		// parse request
 
-		ExecuteRequest executeRequest;
+		ExecuteRequest executeRequest = WebUniRegistrar.parseRequest(method, "EXECUTE", requestMap, ExecuteRequest.class, response);
+		if (executeRequest == null) return;
 
-		try {
-			executeRequest = HttpBindingUtil.fromMapRequest(requestMap, ExecuteRequest.class);
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse EXECUTE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse EXECUTE request (object): " + ex.getMessage());
-			return;
-		}
+		// prepare options
 
-		if (log.isInfoEnabled()) log.info("Parsed EXECUTE request for method " + method + ": " + executeRequest);
-
-		if (executeRequest == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid EXECUTE request found.");
-			return;
-		}
+		WebUniRegistrar.prepareOptions(request, executeRequest);
 
 		// execute the request
 

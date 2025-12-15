@@ -1,7 +1,5 @@
 package uniregistrar.web.servlet;
 
-import foundation.identity.did.DID;
-import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +20,7 @@ import java.util.Map;
 
 public class CreateResourceServlet extends WebUniRegistrar {
 
-	protected static final Logger log = LoggerFactory.getLogger(CreateResourceServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(CreateResourceServlet.class);
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,41 +30,11 @@ public class CreateResourceServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		final Map<String, Object> requestMap;
+		final Map<String, Object> requestMap = readRequestMap("CREATE RESOURCE", request, response);
+		if (requestMap == null) return;
 
-		try {
-			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE RESOURCE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE RESOURCE request (JSON): " + ex.getMessage());
-			return;
-		}
-
-		final String method;
-		if (request.getParameter("method") != null) {
-			method = request.getParameter("method");
-		} else {
-			Object didString = requestMap.get("did");
-			if (didString instanceof String) {
-				if (log.isInfoEnabled()) log.info("Found DID in CREATE RESOURCE request: " + didString);
-				try {
-					DID did = DID.fromString((String) didString);
-					method = did.getMethodName();
-				} catch (ParserException ex) {
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
-					return;
-				}
-			} else {
-				method = null;
-			}
-		}
-		if (method == null) {
-			if (log.isWarnEnabled()) log.warn("Missing DID method in CREATE RESOURCE request.");
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in CREATE RESOURCE request.");
-			return;
-		}
-
-		if (log.isInfoEnabled()) log.info("Incoming CREATE RESOURCE request for method " + method + ": " + requestMap);
+		final String method = readMethod("CREATE RESOURCE", requestMap, request, response);
+		if (method == null) return;
 
 		// [before read]
 
@@ -83,23 +51,12 @@ public class CreateResourceServlet extends WebUniRegistrar {
 
 		// parse request
 
-		CreateResourceRequest createResourceRequest;
+		CreateResourceRequest createResourceRequest = WebUniRegistrar.parseRequest(method, "CREATE RESOURCE", requestMap, CreateResourceRequest.class, response);
+		if (createResourceRequest == null) return;
 
-		try {
-			createResourceRequest = HttpBindingUtil.fromMapRequest(requestMap, CreateResourceRequest.class);
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE RESOURCE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE RESOURCE request (object): " + ex.getMessage());
-			return;
-		}
+		// prepare options
 
-		if (log.isInfoEnabled()) log.info("Parsed CREATE RESOURCE request for method " + method + ": " + createResourceRequest);
-
-		if (createResourceRequest == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid CREATE RESOURCE request found.");
-			return;
-		}
+		WebUniRegistrar.prepareOptions(request, createResourceRequest);
 
 		// execute the request
 

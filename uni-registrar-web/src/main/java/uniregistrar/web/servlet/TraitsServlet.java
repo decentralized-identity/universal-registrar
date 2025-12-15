@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class TraitsServlet extends WebUniRegistrar {
 
-	protected static final Logger log = LoggerFactory.getLogger(TraitsServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(TraitsServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

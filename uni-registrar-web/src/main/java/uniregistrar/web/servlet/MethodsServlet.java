@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class MethodsServlet extends WebUniRegistrar {
 
-	protected static final Logger log = LoggerFactory.getLogger(MethodsServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(MethodsServlet.class);
 
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 

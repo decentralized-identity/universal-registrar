@@ -1,7 +1,5 @@
 package uniregistrar.web.servlet;
 
-import foundation.identity.did.DID;
-import foundation.identity.did.parser.ParserException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +20,7 @@ import java.util.Map;
 
 public class CreateServlet extends WebUniRegistrar {
 
-	protected static final Logger log = LoggerFactory.getLogger(CreateServlet.class);
+	private static final Logger log = LoggerFactory.getLogger(CreateServlet.class);
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -32,41 +30,11 @@ public class CreateServlet extends WebUniRegistrar {
 		request.setCharacterEncoding("UTF-8");
 		response.setCharacterEncoding("UTF-8");
 
-		final Map<String, Object> requestMap;
+		final Map<String, Object> requestMap = readRequestMap("CREATE", request, response);
+		if (requestMap == null) return;
 
-		try {
-			requestMap = HttpBindingUtil.fromHttpBodyMap(request.getReader());
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (JSON): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (JSON): " + ex.getMessage());
-			return;
-		}
-
-		final String method;
-		if (request.getParameter("method") != null) {
-			method = request.getParameter("method");
-		} else {
-			Object didString = requestMap.get("did");
-			if (didString instanceof String) {
-				if (log.isInfoEnabled()) log.info("Found DID in CREATE request: " + didString);
-				try {
-					DID did = DID.fromString((String) didString);
-					method = did.getMethodName();
-				} catch (ParserException ex) {
-					ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse DID: " + didString);
-					return;
-				}
-			} else {
-				method = null;
-			}
-		}
-		if (method == null) {
-			if (log.isWarnEnabled()) log.warn("Missing DID method in CREATE request.");
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Missing DID method in CREATE request.");
-			return;
-		}
-
-		if (log.isInfoEnabled()) log.info("Incoming CREATE request for method " + method + ": " + requestMap);
+		final String method = readMethod("CREATE", requestMap, request, response);
+		if (method == null) return;
 
 		// [before read]
 
@@ -83,23 +51,12 @@ public class CreateServlet extends WebUniRegistrar {
 
 		// parse request
 
-		CreateRequest createRequest;
+		CreateRequest createRequest = WebUniRegistrar.parseRequest(method, "CREATE", requestMap, CreateRequest.class, response);
+		if (createRequest == null) return;
 
-		try {
-			createRequest = HttpBindingUtil.fromMapRequest(requestMap, CreateRequest.class);
-		} catch (Exception ex) {
-			if (log.isWarnEnabled()) log.warn("Cannot parse CREATE request (object): " + ex.getMessage(), ex);
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Cannot parse CREATE request (object): " + ex.getMessage());
-			return;
-		}
+        // prepare options
 
-		if (log.isInfoEnabled()) log.info("Parsed CREATE request for method " + method + ": " + createRequest);
-
-		if (createRequest == null) {
-
-			ServletUtil.sendResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No valid CREATE request found.");
-			return;
-		}
+        WebUniRegistrar.prepareOptions(request, createRequest);
 
 		// execute the request
 
