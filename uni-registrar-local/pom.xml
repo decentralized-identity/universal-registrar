@@ -20,7 +20,7 @@
 	<parent>
 		<groupId>decentralized-identity</groupId>
 		<artifactId>uni-registrar</artifactId>
-		<version>0.42.0</version>
+		<version>0.43-SNAPSHOT</version>
 	</parent>
 
 	<dependencies>
