@@ -108,7 +108,7 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
         if (log.isInfoEnabled()) log.info("Incoming X-Config: header string: " + httpXConfigHeader);
         Map<String, Object> httpXConfigHeaderMap = httpXConfigHeader == null ? null : (Map<String, Object>) objectMapper.readValue(httpXConfigHeader, Map.class);
         RequestOptions requestOptions = Objects.requireNonNullElseGet(registrarRequest.getOptions(), () -> registrarRequest.options(new RequestOptions()).getOptions());
-        if (httpXConfigHeaderMap != null) requestOptions.putAdditionalProperty("_http_x_config", httpXConfigHeaderMap);
+        if (httpXConfigHeaderMap != null) httpXConfigHeaderMap.forEach(requestOptions::putAdditionalProperty);
 
         if (log.isDebugEnabled()) log.debug("Using options: " + requestOptions);
     }
