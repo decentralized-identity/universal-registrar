@@ -22,6 +22,7 @@ import uniregistrar.util.HttpBindingUtil;
 import uniregistrar.web.servlet.ServletUtil;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -29,9 +30,9 @@ import java.util.Set;
 @WebServlet
 public abstract class WebUniRegistrar extends HttpServlet implements HttpRequestHandler, UniRegistrar {
 
-    private static final Logger log = LoggerFactory.getLogger(WebUniRegistrar.class);
+	private static final Logger log = LoggerFactory.getLogger(WebUniRegistrar.class);
 
-    protected static final ObjectMapper objectMapper = new ObjectMapper();
+	protected static final ObjectMapper objectMapper = new ObjectMapper();
 
 	protected static Map<String, Object> readRequestMap(String operation, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
@@ -102,16 +103,21 @@ public abstract class WebUniRegistrar extends HttpServlet implements HttpRequest
 		return registrarRequest;
 	}
 
-    protected static void prepareOptions(HttpServletRequest request, RegistrarRequest registrarRequest) throws JsonProcessingException {
+	protected static void prepareOptions(HttpServletRequest request, RegistrarRequest registrarRequest) throws JsonProcessingException {
 
-        String httpXConfigHeader = request.getHeader("X-Config");
-        if (log.isInfoEnabled()) log.info("Incoming X-Config: header string: " + httpXConfigHeader);
-        Map<String, Object> httpXConfigHeaderMap = httpXConfigHeader == null ? null : (Map<String, Object>) objectMapper.readValue(httpXConfigHeader, Map.class);
-        RequestOptions requestOptions = Objects.requireNonNullElseGet(registrarRequest.getOptions(), () -> registrarRequest.options(new RequestOptions()).getOptions());
-        if (httpXConfigHeaderMap != null) httpXConfigHeaderMap.forEach(requestOptions::putAdditionalProperty);
+		String httpXConfigHeader = request.getHeader("X-Config");
+		if (log.isDebugEnabled()) log.debug("Incoming X-Config: header string: " + httpXConfigHeader);
+		Map<String, Object> httpXConfigHeaderMap = httpXConfigHeader == null ? null : (Map<String, Object>) objectMapper.readValue(httpXConfigHeader, Map.class);
+		RequestOptions requestOptions = Objects.requireNonNullElseGet(registrarRequest.getOptions(), () -> registrarRequest.options(new RequestOptions()).getOptions());
+		if (httpXConfigHeaderMap != null) {
+			Map<String, Object> requestOptionsMap = new HashMap<>(objectMapper.convertValue(requestOptions, Map.class));
+			requestOptionsMap.keySet().forEach(httpXConfigHeaderMap::remove);
+			requestOptionsMap.putAll(httpXConfigHeaderMap);
+			requestOptions = objectMapper.convertValue(requestOptionsMap, RequestOptions.class);
+		}
 
-        if (log.isDebugEnabled()) log.debug("Using options: " + requestOptions);
-    }
+		if (log.isInfoEnabled()) log.info("Using options: " + requestOptions);
+	}
 
 	@Autowired
 	@Qualifier("UniRegistrar")
