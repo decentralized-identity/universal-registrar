@@ -21,10 +21,7 @@ import uniregistrar.openapi.model.*;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ClientUniRegistrar implements UniRegistrar {
 
@@ -33,6 +30,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 	private static final ObjectMapper objectMapper = new ObjectMapper();
 
 	public static final HttpClient DEFAULT_HTTP_CLIENT = HttpClients.createDefault();
+	public static final Map<String, String> DEFAULT_HTTP_HEADERS = Collections.emptyMap();
 	public static final URI DEFAULT_CREATE_URI = URI.create("http://localhost:9080/1.0/create");
 	public static final URI DEFAULT_UPDATE_URI = URI.create("http://localhost:9080/1.0/update");
 	public static final URI DEFAULT_DEACTIVATE_URI = URI.create("http://localhost:9080/1.0/deactivate");
@@ -45,6 +43,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 	public static final URI DEFAULT_TRAITS_URI = URI.create("http://localhost:9080/1.0/traits");
 
 	private HttpClient httpClient = DEFAULT_HTTP_CLIENT;
+	private Map<String, String> httpHeaders = DEFAULT_HTTP_HEADERS;
 	private URI createUri = DEFAULT_CREATE_URI;
 	private URI updateUri = DEFAULT_UPDATE_URI;
 	private URI deactivateUri = DEFAULT_DEACTIVATE_URI;
@@ -101,6 +100,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -165,6 +165,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -229,6 +230,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -293,6 +295,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -357,6 +360,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -421,6 +425,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -485,6 +490,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
 		httpPost.addHeader("Accept", RegistrationMediaTypes.STATE_MEDIA_TYPE);
+		if (this.getHttpHeaders() != null) this.getHttpHeaders().forEach(httpPost::addHeader);
 
 		// execute HTTP request
 
@@ -686,6 +692,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 	public void setHttpClient(HttpClient httpClient) {
 		this.httpClient = httpClient;
+	}
+
+	public Map<String, String> getHttpHeaders() {
+		return this.httpHeaders;
+	}
+
+	public void setHttpHeaders(Map<String, String> httpHeaders) {
+		this.httpHeaders = httpHeaders;
 	}
 
 	public URI getCreateUri() {
