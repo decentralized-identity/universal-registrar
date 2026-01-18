@@ -592,9 +592,11 @@ components:
           $ref: "#/components/schemas/DidDocumentService"
       additionalProperties: { }
     DidDocumentController:
-      type: array
-      items:
-        type: string
+      oneOf:
+        - type: string
+        - type: array
+          items:
+            type: string
     DidDocumentVerificationMethod:
       type: array
       items:
