@@ -594,7 +594,6 @@ components:
       additionalProperties: { }
     DidDocumentController:
       oneOf:
-        - type: null
         - type: string
         - type: array
           items:

@@ -1,6 +1,6 @@
---- src/main/java/uniregistrar/openapi/model/DidDocumentController.java	2026-01-19 18:33:38.733947422 +0100
-+++ src/main/java/uniregistrar/openapi/model/DidDocumentController.java.changed	2026-01-19 18:33:24.931034616 +0100
-@@ -94,18 +94,18 @@
+--- src/main/java/uniregistrar/openapi/model/DidDocumentController.java	2026-01-19 19:26:25.286766770 +0100
++++ src/main/java/uniregistrar/openapi/model/DidDocumentController.java.changed	2026-01-19 19:26:25.286766770 +0100
+@@ -94,17 +94,17 @@
              try {
                  boolean attemptParsing = true;
                  // ensure that we respect type coercion as set on the client ObjectMapper
@@ -16,7 +16,6 @@
 +                        attemptParsing |= ((List.class.equals(Float.class) || List.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
 +                        attemptParsing |= (List.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
 +                        attemptParsing |= (List.class.equals(String.class) && token == JsonToken.VALUE_STRING);
-                         attemptParsing |= (token == JsonToken.VALUE_NULL);
                      }
                  }
                  if (attemptParsing) {
@@ -25,25 +24,25 @@
                      // TODO: there is no validation against JSON schema constraints
                      // (min, max, enum, pattern...), this does not perform a strict JSON
                      // validation, which means the 'match' count may be higher than it should be.
-@@ -234,7 +234,7 @@
+@@ -232,7 +232,7 @@
      }
- 
+
      static {
 -        schemas.put("List<String>", List<String>.class);
 +        schemas.put("List<String>", List.class);
          schemas.put("String", String.class);
          JSON.registerDescendants(DidDocumentController.class, Collections.unmodifiableMap(schemas));
      }
-@@ -259,7 +259,7 @@
-            return;
-         }
- 
+@@ -252,7 +252,7 @@
+      */
+     @Override
+     public void setActualInstance(Object instance) {
 -        if (JSON.isInstanceOf(List<String>.class, instance, new HashSet<Class<?>>())) {
 +        if (JSON.isInstanceOf(List.class, instance, new HashSet<Class<?>>())) {
              super.setActualInstance(instance);
              return;
          }
-@@ -290,7 +290,7 @@
+@@ -283,7 +283,7 @@
       * @return The actual instance of `List<String>`
       * @throws ClassCastException if the instance is not `List<String>`
       */
@@ -51,8 +50,8 @@
 +    public List<String> getList() throws ClassCastException {
          return (List<String>)super.getActualInstance();
      }
- 
-@@ -345,12 +345,12 @@
+
+@@ -338,12 +338,12 @@
          }
          return joiner.toString();
      }
