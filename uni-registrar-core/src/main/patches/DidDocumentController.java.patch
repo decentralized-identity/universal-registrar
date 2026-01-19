@@ -1,0 +1,68 @@
+--- src/main/java/uniregistrar/openapi/model/DidDocumentController.java	2026-01-19 13:55:05.276890450 +0100
++++ src/main/java/uniregistrar/openapi/model/DidDocumentController.java.changed	2026-01-19 13:53:22.947007764 +0100
+@@ -94,17 +94,17 @@
+             try {
+                 boolean attemptParsing = true;
+                 // ensure that we respect type coercion as set on the client ObjectMapper
+-                if (List<String>.class.equals(Integer.class) || List<String>.class.equals(Long.class) || List<String>.class.equals(Float.class) || List<String>.class.equals(Double.class) || List<String>.class.equals(Boolean.class) || List<String>.class.equals(String.class)) {
++                if (List.class.equals(Integer.class) || List.class.equals(Long.class) || List.class.equals(Float.class) || List.class.equals(Double.class) || List.class.equals(Boolean.class) || List.class.equals(String.class)) {
+                     attemptParsing = typeCoercion;
+                     if (!attemptParsing) {
+-                        attemptParsing |= ((List<String>.class.equals(Integer.class) || List<String>.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+-                        attemptParsing |= ((List<String>.class.equals(Float.class) || List<String>.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+-                        attemptParsing |= (List<String>.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+-                        attemptParsing |= (List<String>.class.equals(String.class) && token == JsonToken.VALUE_STRING);
++                        attemptParsing |= ((List.class.equals(Integer.class) || List.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
++                        attemptParsing |= ((List.class.equals(Float.class) || List.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
++                        attemptParsing |= (List.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
++                        attemptParsing |= (List.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                     }
+                 }
+                 if (attemptParsing) {
+-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(List<String>.class);
++                    deserialized = tree.traverse(jp.getCodec()).readValueAs(List.class);
+                     // TODO: there is no validation against JSON schema constraints
+                     // (min, max, enum, pattern...), this does not perform a strict JSON
+                     // validation, which means the 'match' count may be higher than it should be.
+@@ -232,7 +232,7 @@
+     }
+
+     static {
+-        schemas.put("List<String>", List<String>.class);
++        schemas.put("List<String>", List.class);
+         schemas.put("String", String.class);
+         JSON.registerDescendants(DidDocumentController.class, Collections.unmodifiableMap(schemas));
+     }
+@@ -252,7 +252,7 @@
+      */
+     @Override
+     public void setActualInstance(Object instance) {
+-        if (JSON.isInstanceOf(List<String>.class, instance, new HashSet<Class<?>>())) {
++        if (JSON.isInstanceOf(List.class, instance, new HashSet<Class<?>>())) {
+             super.setActualInstance(instance);
+             return;
+         }
+@@ -283,7 +283,7 @@
+      * @return The actual instance of `List<String>`
+      * @throws ClassCastException if the instance is not `List<String>`
+      */
+-    public List<String> getList<String>() throws ClassCastException {
++    public List<String> getList() throws ClassCastException {
+         return (List<String>)super.getActualInstance();
+     }
+
+@@ -338,12 +338,12 @@
+         }
+         return joiner.toString();
+     }
+-    if (getActualInstance() instanceof List<String>) {
++    if (getActualInstance() instanceof List) {
+         if (getActualInstance() != null) {
+           for (int i = 0; i < ((List<String>)getActualInstance()).size(); i++) {
+             joiner.add(String.format(java.util.Locale.ROOT, "%sone_of_1%s%s=%s", prefix, suffix,
+                 "".equals(suffix) ? "" : String.format(java.util.Locale.ROOT, "%s%d%s", containerPrefix, i, containerSuffix),
+-                ApiClient.urlEncode(String.valueOf(getActualInstance().get(i)))));
++                ApiClient.urlEncode(String.valueOf(((List<String>)getActualInstance()).get(i)))));
+           }
+         }
+         return joiner.toString();

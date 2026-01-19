@@ -1,0 +1,11 @@
+--- src/main/java/uniregistrar/openapi/model/StateFinished.java	2026-01-19 14:07:55.326011002 +0100
++++ src/main/java/uniregistrar/openapi/model/StateFinished.java.changed	2026-01-19 14:07:57.069704995 +0100
+@@ -98,7 +98,7 @@
+
+   @Override
+   public int hashCode() {
+-    return Objects.hash(, additionalProperties);
++    return Objects.hash(additionalProperties);
+   }
+
+   @Override

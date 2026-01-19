@@ -390,6 +390,7 @@ components:
     RegistrarRequest:
       description: Input fields for a DID operation.
       type: object
+      x-parent: true
       properties:
         jobId:
           description: This input field is used to keep track of an ongoing DID operation
@@ -593,7 +594,6 @@ components:
       additionalProperties: { }
     DidDocumentController:
       oneOf:
-        - type: null
         - type: string
         - type: array
           items:
@@ -611,6 +611,7 @@ components:
     RegistrarState:
       description: The state after a DID operation.
       type: object
+      x-parent: true
       required:
         - didState
       properties:
@@ -628,6 +629,7 @@ components:
     RegistrarResourceState:
       description: The state after a DID URL operation.
       type: object
+      x-parent: true
       required:
         - didUrlState
       properties:
@@ -688,6 +690,7 @@ components:
     DidState:
       description: The current state of a DID.
       type: object
+      x-parent: true
       required:
         - state
       discriminator:
@@ -712,6 +715,7 @@ components:
     DidUrlState:
       description: The current state of a DID URL and associated resource.
       type: object
+      x-parent: true
       required:
         - state
       discriminator:
@@ -815,6 +819,7 @@ components:
     Secret:
       description: Secrets in requests and states.
       type: object
+      x-parent: true
       properties:
         verificationMethod:
           $ref: "#/components/schemas/SecretVerificationMethod"
@@ -953,6 +958,7 @@ components:
         $ref: "#/components/schemas/DecryptionResponse"
     VerificationMethodData:
       type: object
+      x-parent: true
       required:
         - type
       properties:

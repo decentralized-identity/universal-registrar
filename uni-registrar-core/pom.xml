@@ -48,7 +48,6 @@
 							<apiPackage>uniregistrar.openapi.api</apiPackage>
 							<modelPackage>uniregistrar.openapi.model</modelPackage>
 							<invokerPackage>uniregistrar.openapi</invokerPackage>
-							<openapiNormalizer>REF_AS_PARENT_IN_ALLOF=true</openapiNormalizer>
 							<configOptions>
 								<basePackage>uniregistrar</basePackage>
 								<sourceFolder>src/main/java/</sourceFolder>
@@ -58,6 +57,7 @@
 								<configPackage>uniregistrar.openapi.config</configPackage>
 								<asyncNative>false</asyncNative>
 								<disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+								<legacyDiscriminatorBehavior>false</legacyDiscriminatorBehavior>
 								<library>native</library>
 								<useBeanValidation>true</useBeanValidation>
 								<dateLibrary>java8</dateLibrary>
