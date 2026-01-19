@@ -56,7 +56,7 @@
 								<artifactVersion>${project.version}</artifactVersion>
 								<configPackage>uniregistrar.openapi.config</configPackage>
 								<asyncNative>false</asyncNative>
-								<disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+								<disallowAdditionalPropertiesIfNotPresent>true</disallowAdditionalPropertiesIfNotPresent>
 								<legacyDiscriminatorBehavior>false</legacyDiscriminatorBehavior>
 								<containerDefaultToNull>true</containerDefaultToNull>
 								<library>native</library>
