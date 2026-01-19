@@ -17,6 +17,8 @@ import uniregistrar.openapi.model.RegistrarState;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class HttpBindingUtil {
@@ -44,11 +46,17 @@ public class HttpBindingUtil {
     }
 
     public static <T extends RegistrarState> T fromMapState(Map<String, Object> map, Class<T> cl) {
-        return objectMapper.convertValue(map, cl);
+        T registrarState = objectMapper.convertValue(map, cl);
+        if (registrarState.getDidRegistrationMetadata() == null) registrarState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarState.getDidDocumentMetadata() == null) registrarState.setDidDocumentMetadata(new LinkedHashMap<>());
+        return registrarState;
     }
 
     public static <T extends RegistrarResourceState> T fromMapResourceState(Map<String, Object> map, Class<T> cl) {
-        return objectMapper.convertValue(map, cl);
+        T registrarResourceState = objectMapper.convertValue(map, cl);
+        if (registrarResourceState.getDidRegistrationMetadata() == null) registrarResourceState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarResourceState.getContentMetadata() == null) registrarResourceState.setContentMetadata(new LinkedHashMap<>());
+        return registrarResourceState;
     }
 
     public static Map<String, Object> toMapState(RegistrarState state) {
