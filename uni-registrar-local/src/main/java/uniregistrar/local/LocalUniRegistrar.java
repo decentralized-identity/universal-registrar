@@ -72,6 +72,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare create state
 
 		CreateState createState = new CreateState();
+		createState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		createState.setDidDocumentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before create]
@@ -162,6 +164,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare update state
 
 		UpdateState updateState = new UpdateState();
+		updateState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		updateState.setDidDocumentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before update]
@@ -252,6 +256,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare deactivate state
 
 		DeactivateState deactivateState = new DeactivateState();
+		deactivateState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		deactivateState.setDidDocumentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before deactivate]
@@ -342,6 +348,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare execute state
 
 		ExecuteState executeState = new ExecuteState();
+		executeState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		executeState.setDidDocumentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before execute]
@@ -433,6 +441,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare createResource state
 
 		CreateResourceState createResourceState = new CreateResourceState();
+		createResourceState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		createResourceState.setContentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before createResource]
@@ -523,6 +533,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare updateResource state
 
 		UpdateResourceState updateResourceState = new UpdateResourceState();
+		updateResourceState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		updateResourceState.setContentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before updateResource]
@@ -613,6 +625,8 @@ public class LocalUniRegistrar implements UniRegistrar {
 		// prepare deactivateResource state
 
 		DeactivateResourceState deactivateResourceState = new DeactivateResourceState();
+		deactivateResourceState.setDidRegistrationMetadata(new LinkedHashMap<>());
+		deactivateResourceState.setContentMetadata(new LinkedHashMap<>());
 		ExtensionStatus extensionStatus = new ExtensionStatus();
 
 		// [before deactivateResource]

@@ -1,6 +1,5 @@
 package uniregistrar.client;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpClient;
@@ -17,6 +16,7 @@ import uniregistrar.RegistrationException;
 import uniregistrar.RegistrationMediaTypes;
 import uniregistrar.UniRegistrar;
 import uniregistrar.openapi.model.*;
+import uniregistrar.util.HttpBindingUtil;
 
 import java.io.IOException;
 import java.net.URI;
@@ -87,15 +87,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getCreateUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(createRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(createRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -129,7 +121,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			createState = objectMapper.readValue(httpBody, CreateState.class);
+			createState = HttpBindingUtil.fromHttpBodyState(httpBody, CreateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE STATE for CREATE REQUEST " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -152,15 +144,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getUpdateUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(updateRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(updateRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -194,7 +178,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			updateState = objectMapper.readValue(httpBody, UpdateState.class);
+			updateState = HttpBindingUtil.fromHttpBodyState(httpBody, UpdateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE STATE for UPDATE REQUEST " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -217,15 +201,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getDeactivateUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(deactivateRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(deactivateRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -259,7 +235,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			deactivateState = objectMapper.readValue(httpBody, DeactivateState.class);
+			deactivateState = HttpBindingUtil.fromHttpBodyState(httpBody, DeactivateState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -282,15 +258,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getExecuteUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(executeRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(executeRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -324,7 +292,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			executeState = objectMapper.readValue(httpBody, ExecuteState.class);
+			executeState = HttpBindingUtil.fromHttpBodyState(httpBody, ExecuteState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -347,15 +315,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getCreateResourceUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(createResourceRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(createResourceRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -389,7 +349,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			createResourceState = objectMapper.readValue(httpBody, CreateResourceState.class);
+			createResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, CreateResourceState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -412,15 +372,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getUpdateResourceUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(updateResourceRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(updateResourceRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -454,7 +406,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			updateResourceState = objectMapper.readValue(httpBody, UpdateResourceState.class);
+			updateResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, UpdateResourceState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
@@ -477,15 +429,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		String uriString = this.getDeactivateResourceUri().toString() + "?method=" + method;
 
-		String body;
-
-		try {
-
-			body = objectMapper.writeValueAsString(deactivateResourceRequest);
-		} catch (JsonProcessingException ex) {
-
-			throw new RegistrationException(ex.getMessage(), ex);
-		}
+		String body = HttpBindingUtil.toHttpBodyRequest(deactivateResourceRequest);
 
 		HttpPost httpPost = new HttpPost(URI.create(uriString));
 		httpPost.setEntity(new StringEntity(body, ContentType.create(RegistrationMediaTypes.REQUEST_MEDIA_TYPE, StandardCharsets.UTF_8)));
@@ -519,7 +463,7 @@ public class ClientUniRegistrar implements UniRegistrar {
 				throw new RegistrationException(httpBody);
 			}
 
-			deactivateResourceState = objectMapper.readValue(httpBody, DeactivateResourceState.class);
+			deactivateResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, DeactivateResourceState.class);
 		} catch (IOException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);

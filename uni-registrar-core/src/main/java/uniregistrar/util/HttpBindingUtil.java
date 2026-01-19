@@ -84,10 +84,30 @@ public class HttpBindingUtil {
     }
 
     public static <T extends RegistrarState> T fromHttpBodyState(String httpBody, Class<T> cl) throws JsonProcessingException {
-        return objectMapper.readValue(httpBody, cl);
+        T registrarState = objectMapper.readValue(httpBody, cl);
+        if (registrarState.getDidRegistrationMetadata() == null) registrarState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarState.getDidDocumentMetadata() == null) registrarState.setDidDocumentMetadata(new LinkedHashMap<>());
+        return registrarState;
     }
 
     public static <T extends RegistrarState> T fromHttpBodyState(Reader httpBody, Class<T> cl) throws IOException {
+        T registrarState = objectMapper.readValue(httpBody, cl);
+        if (registrarState.getDidRegistrationMetadata() == null) registrarState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarState.getDidDocumentMetadata() == null) registrarState.setDidDocumentMetadata(new LinkedHashMap<>());
+        return objectMapper.readValue(httpBody, cl);
+    }
+
+    public static <T extends RegistrarResourceState> T fromHttpBodyResourceState(String httpBody, Class<T> cl) throws JsonProcessingException {
+        T registrarState = objectMapper.readValue(httpBody, cl);
+        if (registrarState.getDidRegistrationMetadata() == null) registrarState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarState.getContentMetadata() == null) registrarState.setContentMetadata(new LinkedHashMap<>());
+        return registrarState;
+    }
+
+    public static <T extends RegistrarResourceState> T fromHttpBodyResourceState(Reader httpBody, Class<T> cl) throws IOException {
+        T registrarState = objectMapper.readValue(httpBody, cl);
+        if (registrarState.getDidRegistrationMetadata() == null) registrarState.setDidRegistrationMetadata(new LinkedHashMap<>());
+        if (registrarState.getContentMetadata() == null) registrarState.setContentMetadata(new LinkedHashMap<>());
         return objectMapper.readValue(httpBody, cl);
     }
 
