@@ -838,8 +838,10 @@ components:
       type: array
       items:
         oneOf:
-          - $ref: "#/components/schemas/VerificationMethodPublicData"
-          - $ref: "#/components/schemas/VerificationMethodPrivateData"
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyMultibase"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyMultibase"
           - $ref: "#/components/schemas/SecretVerificationMethodVerificationMethodTemplate"
     SecretVerificationMethodVerificationMethodTemplate:
       type: array
@@ -973,26 +975,46 @@ components:
           type: array
           items:
             type: string
-    VerificationMethodPublicData:
+    VerificationMethodPublicDataPublicKeyJwk:
       description: A verification method public data object, see https://identity.foundation/did-registration/#verification-method-public-data
       allOf:
         - $ref: "#/components/schemas/VerificationMethodData"
         - type: object
+          required:
+            - publicKeyJwk
           properties:
             publicKeyJwk:
-              type: [object, null]
+              type: object
               additionalProperties: { }
+    VerificationMethodPublicDataPublicKeyMultibase:
+      description: A verification method public data object, see https://identity.foundation/did-registration/#verification-method-public-data
+      allOf:
+        - $ref: "#/components/schemas/VerificationMethodData"
+        - type: object
+          required:
+            - publicKeyMultibase
+          properties:
             publicKeyMultibase:
               type: string
-    VerificationMethodPrivateData:
+    VerificationMethodPrivateDataPrivateKeyJwk:
       description: A verification method private data object, see https://identity.foundation/did-registration/#verification-method-private-data
       allOf:
         - $ref: "#/components/schemas/VerificationMethodData"
         - type: object
+          required:
+            - privateKeyJwk
           properties:
             privateKeyJwk:
-              type: [object, null]
+              type: object
               additionalProperties: { }
+    VerificationMethodPrivateDataPrivateKeyMultibase:
+      description: A verification method private data object, see https://identity.foundation/did-registration/#verification-method-private-data
+      allOf:
+        - $ref: "#/components/schemas/VerificationMethodData"
+        - type: object
+          required:
+            - privateKeyMultibase
+          properties:
             privateKeyMultibase:
               type: string
     VerificationMethodTemplate:
