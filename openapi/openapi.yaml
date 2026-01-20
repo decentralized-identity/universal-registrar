@@ -778,7 +778,7 @@ components:
       type: object
       properties:
         verificationMethod:
-          $ref: "#/components/schemas/DidStateRequestSecretVerificationMethod"
+          $ref: "#/components/schemas/DidStateSecretVerificationMethod"
       additionalProperties: { }
       example:
         verificationMethod:
@@ -789,7 +789,7 @@ components:
               crv: Ed25519
               d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
               x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
-    DidStateRequestSecretVerificationMethod:
+    DidStateSecretVerificationMethod:
       type: array
       items:
         oneOf:
