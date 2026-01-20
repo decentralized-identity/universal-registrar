@@ -28,6 +28,7 @@ You should then be able to create/update/deactivate identifiers locally using si
 	curl -X POST 'http://localhost:9080/1.0/create?method=cheqd' -d '{"didDocument":{...}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=ethr' -d '{"options":{"network":"goerli"}}'
 	curl -X POST 'http://localhost:9080/1.0/create?method=dyne' -d '{"didDocument":{}}'
+	curl -X POST 'http://localhost:9080/1.0/create?method=btcr2' -d '{"options":{"network":"testnet3"}}'
 
 If this doesn't work, see [Troubleshooting](/docs/troubleshooting.md).
 
@@ -50,6 +51,8 @@ Are you developing a DID method and Universal Registrar driver? Click [Driver De
 | [did-cheqd](https://github.com/cheqd/did-registrar)                                    | 2.0.6          | [1.0](https://docs.cheqd.io/identity/architecture/adr-list/adr-001-cheqd-did-method) | [cheqd/did-registrar](https://github.com/cheqd/did-registrar/pkgs/container/did-registrar)
 | [did-ethr](https://github.com/danubetech/uni-registrar-driver-did-ethr/)               | 0.2.0          | [0.0](https://github.com/decentralized-identity/ethr-did-resolver/blob/master/doc/did-method-spec.md) | [universalregistrar/driver-did-ethr](https://hub.docker.com/r/universalregistrar/driver-did-ethr/)
 | [did-dyne](https://github.com/dyne/W3C-DID/tree/main/universal-registrar)              | 0.2.0          | [1.0](https://dyne.org/W3C-DID/) | [dyne/did-registrar](https://hub.docker.com/r/dyne/did-registrar)
+| [did-btcr2](https://github.com/danubetech/uni-registrar-driver-did-btcr2/) | 0.1.0          | [0.1](https://dcdpr.github.io/did-btcr2/)                                                             | [universalregistrar/driver-did-btcr2](https://hub.docker.com/r/universalregistrar/driver-did-btcr2/)
+
 
 ## More Information
 

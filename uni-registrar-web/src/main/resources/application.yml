@@ -118,3 +118,12 @@ uniregistrar:
         enumerable: true
         historyAvailable: true
         humanReadable: false
+    - method: btcr2
+      url: http://driver-did-btcr2:9080/
+      propertiesEndpoint: 'true'
+      traits:
+        updatable: true
+        deactivatable: true
+        enumerable: true
+        historyAvailable: true
+        humanReadable: false

@@ -111,3 +111,13 @@ services:
     image: dyne/did-registrar:0.3
     ports:
       - "9091:3000"
+  driver-did-btcr2:
+    image: universalregistrar/driver-did-btcr2:latest
+    environment:
+      uniregistrar_driver_did_btcr2_bitcoinConnections: ${uniregistrar_driver_did_btcr2_bitcoinConnections}
+      uniregistrar_driver_did_btcr2_bitcoinConnectionsUrls: ${uniregistrar_driver_did_btcr2_bitcoinConnectionsUrls}
+      uniregistrar_driver_did_btcr2_bitcoinConnectionsCerts: ${uniregistrar_driver_did_btcr2_bitcoinConnectionsCerts}
+      uniregistrar_driver_did_btcr2_genesisHashes: ${uniregistrar_driver_did_btcr2_genesisHashes}
+      uniregistrar_driver_did_btcr2_ipfs: ${uniregistrar_driver_did_btcr2_ipfs}
+    ports:
+      - "9081:9080"
