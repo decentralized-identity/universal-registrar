@@ -417,11 +417,47 @@ components:
           $ref: "#/components/schemas/RequestOptionsRequestVerificationMethod"
       additionalProperties: { }
       example:
+        clientSecretMode: true
         network: testnet
     RequestOptionsRequestVerificationMethod:
       type: array
       items:
         $ref: "#/components/schemas/VerificationMethodTemplate"
+    RequestSecret:
+      description: This input field contains an object with DID controller keys
+        and other secrets needed for performing the DID operation. See
+        https://identity.foundation/did-registration/#secret.
+      type: object
+      properties:
+        verificationMethod:
+          $ref: "#/components/schemas/RequestSecretVerificationMethod"
+        signingResponse:
+          type: [object, null]
+          additionalProperties:
+            $ref: "#/components/schemas/SigningResponse"
+        decryptionResponse:
+          type: [object, null]
+          additionalProperties:
+            $ref: "#/components/schemas/DecryptionResponse"
+      additionalProperties: { }
+      example:
+        seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
+        verificationMethod:
+            - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
+              type: JsonWebKey2020
+              privateKeyJwk:
+                kty: OKP
+                crv: Ed25519
+                d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+                x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+    RequestSecretVerificationMethod:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyMultibase"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyMultibase"
     CreateRequest:
       description: Input fields for a DID create operation.
       allOf:
@@ -738,6 +774,36 @@ components:
         content:
           $ref: "#/components/schemas/String"
       additionalProperties: { }
+    DidStateSecret:
+      description: This output field contains an object with DID controller keys and other secrets. See
+        https://identity.foundation/did-registration/#didstatesecret.
+      type: object
+      properties:
+        verificationMethod:
+          $ref: "#/components/schemas/DidStateRequestSecretVerificationMethod"
+      additionalProperties: { }
+      example:
+        verificationMethod:
+          - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
+            type: JsonWebKey2020
+            privateKeyJwk:
+              kty: OKP
+              crv: Ed25519
+              d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+              x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+    DidStateRequestSecretVerificationMethod:
+      type: array
+      items:
+        oneOf:
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyMultibase"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyJwk"
+          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyMultibase"
+          - $ref: "#/components/schemas/DidStateSecretVerificationMethodVerificationMethodTemplate"
+    DidStateSecretVerificationMethodVerificationMethodTemplate:
+      type: array
+      items:
+        $ref: "#/components/schemas/VerificationMethodTemplate"
     DidStateFinished:
       allOf:
         - $ref: "#/components/schemas/DidState"
@@ -817,62 +883,6 @@ components:
               $ref: "#/components/schemas/String"
             waittime:
               $ref: "#/components/schemas/String"
-    Secret:
-      description: Secrets in requests and states.
-      type: object
-      x-parent: true
-      properties:
-        verificationMethod:
-          $ref: "#/components/schemas/SecretVerificationMethod"
-      additionalProperties: { }
-      example:
-        verificationMethod:
-          - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
-            type: JsonWebKey2020
-            privateKeyJwk:
-              kty: OKP
-              crv: Ed25519
-              d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
-              x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
-    SecretVerificationMethod:
-      type: array
-      items:
-        oneOf:
-          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyJwk"
-          - $ref: "#/components/schemas/VerificationMethodPublicDataPublicKeyMultibase"
-          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyJwk"
-          - $ref: "#/components/schemas/VerificationMethodPrivateDataPrivateKeyMultibase"
-          - $ref: "#/components/schemas/SecretVerificationMethodVerificationMethodTemplate"
-    SecretVerificationMethodVerificationMethodTemplate:
-      type: array
-      items:
-        $ref: "#/components/schemas/VerificationMethodTemplate"
-    RequestSecret:
-      description: This input field contains an object with DID controller keys
-        and other secrets needed for performing the DID operation. See
-        https://identity.foundation/did-registration/#secret.
-      allOf:
-        - $ref: "#/components/schemas/Secret"
-        - type: object
-          properties:
-            signingResponse:
-              type: [object, null]
-              additionalProperties:
-                $ref: "#/components/schemas/SigningResponse"
-            decryptionResponse:
-              type: [object, null]
-              additionalProperties:
-                $ref: "#/components/schemas/DecryptionResponse"
-          example:
-            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
-    DidStateSecret:
-      description: This output field contains an object with DID controller keys and other secrets. See
-        https://identity.foundation/did-registration/#didstatesecret.
-      allOf:
-        - $ref: "#/components/schemas/Secret"
-        - type: object
-          example:
-            seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
     SigningRequest:
       description: A signing request, see https://identity.foundation/did-registration/#signing-request-set.
       type: object
