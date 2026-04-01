@@ -2,10 +2,7 @@ package uniregistrar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import uniregistrar.openapi.model.DidStateFailed;
-import uniregistrar.openapi.model.DidUrlStateFailed;
-import uniregistrar.openapi.model.RegistrarResourceState;
-import uniregistrar.openapi.model.RegistrarState;
+import uniregistrar.openapi.model.*;
 
 import java.util.Map;
 
