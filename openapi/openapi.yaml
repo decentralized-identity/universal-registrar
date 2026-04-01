@@ -675,7 +675,10 @@ components:
         - didUrlState
       properties:
         jobId:
-          type: string
+          oneOf:
+            - type: null
+            - type: string
+            - type: object
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didUrlState:
           $ref: "#/components/schemas/DidUrlState"
