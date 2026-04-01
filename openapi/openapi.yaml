@@ -395,7 +395,10 @@ components:
         jobId:
           description: This input field is used to keep track of an ongoing DID operation
             process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
-          type: string
+          oneOf:
+            - type: null
+            - type: string
+            - type: object
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         options:
           $ref: "#/components/schemas/RequestOptions"
@@ -651,7 +654,10 @@ components:
         - didState
       properties:
         jobId:
-          type: string
+          oneOf:
+            - type: null
+            - type: string
+            - type: object
           example: 6d85bcd0-2ea3-4288-ab00-15afadd8a156
         didState:
           $ref: "#/components/schemas/DidState"
