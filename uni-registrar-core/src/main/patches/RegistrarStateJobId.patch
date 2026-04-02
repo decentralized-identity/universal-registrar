@@ -1,0 +1,108 @@
+--- src/main/java/uniregistrar/openapi/model/RegistrarStateJobId.java	2026-01-19 14:00:12.159445907 +0100
++++ src/main/java/uniregistrar/openapi/model/RegistrarStateJobId.java.changed	2026-01-19 14:04:24.063072670 +0100
+@@ -86,31 +86,31 @@
+             boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
+             int match = 0;
+             JsonToken token = tree.traverse(jp.getCodec()).nextToken();
+-            // deserialize Object
++            // deserialize Map<String, Object>
+             try {
+                 boolean attemptParsing = true;
+                 // ensure that we respect type coercion as set on the client ObjectMapper
+-                if (Object.class.equals(Integer.class) || Object.class.equals(Long.class) || Object.class.equals(Float.class) || Object.class.equals(Double.class) || Object.class.equals(Boolean.class) || Object.class.equals(String.class)) {
++                if (Map.class.equals(Integer.class) || Map.class.equals(Long.class) || Map.class.equals(Float.class) || Map.class.equals(Double.class) || Map.class.equals(Boolean.class) || Map.class.equals(String.class)) {
+                     attemptParsing = typeCoercion;
+                     if (!attemptParsing) {
+-                        attemptParsing |= ((Object.class.equals(Integer.class) || Object.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
+-                        attemptParsing |= ((Object.class.equals(Float.class) || Object.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
+-                        attemptParsing |= (Object.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
+-                        attemptParsing |= (Object.class.equals(String.class) && token == JsonToken.VALUE_STRING);
++                        attemptParsing |= ((Map.class.equals(Integer.class) || Map.class.equals(Long.class)) && token == JsonToken.VALUE_NUMBER_INT);
++                        attemptParsing |= ((Map.class.equals(Float.class) || Map.class.equals(Double.class)) && token == JsonToken.VALUE_NUMBER_FLOAT);
++                        attemptParsing |= (Map.class.equals(Boolean.class) && (token == JsonToken.VALUE_FALSE || token == JsonToken.VALUE_TRUE));
++                        attemptParsing |= (Map.class.equals(String.class) && token == JsonToken.VALUE_STRING);
+                         attemptParsing |= (token == JsonToken.VALUE_NULL);
+                     }
+                 }
+                 if (attemptParsing) {
+-                    deserialized = tree.traverse(jp.getCodec()).readValueAs(Object.class);
++                    deserialized = tree.traverse(jp.getCodec()).readValueAs(Map.class);
+                     // TODO: there is no validation against JSON schema constraints
+                     // (min, max, enum, pattern...), this does not perform a strict JSON
+                     // validation, which means the 'match' count may be higher than it should be.
+                     match++;
+-                    log.log(Level.FINER, "Input data matches schema 'Object'");
++                    log.log(Level.FINER, "Input data matches schema 'Map<String, Object>'");
+                 }
+             } catch (Exception e) {
+                 // deserialization failed, continue
+-                log.log(Level.FINER, "Input data does not match schema 'Object'", e);
++                log.log(Level.FINER, "Input data does not match schema 'Map<String, Object>'", e);
+             }
+ 
+             // deserialize String
+@@ -175,7 +175,7 @@
+     }
+ 
+     static {
+-        schemas.put("Object", Object.class);
++        schemas.put("Map<String, Object>", Map.class);
+         schemas.put("String", String.class);
+         JSON.registerDescendants(RegistrarStateJobId.class, Collections.unmodifiableMap(schemas));
+     }
+@@ -200,7 +200,7 @@
+            return;
+         }
+ 
+-        if (JSON.isInstanceOf(Object.class, instance, new HashSet<Class<?>>())) {
++        if (JSON.isInstanceOf(Map.class, instance, new HashSet<Class<?>>())) {
+             super.setActualInstance(instance);
+             return;
+         }
+@@ -210,14 +210,14 @@
+             return;
+         }
+ 
+-        throw new RuntimeException("Invalid instance type. Must be Object, String");
++        throw new RuntimeException("Invalid instance type. Must be Map<String, Object>, String");
+     }
+ 
+     /**
+      * Get the actual instance, which can be the following:
+-     * Object, String
++     * Map<String, Object>, String
+      *
+-     * @return The actual instance (Object, String)
++     * @return The actual instance (Map<String, Object>, String)
+      */
+     @Override
+     public Object getActualInstance() {
+@@ -225,14 +225,14 @@
+     }
+ 
+     /**
+-     * Get the actual instance of `Object`. If the actual instance is not `Object`,
++     * Get the actual instance of `Map<String, Object>`. If the actual instance is not `Map<String, Object>`,
+      * the ClassCastException will be thrown.
+      *
+-     * @return The actual instance of `Object`
+-     * @throws ClassCastException if the instance is not `Object`
++     * @return The actual instance of `Map<String, Object>`
++     * @throws ClassCastException if the instance is not `Map<String, Object>`
+      */
+-    public Object getObject() throws ClassCastException {
+-        return (Object)super.getActualInstance();
++    public Map<String, Object> getMap() throws ClassCastException {
++        return (Map<String, Object>)super.getActualInstance();
+     }
+ 
+     /**
+@@ -286,7 +286,7 @@
+         }
+         return joiner.toString();
+     }
+-    if (getActualInstance() instanceof Object) {
++    if (getActualInstance() instanceof Map) {
+         if (getActualInstance() != null) {
+           joiner.add(String.format(java.util.Locale.ROOT, "%sone_of_1%s=%s", prefix, suffix, ApiClient.urlEncode(String.valueOf(getActualInstance()))));
+         }
