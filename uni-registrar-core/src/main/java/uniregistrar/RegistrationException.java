@@ -8,13 +8,13 @@ import java.util.Map;
 
 public class RegistrationException extends Exception {
 
-	public static final String ERROR_INVALID_DID = "invalidDid";
-	public static final String ERROR_INVALID_DID_DOCUMENT = "invalidDidDocument";
-	public static final String ERROR_INVALID_OPTIONS = "invalidOptions";
-	public static final String ERROR_NOT_FOUND = "notFound";
-	public static final String ERROR_METHOD_NOT_SUPPORTED = "methodNotSupported";
-	public static final String ERROR_REPRESENTATION_NOT_SUPPORTED = "representationNotSupported";
-	public static final String ERROR_INTERNAL_ERROR = "internalError";
+	public static final String ERROR_INVALID_DID = "INVALID_DID";
+	public static final String ERROR_INVALID_DID_DOCUMENT = "INVALID_DID_DOCUMENT";
+	public static final String ERROR_INVALID_OPTIONS = "INVALID_OPTIONS";
+	public static final String ERROR_NOT_FOUND = "NOT_FOUND";
+	public static final String ERROR_METHOD_NOT_SUPPORTED = "METHOD_NOT_SUPPORTED";
+	public static final String ERROR_REPRESENTATION_NOT_SUPPORTED = "REPRESENTATION_NOT_SUPPORTED";
+	public static final String ERROR_INTERNAL_ERROR = "INTERNAL_ERROR";
 
 	private static final Logger log = LoggerFactory.getLogger(RegistrationException.class);
 
