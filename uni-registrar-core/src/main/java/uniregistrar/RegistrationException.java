@@ -24,13 +24,13 @@ public class RegistrationException extends Exception {
 	private RegistrarState registrarState;
 	private RegistrarResourceState registrarResourceState;
 
-	private RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
+	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata, Throwable ex) {
 		super(message, ex);
 		this.error = error;
 		this.didRegistrationMetadata = didRegistrationMetadata;
 	}
 
-	private RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata) {
+	public RegistrationException(String error, String message, Map<String, Object> didRegistrationMetadata) {
 		super(message);
 		this.error = error;
 		this.didRegistrationMetadata = didRegistrationMetadata;
