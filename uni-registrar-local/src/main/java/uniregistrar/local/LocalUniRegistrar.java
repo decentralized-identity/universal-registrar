@@ -2,6 +2,7 @@ package uniregistrar.local;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import uniregistrar.ExecutionStateUniRegistrar;
 import uniregistrar.RegistrationException;
 import uniregistrar.UniRegistrar;
 import uniregistrar.driver.Driver;
@@ -20,7 +21,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-public class LocalUniRegistrar implements UniRegistrar {
+public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistrar {
 
 	private static final Logger log = LoggerFactory.getLogger(LocalUniRegistrar.class);
 
@@ -47,12 +48,17 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return localUniRegistrar;
 	}
 
+	/*
+	 * Registrar methods
+	 */
+
 	@Override
 	public CreateState create(String method, CreateRequest createRequest) throws RegistrationException {
 
 		return this.create(method, createRequest, null);
 	}
 
+	@Override
 	public CreateState create(String method, CreateRequest createRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -145,6 +151,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.update(method, updateRequest, null);
 	}
 
+	@Override
 	public UpdateState update(String method, UpdateRequest updateRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -237,6 +244,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.deactivate(method, deactivateRequest, null);
 	}
 
+	@Override
 	public DeactivateState deactivate(String method, DeactivateRequest deactivateRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -329,6 +337,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.execute(method, executeRequest, null);
 	}
 
+	@Override
 	public ExecuteState execute(String method, ExecuteRequest executeRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -422,6 +431,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.createResource(method, createResourceRequest, null);
 	}
 
+	@Override
 	public CreateResourceState createResource(String method, CreateResourceRequest createResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -514,6 +524,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.updateResource(method, updateResourceRequest, null);
 	}
 
+	@Override
 	public UpdateResourceState updateResource(String method, UpdateResourceRequest updateResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
@@ -606,6 +617,7 @@ public class LocalUniRegistrar implements UniRegistrar {
 		return this.deactivateResource(method, deactivateResourceRequest, null);
 	}
 
+	@Override
 	public DeactivateResourceState deactivateResource(String method, DeactivateResourceRequest deactivateResourceRequest, Map<String, Object> initialExecutionState) throws RegistrationException {
 
 		if (method == null) throw new NullPointerException();
