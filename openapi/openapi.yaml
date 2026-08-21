@@ -886,7 +886,7 @@ components:
           properties:
             wait:
               $ref: "#/components/schemas/String"
-            waittime:
+            waitTime:
               $ref: "#/components/schemas/String"
     SigningRequest:
       description: A signing request, see https://identity.foundation/did-registration/#signing-request-set.
