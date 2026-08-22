@@ -1,15 +1,16 @@
 package uniregistrar.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uniregistrar.RegistrationException;
@@ -102,12 +103,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -115,14 +116,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE STATE for CREATE REQUEST " + createRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			createState = HttpBindingUtil.fromHttpBodyState(httpBody, CreateState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE STATE for CREATE REQUEST " + createRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -159,12 +160,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -172,14 +173,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE STATE for UPDATE REQUEST " + updateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			updateState = HttpBindingUtil.fromHttpBodyState(httpBody, UpdateState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE STATE for UPDATE REQUEST " + updateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -216,12 +217,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -229,14 +230,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			deactivateState = HttpBindingUtil.fromHttpBodyState(httpBody, DeactivateState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE STATE for DEACTIVATE REQUEST " + deactivateRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -273,12 +274,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -286,14 +287,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			executeState = HttpBindingUtil.fromHttpBodyState(httpBody, ExecuteState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve EXECUTE STATE for EXECUTE REQUEST " + executeRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -330,12 +331,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -343,14 +344,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			createResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, CreateResourceState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve CREATE RESOURCE STATE for CREATE RESOURCE REQUEST " + createResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -387,12 +388,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -400,14 +401,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			updateResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, UpdateResourceState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve UPDATE RESOURCE STATE for UPDATE RESOURCE REQUEST " + updateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -444,12 +445,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpPost)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (statusCode == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -457,14 +458,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			deactivateResourceState = HttpBindingUtil.fromHttpBodyResourceState(httpBody, DeactivateResourceState.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve DEACTIVATE RESOURCE STATE for DEACTIVATE RESOURCE REQUEST " + deactivateResourceRequest + " from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -494,12 +495,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (httpResponse.getStatusLine().getStatusCode() == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -507,14 +508,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve PROPERTIES from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			properties = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, LinkedHashMap.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve PROPERTIES from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -544,12 +545,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (httpResponse.getStatusLine().getStatusCode() == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -557,14 +558,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() >= 300) {
+			if (httpCode >= 300) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve METHODS from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			methods = (Set<String>) objectMapper.readValue(httpBody, LinkedHashSet.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve METHODS from " + uriString + ": " + ex.getMessage(), ex);
 		}
@@ -594,12 +595,12 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 		try (CloseableHttpResponse httpResponse = (CloseableHttpResponse) this.getHttpClient().execute(httpGet)) {
 
-			int statusCode = httpResponse.getStatusLine().getStatusCode();
-			String statusMessage = httpResponse.getStatusLine().getReasonPhrase();
+			int httpCode = httpResponse.getCode();
+			String httpReasonPhrase = httpResponse.getReasonPhrase();
 
-			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + statusCode + " " + statusMessage);
+			if (log.isDebugEnabled()) log.debug("Response status from " + uriString + ": " + httpCode + " " + httpReasonPhrase);
 
-			if (httpResponse.getStatusLine().getStatusCode() == 404) return null;
+			if (httpCode == 404) return null;
 
 			HttpEntity httpEntity = httpResponse.getEntity();
 			String httpBody = EntityUtils.toString(httpEntity);
@@ -607,14 +608,14 @@ public class ClientUniRegistrar implements UniRegistrar {
 
 			if (log.isDebugEnabled()) log.debug("Response body from " + uriString + ": " + httpBody);
 
-			if (httpResponse.getStatusLine().getStatusCode() > 200) {
+			if (httpCode > 200) {
 
 				if (log.isWarnEnabled()) log.warn("Cannot retrieve TRAITS from " + uriString + ": " + httpBody);
 				throw new RegistrationException(httpBody);
 			}
 
 			traits = (Map<String, Map<String, Object>>) objectMapper.readValue(httpBody, LinkedHashMap.class);
-		} catch (IOException ex) {
+		} catch (IOException | ParseException ex) {
 
 			throw new RegistrationException("Cannot retrieve TRAITS from " + uriString + ": " + ex.getMessage(), ex);
 		}
