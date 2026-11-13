@@ -18,7 +18,7 @@ Your driver will receive a DID request object like the following in the HTTP bod
 
 ```
 {
-	"jobId": null,
+	"operationState": null,
 	"options": {
 		"ledger": "test",
 		"keytype": "ed25519"
@@ -32,7 +32,7 @@ It should return a DID state object like the following in the HTTP body:
 
 ```
 {
-	"jobId": null,
+	"operationState": null,
 	"didState": {
 		"did": "did:example:0000000000123456",
 		"state": "finished",

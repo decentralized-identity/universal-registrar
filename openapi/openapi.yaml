@@ -37,7 +37,7 @@ paths:
       responses:
         "200":
           description: The request was successful, but the DID may not be fully created
-            yet, as indicated by the "didState.state" and "jobId" output fields. Additional
+            yet, as indicated by the "didState.state" and "operationState" output fields. Additional
             state information plus metadata are available in the response body.
           content:
             application/json:
@@ -85,7 +85,7 @@ paths:
       responses:
         "200":
           description: The request was successful, and the DID may or may not be fully
-            updated yet, as indicated by the "didState.state" and "jobId" output fields.
+            updated yet, as indicated by the "didState.state" and "operationState" output fields.
             Additional state information plus metadata are available in the response
             body.
           content:
@@ -126,7 +126,7 @@ paths:
       responses:
         "200":
           description: The request was successful, and the DID may or may not be fully
-            deactivated yet, as indicated by the "didState.state" and "jobId" output
+            deactivated yet, as indicated by the "didState.state" and "operationState" output
             fields. Additional state information plus metadata are available in the
             response body.
           content:
@@ -167,7 +167,7 @@ paths:
       responses:
         "200":
           description: The request was successful, and the operation may or may not be fully
-            executed yet, as indicated by the "didState.state" and "jobId" output fields.
+            executed yet, as indicated by the "didState.state" and "operationState" output fields.
             Additional state information plus metadata are available in the response
             body.
           content:
@@ -208,7 +208,7 @@ paths:
       responses:
         "200":
           description: The request was successful, but the DID URL may not be fully created
-            yet, as indicated by the "didState.state" and "jobId" output fields. Additional
+            yet, as indicated by the "didState.state" and "operationState" output fields. Additional
             state information plus metadata are available in the response body.
           content:
             application/json:
@@ -256,7 +256,7 @@ paths:
       responses:
         "200":
           description: The request was successful, and the DID URL may or may not be fully
-            updated yet, as indicated by the "didState.state" and "jobId" output fields.
+            updated yet, as indicated by the "didState.state" and "operationState" output fields.
             Additional state information plus metadata are available in the response
             body.
           content:
@@ -297,7 +297,7 @@ paths:
       responses:
         "200":
           description: The request was successful, and the DID URL may or may not be fully
-            deactivated yet, as indicated by the "didState.state" and "jobId" output
+            deactivated yet, as indicated by the "didState.state" and "operationState" output
             fields. Additional state information plus metadata are available in the
             response body.
           content:
@@ -392,9 +392,9 @@ components:
       type: object
       x-parent: true
       properties:
-        jobId:
+        operationState:
           description: This input field is used to keep track of an ongoing DID operation
-            process. See <a href="https://identity.foundation/did-registration/#jobid">https://identity.foundation/did-registration/#jobid</a>.
+            process. See <a href="https://identity.foundation/did-registration/#operationstate">https://identity.foundation/did-registration/#operationstate</a>.
           oneOf:
             - type: null
             - type: string
@@ -446,13 +446,13 @@ components:
       example:
         seed: 72WGp7NgFR1Oqdi8zlt7jQQ434XR0cNQ
         verificationMethod:
-            - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
-              type: JsonWebKey2020
-              privateKeyJwk:
-                kty: OKP
-                crv: Ed25519
-                d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
-                x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
+          - id: did:indy:sovrin:WRfXPg8dantKVubE3HX8pw#key-1
+            type: JsonWebKey2020
+            privateKeyJwk:
+              kty: OKP
+              crv: Ed25519
+              d: NzJXR3A3TmdGUjFPcWRpOHpsdDdqUVE0MzRYUjBjTlE
+              x: jpIKKU2b77lNXKTNW2NGvw1GUMjU6v_l_tLJAH5uYz0
     RequestSecretVerificationMethod:
       type: array
       items:
@@ -653,7 +653,7 @@ components:
       required:
         - didState
       properties:
-        jobId:
+        operationState:
           oneOf:
             - type: null
             - type: string
@@ -674,7 +674,7 @@ components:
       required:
         - didUrlState
       properties:
-        jobId:
+        operationState:
           oneOf:
             - type: null
             - type: string

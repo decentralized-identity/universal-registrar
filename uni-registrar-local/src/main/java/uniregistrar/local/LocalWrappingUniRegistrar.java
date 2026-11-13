@@ -76,7 +76,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			CreateState uniRegistrarCreateState = uniRegistrar.create(method, createRequest);
 			if (uniRegistrarCreateState != null) {
-				createState.setJobId(uniRegistrarCreateState.getJobId());
+				createState.setOperationState(uniRegistrarCreateState.getOperationState());
 				createState.setDidState(uniRegistrarCreateState.getDidState());
 				if (uniRegistrarCreateState.getDidRegistrationMetadata() != null) createState.getDidRegistrationMetadata().putAll(uniRegistrarCreateState.getDidRegistrationMetadata());
 				if (uniRegistrarCreateState.getDidDocumentMetadata() != null) createState.getDidDocumentMetadata().putAll(uniRegistrarCreateState.getDidDocumentMetadata());
@@ -143,7 +143,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			UpdateState uniRegistrarUpdateState = uniRegistrar.update(method, updateRequest);
 			if (uniRegistrarUpdateState != null) {
-				updateState.setJobId(uniRegistrarUpdateState.getJobId());
+				updateState.setOperationState(uniRegistrarUpdateState.getOperationState());
 				updateState.setDidState(uniRegistrarUpdateState.getDidState());
 				if (uniRegistrarUpdateState.getDidRegistrationMetadata() != null) updateState.getDidRegistrationMetadata().putAll(uniRegistrarUpdateState.getDidRegistrationMetadata());
 				if (uniRegistrarUpdateState.getDidDocumentMetadata() != null) updateState.getDidDocumentMetadata().putAll(uniRegistrarUpdateState.getDidDocumentMetadata());
@@ -210,7 +210,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			DeactivateState uniRegistrarDeactivateState = uniRegistrar.deactivate(method, deactivateRequest);
 			if (uniRegistrarDeactivateState != null) {
-				deactivateState.setJobId(uniRegistrarDeactivateState.getJobId());
+				deactivateState.setOperationState(uniRegistrarDeactivateState.getOperationState());
 				deactivateState.setDidState(uniRegistrarDeactivateState.getDidState());
 				if (uniRegistrarDeactivateState.getDidRegistrationMetadata() != null) deactivateState.getDidRegistrationMetadata().putAll(uniRegistrarDeactivateState.getDidRegistrationMetadata());
 				if (uniRegistrarDeactivateState.getDidDocumentMetadata() != null) deactivateState.getDidDocumentMetadata().putAll(uniRegistrarDeactivateState.getDidDocumentMetadata());
@@ -277,7 +277,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			ExecuteState uniRegistrarExecuteState = uniRegistrar.execute(method, executeRequest);
 			if (uniRegistrarExecuteState != null) {
-				executeState.setJobId(uniRegistrarExecuteState.getJobId());
+				executeState.setOperationState(uniRegistrarExecuteState.getOperationState());
 				executeState.setDidState(uniRegistrarExecuteState.getDidState());
 				if (uniRegistrarExecuteState.getDidRegistrationMetadata() != null) executeState.getDidRegistrationMetadata().putAll(uniRegistrarExecuteState.getDidRegistrationMetadata());
 				if (uniRegistrarExecuteState.getDidDocumentMetadata() != null) executeState.getDidDocumentMetadata().putAll(uniRegistrarExecuteState.getDidDocumentMetadata());
@@ -345,7 +345,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			CreateResourceState uniRegistrarCreateResourceState = uniRegistrar.createResource(method, createResourceRequest);
 			if (uniRegistrarCreateResourceState != null) {
-				createResourceState.setJobId(uniRegistrarCreateResourceState.getJobId());
+				createResourceState.setOperationState(uniRegistrarCreateResourceState.getOperationState());
 				createResourceState.setDidUrlState(uniRegistrarCreateResourceState.getDidUrlState());
 				if (uniRegistrarCreateResourceState.getDidRegistrationMetadata() != null) createResourceState.getDidRegistrationMetadata().putAll(uniRegistrarCreateResourceState.getDidRegistrationMetadata());
 				if (uniRegistrarCreateResourceState.getContentMetadata() != null) createResourceState.getContentMetadata().putAll(uniRegistrarCreateResourceState.getContentMetadata());
@@ -411,7 +411,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			UpdateResourceState uniRegistrarUpdateResourceState = uniRegistrar.updateResource(method, updateResourceRequest);
 			if (uniRegistrarUpdateResourceState != null) {
-				updateResourceState.setJobId(uniRegistrarUpdateResourceState.getJobId());
+				updateResourceState.setOperationState(uniRegistrarUpdateResourceState.getOperationState());
 				updateResourceState.setDidUrlState(uniRegistrarUpdateResourceState.getDidUrlState());
 				if (uniRegistrarUpdateResourceState.getDidRegistrationMetadata() != null) updateResourceState.getDidRegistrationMetadata().putAll(uniRegistrarUpdateResourceState.getDidRegistrationMetadata());
 				if (uniRegistrarUpdateResourceState.getContentMetadata() != null) updateResourceState.getContentMetadata().putAll(uniRegistrarUpdateResourceState.getContentMetadata());
@@ -477,7 +477,7 @@ public class LocalWrappingUniRegistrar implements UniRegistrar, ExecutionStateUn
 
 			DeactivateResourceState uniRegistrarDeactivateState = uniRegistrar.deactivateResource(method, deactivateResourceRequest);
 			if (uniRegistrarDeactivateState != null) {
-				deactivateResourceState.setJobId(uniRegistrarDeactivateState.getJobId());
+				deactivateResourceState.setOperationState(uniRegistrarDeactivateState.getOperationState());
 				deactivateResourceState.setDidUrlState(uniRegistrarDeactivateState.getDidUrlState());
 				if (uniRegistrarDeactivateState.getDidRegistrationMetadata() != null) deactivateResourceState.getDidRegistrationMetadata().putAll(uniRegistrarDeactivateState.getDidRegistrationMetadata());
 				if (uniRegistrarDeactivateState.getContentMetadata() != null) deactivateResourceState.getContentMetadata().putAll(uniRegistrarDeactivateState.getContentMetadata());

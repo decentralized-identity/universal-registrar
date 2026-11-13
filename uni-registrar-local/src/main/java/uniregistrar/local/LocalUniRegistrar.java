@@ -121,7 +121,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			CreateState driverCreateState = driver.create(createRequest);
 			if (driverCreateState != null) {
-				createState.setJobId(driverCreateState.getJobId());
+				createState.setOperationState(driverCreateState.getOperationState());
 				createState.setDidState(driverCreateState.getDidState());
 				if (driverCreateState.getDidRegistrationMetadata() != null) createState.getDidRegistrationMetadata().putAll(driverCreateState.getDidRegistrationMetadata());
 				if (driverCreateState.getDidDocumentMetadata() != null) createState.getDidDocumentMetadata().putAll(driverCreateState.getDidDocumentMetadata());
@@ -214,7 +214,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			UpdateState driverUpdateState = driver.update(updateRequest);
 			if (driverUpdateState != null) {
-				updateState.setJobId(driverUpdateState.getJobId());
+				updateState.setOperationState(driverUpdateState.getOperationState());
 				updateState.setDidState(driverUpdateState.getDidState());
 				if (driverUpdateState.getDidRegistrationMetadata() != null) updateState.getDidRegistrationMetadata().putAll(driverUpdateState.getDidRegistrationMetadata());
 				if (driverUpdateState.getDidDocumentMetadata() != null) updateState.getDidDocumentMetadata().putAll(driverUpdateState.getDidDocumentMetadata());
@@ -307,7 +307,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			DeactivateState driverDeactivateState = driver.deactivate(deactivateRequest);
 			if (driverDeactivateState != null) {
-				deactivateState.setJobId(driverDeactivateState.getJobId());
+				deactivateState.setOperationState(driverDeactivateState.getOperationState());
 				deactivateState.setDidState(driverDeactivateState.getDidState());
 				if (driverDeactivateState.getDidRegistrationMetadata() != null) deactivateState.getDidRegistrationMetadata().putAll(driverDeactivateState.getDidRegistrationMetadata());
 				if (driverDeactivateState.getDidDocumentMetadata() != null) deactivateState.getDidDocumentMetadata().putAll(driverDeactivateState.getDidDocumentMetadata());
@@ -400,7 +400,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			ExecuteState driverExecuteState = driver.execute(executeRequest);
 			if (driverExecuteState != null) {
-				executeState.setJobId(driverExecuteState.getJobId());
+				executeState.setOperationState(driverExecuteState.getOperationState());
 				executeState.setDidState(driverExecuteState.getDidState());
 				if (driverExecuteState.getDidRegistrationMetadata() != null) executeState.getDidRegistrationMetadata().putAll(driverExecuteState.getDidRegistrationMetadata());
 				if (driverExecuteState.getDidDocumentMetadata() != null) executeState.getDidDocumentMetadata().putAll(driverExecuteState.getDidDocumentMetadata());
@@ -494,7 +494,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			CreateResourceState driverCreateResourceState = driver.createResource(createResourceRequest);
 			if (driverCreateResourceState != null) {
-				createResourceState.setJobId(driverCreateResourceState.getJobId());
+				createResourceState.setOperationState(driverCreateResourceState.getOperationState());
 				createResourceState.setDidUrlState(driverCreateResourceState.getDidUrlState());
 				if (driverCreateResourceState.getDidRegistrationMetadata() != null) createResourceState.getDidRegistrationMetadata().putAll(driverCreateResourceState.getDidRegistrationMetadata());
 				if (driverCreateResourceState.getContentMetadata() != null) createResourceState.getContentMetadata().putAll(driverCreateResourceState.getContentMetadata());
@@ -587,7 +587,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			UpdateResourceState driverUpdateResourceState = driver.updateResource(updateResourceRequest);
 			if (driverUpdateResourceState != null) {
-				updateResourceState.setJobId(driverUpdateResourceState.getJobId());
+				updateResourceState.setOperationState(driverUpdateResourceState.getOperationState());
 				updateResourceState.setDidUrlState(driverUpdateResourceState.getDidUrlState());
 				if (driverUpdateResourceState.getDidRegistrationMetadata() != null) updateResourceState.getDidRegistrationMetadata().putAll(driverUpdateResourceState.getDidRegistrationMetadata());
 				if (driverUpdateResourceState.getContentMetadata() != null) updateResourceState.getContentMetadata().putAll(driverUpdateResourceState.getContentMetadata());
@@ -680,7 +680,7 @@ public class LocalUniRegistrar implements UniRegistrar, ExecutionStateUniRegistr
 
 			DeactivateResourceState driverDeactivateState = driver.deactivateResource(deactivateResourceRequest);
 			if (driverDeactivateState != null) {
-				deactivateResourceState.setJobId(driverDeactivateState.getJobId());
+				deactivateResourceState.setOperationState(driverDeactivateState.getOperationState());
 				deactivateResourceState.setDidUrlState(driverDeactivateState.getDidUrlState());
 				if (driverDeactivateState.getDidRegistrationMetadata() != null) deactivateResourceState.getDidRegistrationMetadata().putAll(driverDeactivateState.getDidRegistrationMetadata());
 				if (driverDeactivateState.getContentMetadata() != null) deactivateResourceState.getContentMetadata().putAll(driverDeactivateState.getContentMetadata());

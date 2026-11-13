@@ -1,5 +1,5 @@
---- src/main/java/uniregistrar/openapi/model/RegistrarStateJobId.java	2026-01-19 14:00:12.159445907 +0100
-+++ src/main/java/uniregistrar/openapi/model/RegistrarStateJobId.java.changed	2026-01-19 14:04:24.063072670 +0100
+--- src/main/java/uniregistrar/openapi/model/RegistrarStateOperationState.java	2026-01-19 14:00:12.159445907 +0100
++++ src/main/java/uniregistrar/openapi/model/RegistrarStateOperationState.java.changed	2026-01-19 14:04:24.063072670 +0100
 @@ -86,31 +86,31 @@
              boolean typeCoercion = ctxt.isEnabled(MapperFeature.ALLOW_COERCION_OF_SCALARS);
              int match = 0;
@@ -48,7 +48,7 @@
 -        schemas.put("Object", Object.class);
 +        schemas.put("Map<String, Object>", Map.class);
          schemas.put("String", String.class);
-         JSON.registerDescendants(RegistrarStateJobId.class, Collections.unmodifiableMap(schemas));
+         JSON.registerDescendants(RegistrarStateOperationState.class, Collections.unmodifiableMap(schemas));
      }
 @@ -200,7 +200,7 @@
             return;
