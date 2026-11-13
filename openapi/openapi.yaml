@@ -990,6 +990,7 @@ components:
           type: array
           items:
             type: string
+      additionalProperties: { }
     VerificationMethodPublicData:
       description: A verification method public data object, see https://identity.foundation/did-registration/#verification-method-public-data
       allOf:
@@ -997,10 +998,8 @@ components:
         - type: object
           properties:
             publicKeyJwk:
-              type: object
+              type: [object, null]
               additionalProperties: { }
-            publicKeyMultibase:
-              type: string
     VerificationMethodPrivateData:
       description: A verification method private data object, see https://identity.foundation/did-registration/#verification-method-private-data
       allOf:
@@ -1008,10 +1007,8 @@ components:
         - type: object
           properties:
             privateKeyJwk:
-              type: object
+              type: [object, null]
               additionalProperties: { }
-            privateKeyMultibase:
-              type: string
     VerificationMethodTemplate:
       description: A verification method template, see https://identity.foundation/did-registration/#verification-method-template
       type: object
@@ -1029,6 +1026,7 @@ components:
         publicKeyJwk:
           type: [object, null]
           additionalProperties: { }
+      additionalProperties: { }
     String:
       type: string
     Boolean:
